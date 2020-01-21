@@ -17,6 +17,7 @@ namespace SMSProjectWinFrm
         DAL dal = new DAL();
         ListBox listBox1 = null;
         Logger logger = new Logger();
+        TextBox TxtSmsCounter = null;
 
         public SMSManagement sMSManagement { get; set; }
         private void getfolders(Outlook.Folder folder)
@@ -71,6 +72,12 @@ namespace SMSProjectWinFrm
         public OutlookManagement(ListBox listBox)
         {
             listBox1 = listBox;
+            InitializeOutlookObjects();
+            //dal.ClearDatabase(); //باید کامنت شود
+        }
+        public OutlookManagement(TextBox txtbox)
+        {
+            TxtSmsCounter = txtbox;
             InitializeOutlookObjects();
             //dal.ClearDatabase(); //باید کامنت شود
         }
@@ -323,10 +330,34 @@ namespace SMSProjectWinFrm
                     else
                         a.contact.FullName = item.Subject;
                     a = GetContactInfo(a);
-                    contacts.Add(a);
+                    if (a != null)
+                        contacts.Add(a);
                 }
             }
             return contacts;
+        }
+        public void SendAnSMSToAllContacts(string TxtSMS)
+        {
+            int counter = 0;
+            foreach (Outlook.ContactItem Contact in defaultContactsFolder.Items)
+            {
+                try
+                {
+                    sMSManagement.SendSMS(TxtSMS, Contact.MobileTelephoneNumber);
+                    ++counter;
+                    TxtSmsCounter.Invoke(new Action(() => TxtSmsCounter.Text = counter.ToString()));
+                }
+                catch (Exception ex)
+                {
+                    //MessageBox.Show("اتصال با مودم با مشکل مواجه شده است.");
+                    logger.ErrorLog(ex.Message);
+                    //throw (ex);
+                }
+            }
+        }
+        public long GetContactsCount()
+        {
+            return defaultContactsFolder.Items.Count;
         }
     }
 

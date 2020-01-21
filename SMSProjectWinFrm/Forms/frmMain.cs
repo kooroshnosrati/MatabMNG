@@ -50,5 +50,12 @@ namespace SMSProjectWinFrm
             frm.MdiParent = this;
             frm.Show();
         }
+
+        private void toolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            FrmSendSMStoAll frm = new FrmSendSMStoAll();
+            frm.MdiParent = this;
+            frm.Show();
+        }
     }
 }
