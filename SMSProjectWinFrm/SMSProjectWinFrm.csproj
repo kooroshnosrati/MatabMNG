@@ -124,6 +124,12 @@
     <Compile Include="Business\ApplicationConfigManagement.cs" />
     <Compile Include="Business\Contact.cs" />
     <Compile Include="Business\DAL.cs" />
+    <Compile Include="Forms\FrmSMSCenter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FrmSMSCenter.Designer.cs">
+      <DependentUpon>FrmSMSCenter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FrmAppointmentSendSMS.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -165,6 +171,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Business\SMSManagement.cs" />
+    <EmbeddedResource Include="Forms\FrmSMSCenter.resx">
+      <DependentUpon>FrmSMSCenter.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FrmAppointmentSendSMS.resx">
       <DependentUpon>FrmAppointmentSendSMS.cs</DependentUpon>
     </EmbeddedResource>

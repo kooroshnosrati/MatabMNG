@@ -59,5 +59,23 @@ namespace SMSProjectWinFrm
             command1.CommandType = CommandType.Text;
             command1.ExecuteNonQuery();
         }
+
+        public void RefreshThreadSendSMS()
+        {
+            //CategoryID = '2' and SentDate = '" + a.Date + "' and MobileNumber = '" + a.contact.Mobile + "' and PatientID = '" + a.contact.PatientID + "'"
+            string sql = "select * from Tbl_SentSMS where IsSent = false and TryCount < 3 order by ";
+            using (SqliteCommand command = new SqliteCommand(sql, m_dbConnection))
+            {
+                SqliteDataReader dr = command.ExecuteReader();
+                while (dr.Read())
+                {
+
+                }
+            }
+            
+            
+            command.Dispose();
+            //return (dr.HasRows);
+        }
     }
 }
