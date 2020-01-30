@@ -122,6 +122,8 @@
   <ItemGroup>
     <Compile Include="Business\Apointment.cs" />
     <Compile Include="Business\ApplicationConfigManagement.cs" />
+    <Compile Include="Business\Cls_SMS.cs" />
+    <Compile Include="Business\Cls_SMSToSend.cs" />
     <Compile Include="Business\Contact.cs" />
     <Compile Include="Business\DAL.cs" />
     <Compile Include="Forms\FrmSMSCenter.cs">

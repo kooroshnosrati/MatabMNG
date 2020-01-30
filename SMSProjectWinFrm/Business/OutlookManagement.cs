@@ -6,6 +6,8 @@ using System.Text;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Windows.Forms;
 using System.Globalization;
+using SMSProjectWinFrm;
+using SMSProjectWinFrm.Business;
 
 namespace SMSProjectWinFrm
 {
@@ -81,20 +83,33 @@ namespace SMSProjectWinFrm
             InitializeOutlookObjects();
             //dal.ClearDatabase(); //باید کامنت شود
         }
-        public void SendVisitConfirmationSmsToContact(Appointment a)
+        public void SendVisitConfirmationSmsToContact(Appointment a, int JobID)
         {
-            if (!dal.isSentVisitConfirmationSMSToMobile(a))
+            if (!dal.isSentVisitConfirmationSMSToMobile(a, JobID))
             {
                 //.............................................. Send SMS ....................................................
                 try
                 {
                     if (a.AppointmentDateTime > DateTime.Now)
                     {
-                        string bodyStr = string.Format("آقای/خانم\n{0} نوبت ويزيت شما براي خانم دكتر علي مددي تاريخ {1} ساعت {2} میباشد.", a.contact.FullName, a.AppointmentDateTime.ToLongDateString(), a.AppointmentDateTime.ToShortTimeString());
-                        sMSManagement.SendSMS(bodyStr, a);
-                        dal.AddMobileToSendVisitConfirmationSMS(a);
-                        if (listBox1 != null)
-                            listBox1.Invoke(new Action(() => listBox1.Items.Add(a.Date + " --- " + a.contact.FullName + " --- " + a.contact.Mobile + " --- " + a.contact.PatientID)));
+                        string TxtBodyTemplate = dal.GetSMSTextBodyTemplate(JobID);
+                        if (TxtBodyTemplate != null)
+                        {
+                            string bodyStr = string.Format(TxtBodyTemplate, a.contact.FullName, a.AppointmentDateTime.ToLongDateString(), a.AppointmentDateTime.ToShortTimeString());
+                            Cls_SMS sms = new Cls_SMS();
+                            sms.JobID = JobID;
+                            sms.PatientID = int.Parse(a.contact.PatientID);
+                            sms.MobileNumber = a.contact.Mobile;
+                            sms.TxtBody = bodyStr;
+                            sms.TryCount = 0;
+                            sms.IsSent = false;
+                            sms.ErrorTxt = "";
+                            dal.InsertSmsInfoToSentSMSTable(sms);
+                            //sMSManagement.SendSMS(bodyStr, a);
+                            //dal.AddMobileToSendVisitConfirmationSMS(a);
+                            if (listBox1 != null)
+                                listBox1.Invoke(new Action(() => listBox1.Items.Add(a.Date + " --- " + a.contact.FullName + " --- " + a.contact.Mobile + " --- " + a.contact.PatientID)));
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -115,8 +130,9 @@ namespace SMSProjectWinFrm
                 contact.Save();
             }
         }
-        private void FindContactAndSendVisitConfirmationSMS(Appointment a)
+        private void FindContactAndSendVisitConfirmationSMS(Appointment a, int JobID)
         {
+            bool chk = false;
             string filterStr = "";
             Outlook.ContactItem Contact = null;
             if (a.contact.PatientID.Length > 0)
@@ -132,7 +148,7 @@ namespace SMSProjectWinFrm
                 CorrectPhoneNumber(Contact);
                 a.contact.PatientID = Contact.Title;
                 a.contact.Mobile = string.IsNullOrEmpty(Contact.MobileTelephoneNumber) ? "-1" : Contact.MobileTelephoneNumber;
-                SendVisitConfirmationSmsToContact(a);
+                chk = true;
             }
             else
             {
@@ -148,7 +164,7 @@ namespace SMSProjectWinFrm
                     CorrectPhoneNumber(Contact);
                     a.contact.PatientID = Contact.Title;
                     a.contact.Mobile = Contact.MobileTelephoneNumber;
-                    SendVisitConfirmationSmsToContact(a);
+                    chk = true;
                 }
                 else
                 {
@@ -164,20 +180,22 @@ namespace SMSProjectWinFrm
                         CorrectPhoneNumber(Contact);
                         a.contact.PatientID = Contact.Title;
                         a.contact.Mobile = Contact.MobileTelephoneNumber;
-                        SendVisitConfirmationSmsToContact(a);
+                        chk = true;
                     }
                     else
                     {
                         if (a.contact.Mobile.Length > 0)
                         {
                             a.contact.PatientID = "-1";
-                            SendVisitConfirmationSmsToContact(a);
+                            chk = true;
                         }
                     }
                 }
             }
+            if (chk)
+                SendVisitConfirmationSmsToContact(a, JobID);
         }
-        private void ListOneDayAppointmentsAndSendSMS(DateTime dateTime)
+        private void ListOneDayAppointmentsAndSendSMS(DateTime dateTime, int JobID)
         {
             DateTime startDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
             string AimDate = startDate.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
@@ -206,7 +224,7 @@ namespace SMSProjectWinFrm
                         a.contact.FullName = item.Subject;
                     //a.Start = item.Start;
 
-                    FindContactAndSendVisitConfirmationSMS(a);
+                    FindContactAndSendVisitConfirmationSMS(a, JobID);
                 }
             }
         }
@@ -217,21 +235,26 @@ namespace SMSProjectWinFrm
             {
                 if (DateTime.Now.DayOfWeek == DayOfWeek.Wednesday)
                 {
-                    for (short TimeAfterToSendSMS = 0; TimeAfterToSendSMS < 4; TimeAfterToSendSMS++)
+                    for (short TimeAfterToSendSMS = 0; TimeAfterToSendSMS < 10; TimeAfterToSendSMS++)
                     {
                         DateTime now = DateTime.Now.AddDays(TimeAfterToSendSMS);
-                        ListOneDayAppointmentsAndSendSMS(now);
+                        int jobID = dal.isJobCreated(now, 1);
+                        if ( jobID == -1)
+                            jobID = dal.JobCreat(now, 1);
+                        ListOneDayAppointmentsAndSendSMS(now, jobID);
                     }
                 }
                 else
                 {
-                    for (short TimeAfterToSendSMS = 0; TimeAfterToSendSMS < 3; TimeAfterToSendSMS++)
+                    for (short TimeAfterToSendSMS = 0; TimeAfterToSendSMS < 8; TimeAfterToSendSMS++)
                     {
                         DateTime now = DateTime.Now.AddDays(TimeAfterToSendSMS);
-                        ListOneDayAppointmentsAndSendSMS(now);
+                        int jobID = dal.isJobCreated(now, 1);
+                        if (jobID == -1)
+                            jobID = dal.JobCreat(now, 1);
+                        ListOneDayAppointmentsAndSendSMS(now, jobID);
                     }
                 }
-
             }
             catch (Exception err)
             {

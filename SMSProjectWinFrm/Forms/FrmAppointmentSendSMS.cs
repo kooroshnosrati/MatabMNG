@@ -24,26 +24,11 @@ namespace SMSProjectWinFrm
         {
             InitializeComponent();
         }
-        private void LoadGSMModem()
-        {
-            try
-            {
-                CmbPortName.Items.Clear();
-                string[] ports = SerialPort.GetPortNames();
-                foreach (string port in ports)
-                    CmbPortName.Items.Add(port);
-                CmbPortName.SelectedIndex = 0;
-            }
-            catch (Exception ex)
-            {
-                logger.ErrorLog(ex.Message);
-            }
-        }
+        
         private void Form1_Load(object sender, EventArgs e)
         {
             outlookManagement = new OutlookManagement(listBox1);
             outlookManagement.sMSManagement = new SMSManagement();
-            LoadGSMModem();
         }
         private void button1_Click(object sender, EventArgs e)
         {
@@ -80,17 +65,6 @@ namespace SMSProjectWinFrm
                 }
             }
             e.Cancel = true;
-        }
-        private void CmbPortName_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string PortName = "";
-            CmbPortName.Invoke(new Action(() => PortName = CmbPortName.Text));
-            outlookManagement.sMSManagement.Close();
-            outlookManagement.sMSManagement.Open(PortName);
-        }
-        private void button3_Click(object sender, EventArgs e)
-        {
-            LoadGSMModem();
         }
     }
 }
