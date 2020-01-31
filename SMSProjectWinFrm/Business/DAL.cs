@@ -32,9 +32,14 @@ namespace SMSProjectWinFrm
             command1.CommandType = CommandType.Text;
             command1.ExecuteNonQuery();
         }
-        public int isJobCreated(DateTime date, short categoryID)
+        public int isJobCreated(DateTime date, short categoryID, bool AbsoluteDate)
         {
-            DateTime d = new DateTime(date.Year, date.Month, date.Day);
+            DateTime d;
+            if (AbsoluteDate)
+                d = new DateTime(date.Year, date.Month, date.Day);
+            else
+                d = date;
+
             string sql = "select * from Tbl_Jobs where JobDate = '" + d.ToString() + "' and CategoryID = '" + categoryID + "'";
             using (SqliteCommand command = new SqliteCommand(sql, m_dbConnection))
             {
@@ -50,27 +55,32 @@ namespace SMSProjectWinFrm
             }
             return (-1);
         }
-        public int JobCreat(DateTime date, short categoryID)
+        public int JobCreat(DateTime date, short categoryID, bool AbsoluteDate)
         {
             try
             {
-                DateTime d = new DateTime(date.Year, date.Month, date.Day);
+                DateTime d;
+                if (AbsoluteDate)
+                    d = new DateTime(date.Year, date.Month, date.Day);
+                else
+                    d = date;
+
                 string sql = "INSERT INTO[Tbl_Jobs] ([JobDate],[CategoryID]) VALUES('" + d + "', " + categoryID  + ");";
                 using (SqliteCommand command = new SqliteCommand(sql, m_dbConnection))
                 {
                     command.CommandType = CommandType.Text;
                     command.ExecuteNonQuery();
                 }
-                return isJobCreated(date, categoryID);
+                return isJobCreated(date, categoryID, AbsoluteDate);
             }
             catch (Exception)
             {
                 return (-1);
             }
         }
-        public bool isSentVisitConfirmationSMSToMobile(Appointment a, int JobID)
+        public bool isSentSMSToMobile(string Mobile, int JobID)
         {
-            string sql = "select * from Tbl_SentSMS where JobID = " + JobID + " and MobileNumber = '" + a.contact.Mobile + "'";
+            string sql = "select * from Tbl_SentSMS where JobID = " + JobID + " and MobileNumber = '" + Mobile + "'";
             SqliteCommand command = new SqliteCommand(sql, m_dbConnection);
             SqliteDataReader dr = command.ExecuteReader();
             command.Dispose();
@@ -129,7 +139,26 @@ namespace SMSProjectWinFrm
             
             return (SmsToSend);
         }
-        public string GetSMSTextBodyTemplate(int JobID)
+        public string GetSMSTextBodyTemplateByCategoryID(int CategoryID)
+        {
+            string sql = @"SELECT c.TxtBodyTemplate
+                            FROM TbL_Categories as c 
+                            where c.id = " + CategoryID + ";";
+            using (SqliteCommand command = new SqliteCommand(sql, m_dbConnection))
+            {
+                SqliteDataReader dr = command.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    while (dr.Read())
+                    {
+                        return dr.GetString(0);
+                    }
+                }
+                command.Dispose();
+            }
+            return null;
+        }
+        public string GetSMSTextBodyTemplateByJobID(int JobID)
         {
             string sql =  @"SELECT c.TxtBodyTemplate
                             FROM Tbl_Jobs as j

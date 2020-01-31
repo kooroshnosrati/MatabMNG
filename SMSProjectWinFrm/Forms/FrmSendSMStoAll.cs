@@ -25,23 +25,6 @@ namespace SMSProjectWinFrm
         {
             InitializeComponent();
         }
-
-        private void LoadGSMModem()
-        {
-            try
-            {
-                CmbPortName.Items.Clear();
-                string[] ports = SerialPort.GetPortNames();
-                foreach (string port in ports)
-                    CmbPortName.Items.Add(port);
-                CmbPortName.SelectedIndex = 0;
-            }
-            catch (Exception ex)
-            {
-                logger.ErrorLog(ex.Message);
-            }
-        }
-
         private void FrmSendSMStoAll_Load(object sender, EventArgs e)
         {
             label2.Text = "";
@@ -49,14 +32,7 @@ namespace SMSProjectWinFrm
 
             outlookManagement = new OutlookManagement(textBox2);
             outlookManagement.sMSManagement = new SMSManagement();
-            LoadGSMModem();
         }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            LoadGSMModem();
-        }
-
         private void button4_Click(object sender, EventArgs e)
         {
             textBox3.Text = outlookManagement.GetContactsCount().ToString();
@@ -80,8 +56,6 @@ namespace SMSProjectWinFrm
         {
             try
             {
-                button3.Invoke(new Action(() => button3.Enabled = false));
-                CmbPortName.Invoke(new Action(() => CmbPortName.Enabled = false));
                 label2.Invoke(new Action(() => label2.Text = "لطفا منتظر باشید تا تمام پیغام ها ارسال گردد..."));
                 label2.Invoke(new Action(() => label2.ForeColor = Color.Green));
 
@@ -90,8 +64,11 @@ namespace SMSProjectWinFrm
                 button4.Invoke(new Action(() => button4.Enabled = false));
                 textBox1.Invoke(new Action(() => StrSmsBody = textBox1.Text));
                 textBox1.Invoke(new Action(() => textBox1.Enabled = false));
-
-                outlookManagement.SendAnSMSToAllContacts(StrSmsBody);
+                
+                int jobID = dAL.isJobCreated(DateTime.Now, 3, false);
+                if (jobID == -1)
+                    jobID = dAL.JobCreat(DateTime.Now, 3, false);
+                outlookManagement.SendAnSMSToAllContacts(jobID, StrSmsBody);
             }
             catch (Exception)
             {
@@ -103,20 +80,11 @@ namespace SMSProjectWinFrm
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            CmbPortName.Invoke(new Action(() => CmbPortName.Enabled = true));
             button1.Invoke(new Action(() => button1.Enabled = true));
             button4.Invoke(new Action(() => button4.Enabled = true));
             textBox1.Invoke(new Action(() => textBox1.Enabled = true));
             label2.Invoke(new Action(() => label2.Text = "ارسال پیامک ها به پایان رسید..."));
             label2.Invoke(new Action(() => label2.ForeColor = Color.Green));
-        }
-
-        private void CmbPortName_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string PortName = "";
-            CmbPortName.Invoke(new Action(() => PortName = CmbPortName.Text));
-            outlookManagement.sMSManagement.Close();
-            outlookManagement.sMSManagement.Open(PortName);
         }
     }
 }

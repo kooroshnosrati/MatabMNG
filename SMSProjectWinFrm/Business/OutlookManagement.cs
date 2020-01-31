@@ -85,14 +85,14 @@ namespace SMSProjectWinFrm
         }
         public void SendVisitConfirmationSmsToContact(Appointment a, int JobID)
         {
-            if (!dal.isSentVisitConfirmationSMSToMobile(a, JobID))
+            if (!dal.isSentSMSToMobile(a.contact.Mobile, JobID))
             {
                 //.............................................. Send SMS ....................................................
                 try
                 {
                     if (a.AppointmentDateTime > DateTime.Now)
                     {
-                        string TxtBodyTemplate = dal.GetSMSTextBodyTemplate(JobID);
+                        string TxtBodyTemplate = dal.GetSMSTextBodyTemplateByJobID(JobID);
                         if (TxtBodyTemplate != null)
                         {
                             string bodyStr = string.Format(TxtBodyTemplate, a.contact.FullName, a.AppointmentDateTime.ToLongDateString(), a.AppointmentDateTime.ToShortTimeString());
@@ -235,23 +235,25 @@ namespace SMSProjectWinFrm
             {
                 if (DateTime.Now.DayOfWeek == DayOfWeek.Wednesday)
                 {
-                    for (short TimeAfterToSendSMS = 0; TimeAfterToSendSMS < 10; TimeAfterToSendSMS++)
+                    for (short TimeAfterToSendSMS = 0; TimeAfterToSendSMS < 5; TimeAfterToSendSMS++)
                     {
                         DateTime now = DateTime.Now.AddDays(TimeAfterToSendSMS);
-                        int jobID = dal.isJobCreated(now, 1);
+                        
+                        int jobID = dal.isJobCreated(now, 1, true);
                         if ( jobID == -1)
-                            jobID = dal.JobCreat(now, 1);
+                            jobID = dal.JobCreat(now, 1, true);
                         ListOneDayAppointmentsAndSendSMS(now, jobID);
                     }
                 }
                 else
                 {
-                    for (short TimeAfterToSendSMS = 0; TimeAfterToSendSMS < 8; TimeAfterToSendSMS++)
+                    for (short TimeAfterToSendSMS = 0; TimeAfterToSendSMS < 3; TimeAfterToSendSMS++)
                     {
                         DateTime now = DateTime.Now.AddDays(TimeAfterToSendSMS);
-                        int jobID = dal.isJobCreated(now, 1);
+                        
+                        int jobID = dal.isJobCreated(now, 1, true);
                         if (jobID == -1)
-                            jobID = dal.JobCreat(now, 1);
+                            jobID = dal.JobCreat(now, 1, true);
                         ListOneDayAppointmentsAndSendSMS(now, jobID);
                     }
                 }
@@ -327,7 +329,7 @@ namespace SMSProjectWinFrm
         }
         public List<Appointment> GetContactsForOneDayAppointments(DateTime dateTime)
         {
-            List<Appointment> contacts = new List<Appointment>();
+            List<Appointment> appointments = new List<Appointment>();
             DateTime startDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
             string AimDate = startDate.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
 
@@ -354,19 +356,31 @@ namespace SMSProjectWinFrm
                         a.contact.FullName = item.Subject;
                     a = GetContactInfo(a);
                     if (a != null)
-                        contacts.Add(a);
+                        appointments.Add(a);
                 }
             }
-            return contacts;
+            return appointments;
         }
-        public void SendAnSMSToAllContacts(string TxtSMS)
+        public void SendAnSMSToAllContacts(int jobID, string StrSmsBody)
         {
             int counter = 0;
-            foreach (Outlook.ContactItem Contact in defaultContactsFolder.Items)
+            foreach (Outlook.ContactItem contact in defaultContactsFolder.Items)
             {
                 try
                 {
-                    sMSManagement.SendSMS(TxtSMS, Contact.MobileTelephoneNumber);
+                    if (!dal.isSentSMSToMobile(contact.MobileTelephoneNumber, jobID))
+                    {
+                        Cls_SMS sms = new Cls_SMS();
+                        sms.JobID = jobID;
+                        sms.PatientID = int.Parse(contact.Title);
+                        sms.MobileNumber = contact.MobileTelephoneNumber;
+                        sms.TxtBody = StrSmsBody;
+                        sms.TryCount = 0;
+                        sms.IsSent = false;
+                        sms.ErrorTxt = "";
+                        if (!dal.isSentSMSToMobile(sms.MobileNumber, sms.JobID))
+                            dal.InsertSmsInfoToSentSMSTable(sms);
+                    }
                     ++counter;
                     TxtSmsCounter.Invoke(new Action(() => TxtSmsCounter.Text = counter.ToString()));
                 }
@@ -381,6 +395,33 @@ namespace SMSProjectWinFrm
         public long GetContactsCount()
         {
             return defaultContactsFolder.Items.Count;
+        }
+        public void SendCancelNotificationToContacts(List<Contact> contacts, int JobID, DateTime date)
+        {
+            DateTime d = new DateTime(date.Year, date.Month, date.Day);
+            string TxtBodyTemplate = dal.GetSMSTextBodyTemplateByJobID(JobID);
+
+            if (TxtBodyTemplate != null)
+            {
+                //listBox1.Invoke(new Action(() => listBox1.Items.Clear()));
+                foreach (Contact contact in contacts)
+                {
+                    string bodyStr = string.Format(TxtBodyTemplate, d.ToLongDateString());
+                    Cls_SMS sms = new Cls_SMS();
+                    sms.JobID = JobID;
+                    sms.PatientID = int.Parse(contact.PatientID);
+                    sms.MobileNumber = contact.Mobile;
+                    sms.TxtBody = bodyStr;
+                    sms.TryCount = 0;
+                    sms.IsSent = false;
+                    sms.ErrorTxt = "";
+                    if (!dal.isSentSMSToMobile(sms.MobileNumber, sms.JobID))
+                        dal.InsertSmsInfoToSentSMSTable(sms);
+                    //if (listBox1 != null)
+                    //    listBox1.Invoke(new Action(() => listBox1.Items.Add(contact.FullName + " --- " + contact.Mobile + " --- " + contact.PatientID)));
+                        
+                }
+            }
         }
     }
 
