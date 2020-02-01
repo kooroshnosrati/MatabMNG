@@ -10,13 +10,14 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.IO.Ports;
-
+using SMSProjectWinFrm.Business;
 
 namespace SMSProjectWinFrm
 {
     public partial class FrmSMSCenter : Form
     {
-        OutlookManagement outlookManagement = null;
+        Cls_SMSToSend sMsToSend = new Cls_SMSToSend();
+        //SMSManagement sms = new SMSManagement();
         Logger logger = new Logger();
         SerialPort port = new SerialPort();
 
@@ -41,52 +42,55 @@ namespace SMSProjectWinFrm
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-            outlookManagement = new OutlookManagement(listBox1);
-            outlookManagement.sMSManagement = new SMSManagement();
+            sMsToSend.sMSManagement = new SMSManagement();
             LoadGSMModem();
-        }
-        private void button1_Click(object sender, EventArgs e)
-        {
-            button1.Enabled = false;
-            button2.Enabled = true;
             if (backgroundWorker1.IsBusy != true)
                 backgroundWorker1.RunWorkerAsync();
         }
-        private void button2_Click(object sender, EventArgs e)
-        {
-            button1.Enabled = true;
-            button2.Enabled = false;
-            if (backgroundWorker1.WorkerSupportsCancellation == true)
-                backgroundWorker1.CancelAsync();
-        }
+        //private void button1_Click(object sender, EventArgs e)
+        //{
+        //    button1.Enabled = false;
+        //    button2.Enabled = true;
+        //    if (backgroundWorker1.IsBusy != true)
+        //        backgroundWorker1.RunWorkerAsync();
+        //}
+        //private void button2_Click(object sender, EventArgs e)
+        //{
+        //    button1.Enabled = true;
+        //    button2.Enabled = false;
+        //    if (backgroundWorker1.WorkerSupportsCancellation == true)
+        //        backgroundWorker1.CancelAsync();
+        //}
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
             while (!worker.CancellationPending)
             {
-                if (!outlookManagement.IsSurfingInAppointment)
+                try
                 {
-                    try
-                    {
-                        outlookManagement.ListForwardAppointmentsAndSendSMS();
-                    }
-                    catch (Exception err)
-                    {
-                        listBox1.Invoke(new Action(() => listBox1.Items.Add(err.Message + "---" + err.InnerException)));
-                        button2_Click(null, null);
-                        e.Cancel = true;
-                        break;
-                    }
+                    sMsToSend.DoSend();
+                    Thread.Sleep(10000);
                 }
+                catch (Exception err)
+                {
+                    logger.ErrorLog(err.Message + "---" + err.InnerException);
+                    listBox1.Invoke(new Action(() => listBox1.Items.Insert(0, err.Message + "---" + err.InnerException)));
+                    //if (backgroundWorker1.WorkerSupportsCancellation == true)
+                    //    backgroundWorker1.CancelAsync();
+                    //e.Cancel = true;
+                    //break;
+                }
+                
             }
+            MessageBox.Show("لطفا یک بار برنامه را ببندید و دوباره اجرا نمایید...");
             e.Cancel = true;
         }
         private void CmbPortName_SelectedIndexChanged(object sender, EventArgs e)
         {
             string PortName = "";
             CmbPortName.Invoke(new Action(() => PortName = CmbPortName.Text));
-            outlookManagement.sMSManagement.Close();
-            outlookManagement.sMSManagement.Open(PortName);
+            sMsToSend.sMSManagement.Close();
+            sMsToSend.sMSManagement.Open(PortName);
         }
         private void button3_Click(object sender, EventArgs e)
         {

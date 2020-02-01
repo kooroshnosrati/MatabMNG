@@ -57,5 +57,12 @@ namespace SMSProjectWinFrm
             frm.MdiParent = this;
             frm.Show();
         }
+
+        private void frmMain_Load(object sender, EventArgs e)
+        {
+            FrmSMSCenter frm = new FrmSMSCenter();
+            frm.MdiParent = this;
+            frm.Show();
+        }
     }
 }

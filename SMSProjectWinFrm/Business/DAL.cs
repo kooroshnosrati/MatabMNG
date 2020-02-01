@@ -102,21 +102,10 @@ namespace SMSProjectWinFrm
             command1.CommandType = CommandType.Text;
             command1.ExecuteNonQuery();
         }
-        public Cls_SMSToSend RefreshThreadSendSMS()
+        public List<Cls_SMS> GetSmsNotSent()
         {
-            Cls_SMSToSend SmsToSend = new Cls_SMSToSend();
-            string sql = @"SELECT 
-                                   s.ID, 
-                                   s.JobID,
-                                   j.JobDate,
-                                   s.PatientID, 
-                                   s.MobileNumber, 
-                                   s.TxtBody, 
-                                   s.TryCount
-                            FROM   Tbl_Jobs as j
-                                   INNER JOIN Tbl_SentSMS as s ON j.ID = s.JobID
-                            WHERE s.IsSent = false and s.TryCount < 3
-                            ORDER BY j.JobDate;";
+            List<Cls_SMS> SMSs = new List<Cls_SMS>();
+            string sql = @"SELECT s.ID, s.JobID,j.JobDate,s.PatientID, s.MobileNumber, s.TxtBody, s.TryCount FROM   Tbl_Jobs as j INNER JOIN Tbl_SentSMS as s ON j.ID = s.JobID WHERE s.IsSent = 0 and s.TryCount < 3 ORDER BY j.JobDate;";
 
             using (SqliteCommand command = new SqliteCommand(sql, m_dbConnection))
             {
@@ -126,18 +115,18 @@ namespace SMSProjectWinFrm
                     Cls_SMS sms = new Cls_SMS();
                     sms.ID = dr.GetInt32(0);
                     sms.JobID = dr.GetInt32(1);
-                    sms.JobDate = dr.GetDateTime(2);
+                    //sms.JobDate = dr.GetDateTime(2);
                     sms.PatientID = dr.GetInt32(3);
                     sms.MobileNumber = dr.GetString(4);
                     sms.TxtBody = dr.GetString(5);
                     sms.TryCount = dr.GetInt16(6);
 
-                    SmsToSend.SMSsToSend.Add(sms);
+                    SMSs.Add(sms);
                 }
                 command.Dispose();
             }
             
-            return (SmsToSend);
+            return (SMSs);
         }
         public string GetSMSTextBodyTemplateByCategoryID(int CategoryID)
         {
@@ -183,6 +172,40 @@ namespace SMSProjectWinFrm
             try
             {
                 string sql = "INSERT INTO[Tbl_SentSMS] ([JobID],[PatientID], [MobileNumber], [TxtBody], [TryCount], [IsSent], [ErrorTxt]) VALUES (" + sms.JobID + ", " + sms.PatientID + ", '" + sms.MobileNumber + "', '" + sms.TxtBody + "', 0, 0, '');";
+                using (SqliteCommand command = new SqliteCommand(sql, m_dbConnection))
+                {
+                    command.CommandType = CommandType.Text;
+                    command.ExecuteNonQuery();
+                }
+                return true;
+            }
+            catch (Exception err)
+            {
+                return (false);
+            }
+        }
+        public bool SetSuccessSentSMS(Cls_SMS sms)
+        {
+            try
+            {
+                string sql = "Update Tbl_SentSMS set IsSent = 1 where ID = " + sms.ID;
+                using (SqliteCommand command = new SqliteCommand(sql, m_dbConnection))
+                {
+                    command.CommandType = CommandType.Text;
+                    command.ExecuteNonQuery();
+                }
+                return true;
+            }
+            catch (Exception err)
+            {
+                return (false);
+            }
+        }
+        public bool SetErrorSentSMS(Cls_SMS sms)
+        {
+            try
+            {
+                string sql = "Update Tbl_SentSMS set trycount = " + sms.TryCount + ", ErrorTxt = '" + sms.ErrorTxt + "' where ID = " + sms.ID;
                 using (SqliteCommand command = new SqliteCommand(sql, m_dbConnection))
                 {
                     command.CommandType = CommandType.Text;
