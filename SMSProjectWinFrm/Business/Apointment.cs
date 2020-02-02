@@ -10,11 +10,11 @@ namespace SMSProjectWinFrm
     {
         public  Appointment()
         {
-            contact = new Contact();
+            contact = new cls_Contact();
         }
         public string Subject { get; set; }
         public string Date { get; set; }
         public DateTime AppointmentDateTime { get; set; }
-        public Contact contact { get; set; }
+        public cls_Contact contact { get; set; }
     }
 }

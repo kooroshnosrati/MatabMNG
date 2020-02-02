@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Outlook = Microsoft.Office.Interop.Outlook;
+
 using System.Windows.Forms;
 using System.Globalization;
 using SMSProjectWinFrm;
@@ -21,7 +22,7 @@ namespace SMSProjectWinFrm
         Logger logger = new Logger();
         TextBox TxtSmsCounter = null;
 
-        public SMSManagement sMSManagement { get; set; }
+        //public SMSManagement sMSManagement { get; set; }
         private void getfolders(Outlook.Folder folder)
         {
             if (folder.Name.ToLower() == "Contacts".ToLower())
@@ -396,7 +397,7 @@ namespace SMSProjectWinFrm
         {
             return defaultContactsFolder.Items.Count;
         }
-        public void SendCancelNotificationToContacts(List<Contact> contacts, int JobID, DateTime date)
+        public void SendCancelNotificationToContacts(List<cls_Contact> contacts, int JobID, DateTime date)
         {
             DateTime d = new DateTime(date.Year, date.Month, date.Day);
             string TxtBodyTemplate = dal.GetSMSTextBodyTemplateByJobID(JobID);
@@ -404,7 +405,7 @@ namespace SMSProjectWinFrm
             if (TxtBodyTemplate != null)
             {
                 //listBox1.Invoke(new Action(() => listBox1.Items.Clear()));
-                foreach (Contact contact in contacts)
+                foreach (cls_Contact contact in contacts)
                 {
                     string bodyStr = string.Format(TxtBodyTemplate, d.ToLongDateString());
                     Cls_SMS sms = new Cls_SMS();
@@ -421,6 +422,29 @@ namespace SMSProjectWinFrm
                     //    listBox1.Invoke(new Action(() => listBox1.Items.Add(contact.FullName + " --- " + contact.Mobile + " --- " + contact.PatientID)));
                         
                 }
+            }
+        }
+        public bool AddNewContact(cls_Contact contact)
+        {
+            try
+            {
+                Outlook.ContactItem newContact = defaultContactsFolder.Application.CreateItem(Outlook.OlItemType.olContactItem) as Outlook.ContactItem;
+
+                newContact.Title = contact.PatientID;
+                newContact.FirstName = contact.FirstName;
+                newContact.LastName = contact.LastName;
+                newContact.MiddleName = contact.FatherName;
+                newContact.Suffix = contact.SSID;
+                newContact.HomeTelephoneNumber = contact.Phone;
+                newContact.MobileTelephoneNumber = contact.Mobile;
+                newContact.Body = contact.Notes;
+                newContact.Save();
+                newContact.Display(true);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
     }

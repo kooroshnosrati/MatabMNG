@@ -28,7 +28,7 @@ namespace SMSProjectWinFrm
         private void Form1_Load(object sender, EventArgs e)
         {
             outlookManagement = new OutlookManagement(listBox1);
-            outlookManagement.sMSManagement = new SMSManagement();
+            //outlookManagement.sMSManagement = new SMSManagement();
         }
         private void button1_Click(object sender, EventArgs e)
         {

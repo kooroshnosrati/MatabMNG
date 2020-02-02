@@ -18,7 +18,7 @@ public partial class FrmCancelAppointment : Form
     SerialPort port = new SerialPort();
     Logger logger = new Logger();
     List<Appointment> appointments = new List<Appointment>();
-    List<Contact> contacts = new List<Contact>();
+    List<cls_Contact> contacts = new List<cls_Contact>();
     DAL dal = new DAL();
     bool chk = false;
     public FrmCancelAppointment()
@@ -29,7 +29,7 @@ public partial class FrmCancelAppointment : Form
     {
         dateTimePicker1.Value = DateTime.Now;
         outlookManagement = new OutlookManagement();
-        outlookManagement.sMSManagement = new SMSManagement();
+        //outlookManagement.sMSManagement = new SMSManagement();
     }
     private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
     {

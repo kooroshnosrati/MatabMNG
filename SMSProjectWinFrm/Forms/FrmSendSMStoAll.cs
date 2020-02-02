@@ -18,7 +18,7 @@ namespace SMSProjectWinFrm
         SerialPort port = new SerialPort();
         Logger logger = new Logger();
         List<Appointment> appointments = new List<Appointment>();
-        List<Contact> contacts = new List<Contact>();
+        List<cls_Contact> contacts = new List<cls_Contact>();
         DAL dAL = new DAL();
 
         public FrmSendSMStoAll()
@@ -31,7 +31,7 @@ namespace SMSProjectWinFrm
             label2.ForeColor = Color.Green;
 
             outlookManagement = new OutlookManagement(textBox2);
-            outlookManagement.sMSManagement = new SMSManagement();
+            //outlookManagement.sMSManagement = new SMSManagement();
         }
         private void button4_Click(object sender, EventArgs e)
         {

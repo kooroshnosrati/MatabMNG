@@ -25,7 +25,7 @@ namespace SMSProjectWinFrm
         {
             InitializeComponent();
         }
-        private void LoadGSMModem()
+        private bool LoadGSMModem()
         {
             try
             {
@@ -34,18 +34,28 @@ namespace SMSProjectWinFrm
                 foreach (string port in ports)
                     CmbPortName.Items.Add(port);
                 CmbPortName.SelectedIndex = 0;
+                return true;
             }
             catch (Exception ex)
             {
+                MessageBox.Show("خطای ارتباط با مودم .... \n\r لطفا از ارتباط مودم با سیستم اطمینان حاصل نمایید....");
                 logger.ErrorLog(ex.Message);
+                return false;
             }
         }
         private void Form1_Load(object sender, EventArgs e)
         {
             sMsToSend.sMSManagement = new SMSManagement();
-            LoadGSMModem();
-            if (backgroundWorker1.IsBusy != true)
-                backgroundWorker1.RunWorkerAsync();
+            if (LoadGSMModem())
+            {
+                if (backgroundWorker1.IsBusy != true)
+                    backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                if (backgroundWorker1.WorkerSupportsCancellation == true)
+                    backgroundWorker1.CancelAsync();
+            }
         }
         //private void button1_Click(object sender, EventArgs e)
         //{
@@ -87,10 +97,22 @@ namespace SMSProjectWinFrm
         }
         private void CmbPortName_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string PortName = "";
-            CmbPortName.Invoke(new Action(() => PortName = CmbPortName.Text));
-            sMsToSend.sMSManagement.Close();
-            sMsToSend.sMSManagement.Open(PortName);
+            try
+            {
+                string PortName = "";
+                CmbPortName.Invoke(new Action(() => PortName = CmbPortName.Text));
+                sMsToSend.sMSManagement.Close();
+                sMsToSend.sMSManagement.Open(PortName);
+                if (backgroundWorker1.IsBusy != true)
+                    backgroundWorker1.RunWorkerAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("خطای ارتباط با مودم .... \n\r لطفا از ارتباط مودم با سیستم اطمینان حاصل نمایید....");
+                logger.ErrorLog(ex.Message);
+                if (backgroundWorker1.WorkerSupportsCancellation == true)
+                    backgroundWorker1.CancelAsync();
+            }
         }
         private void button3_Click(object sender, EventArgs e)
         {
