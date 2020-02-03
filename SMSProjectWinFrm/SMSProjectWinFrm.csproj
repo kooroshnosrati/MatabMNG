@@ -122,6 +122,7 @@
   <ItemGroup>
     <Compile Include="Business\cls_Appointment.cs" />
     <Compile Include="Business\ApplicationConfigManagement.cs" />
+    <Compile Include="Business\Cls_PersianDateTime.cs" />
     <Compile Include="Business\Cls_SMS.cs" />
     <Compile Include="Business\Cls_SMSToSend.cs" />
     <Compile Include="Business\cls_Contact.cs" />

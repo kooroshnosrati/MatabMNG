@@ -15,6 +15,7 @@ namespace SMSProjectWinFrm
     public class cls_OutlookManagement
     {
         List<cls_Contact> contacts = new List<cls_Contact>();
+        List<cls_Appointment> appointments = new List<cls_Appointment>();
         public bool IsSurfingInAppointment = false;
         Outlook.MAPIFolder defaultContactsFolder = null;
         Outlook.MAPIFolder defaultCalendarFolder = null;
@@ -34,7 +35,7 @@ namespace SMSProjectWinFrm
                     cls_Contact contact = new cls_Contact();
                     contact.PatientID = Ocontact.Title;
                     contact.DiseaseName = Ocontact.JobTitle;
-                    contact.FatherName = Ocontact.FirstName;
+                    contact.FirstName = Ocontact.FirstName;
                     contact.LastName = Ocontact.LastName;
                     contact.FatherName = Ocontact.MiddleName;
                     contact.SSID = Ocontact.Suffix;
@@ -51,37 +52,65 @@ namespace SMSProjectWinFrm
         }
         private void FillAppointments()
         {
-            DateTime startDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
-            string AimDate = startDate.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
+            Cls_PersianDateTime pZeroDateTime = new Cls_PersianDateTime();
+            pZeroDateTime.Day = 1;
+            pZeroDateTime.Month = 1;
+            DateTime ZeroDateTime = pZeroDateTime.ToDateTime();// new DateTime(DateTime.Now.Year, 1, 1);
+
+            Cls_PersianDateTime pHandredDateTime = new Cls_PersianDateTime(ZeroDateTime.AddYears(1));
+            pHandredDateTime.Day = 1;
+            pHandredDateTime.Month = 1;
+            DateTime HandredDateTime = pHandredDateTime.ToDateTime();
+
+            appointments.Clear();
+            for (DateTime SlotDateTime = ZeroDateTime; SlotDateTime < HandredDateTime; SlotDateTime = SlotDateTime.AddMinutes(10))
+            {
+                cls_Appointment appointment = new cls_Appointment();
+                appointment.StartDateTime = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                appointment.EndDateTime = SlotDateTime.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                appointments.Add(appointment);
+            }
 
             foreach (Outlook.AppointmentItem item in defaultCalendarFolder.Items)
             {
-                string appointmentDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
-                if (appointmentDate == AimDate)
-                {
-                    cls_Appointment a = new cls_Appointment();
-                    a.Date = AimDate;
-                    a.AppointmentDateTime = item.Start;
-                    try
-                    {
-                        a.contact.PatientID = a.contact.Mobile = new String(item.Subject.Where(Char.IsDigit).ToArray());
-                    }
-                    catch (Exception err1)
-                    {
-                        logger.ErrorLog(err1.Message + " ErrorFunction : ListOneDayAppointmentsAndSendSMS");
-                        //throw (err1);
-                    }
-                    a.Subject = item.Subject;
-                    if (!string.IsNullOrEmpty(a.contact.PatientID))
-                        a.contact.FullName = item.Subject.Replace(a.contact.PatientID, "").Trim();
-                    else
-                        a.contact.FullName = item.Subject;
-                    //a.Start = item.Start;
-
-                    FindContactAndSendVisitConfirmationSMS(a, JobID);
-                }
+                string appointmentDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                cls_Appointment appointment = appointments.Single(m => m.StartDateTime == appointmentDate);
+                appointment.Subject = item.Subject;
+                appointment.Paid = item.Location;
             }
-        }
+
+
+                //DateTime startDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
+                //string AimDate = startDate.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
+
+                //foreach (Outlook.AppointmentItem item in defaultCalendarFolder.Items)
+                //{
+                //    string appointmentDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
+                //    if (appointmentDate == AimDate)
+                //    {
+                //        cls_Appointment a = new cls_Appointment();
+                //        a.Date = AimDate;
+                //        a.AppointmentDateTime = item.Start;
+                //        try
+                //        {
+                //            a.contact.PatientID = a.contact.Mobile = new String(item.Subject.Where(Char.IsDigit).ToArray());
+                //        }
+                //        catch (Exception err1)
+                //        {
+                //            logger.ErrorLog(err1.Message + " ErrorFunction : ListOneDayAppointmentsAndSendSMS");
+                //            //throw (err1);
+                //        }
+                //        a.Subject = item.Subject;
+                //        if (!string.IsNullOrEmpty(a.contact.PatientID))
+                //            a.contact.FullName = item.Subject.Replace(a.contact.PatientID, "").Trim();
+                //        else
+                //            a.contact.FullName = item.Subject;
+                //        //a.Start = item.Start;
+
+                //        FindContactAndSendVisitConfirmationSMS(a, JobID);
+                //    }
+                //}
+            }
         private void getfolders(Outlook.Folder folder)
         {
             if (folder.Name.ToLower() == "Contacts".ToLower())
@@ -120,6 +149,8 @@ namespace SMSProjectWinFrm
                     if (item.Name.ToLower() == acm.ReadSetting("OutlookAccount").ToLower())
                         getfolders(item);
                 }
+                //FillContacts();
+                FillAppointments();
             }
             catch (Exception err)
             {
@@ -129,8 +160,6 @@ namespace SMSProjectWinFrm
         public cls_OutlookManagement()
         {
             InitializeOutlookObjects();
-            FillContacts();
-            FillAppointments();
             //dal.ClearDatabase(); //باید کامنت شود
         }
         public cls_OutlookManagement(ListBox listBox)

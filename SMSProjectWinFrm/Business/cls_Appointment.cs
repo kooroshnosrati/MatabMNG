@@ -13,6 +13,9 @@ namespace SMSProjectWinFrm
             contact = new cls_Contact();
         }
         public string Subject { get; set; }
+        public string Paid { get; set; }
+        public string StartDateTime { get; set; }
+        public string EndDateTime { get; set; }
         public string Date { get; set; }
         public DateTime AppointmentDateTime { get; set; }
         public cls_Contact contact { get; set; }

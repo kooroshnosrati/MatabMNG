@@ -13,6 +13,7 @@ namespace SMSProjectWinFrm
 {
     public partial class frmMain : Form
     {
+        cls_OutlookManagement outlookManagement = new cls_OutlookManagement();
         public frmMain()
         {
             InitializeComponent();
