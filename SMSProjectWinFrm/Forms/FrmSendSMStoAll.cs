@@ -13,11 +13,11 @@ namespace SMSProjectWinFrm
 {
     public partial class FrmSendSMStoAll : Form
     {
-        OutlookManagement outlookManagement = new OutlookManagement();
-        DateTime LastDateChoosen;
+        cls_OutlookManagement outlookManagement = new cls_OutlookManagement();
+        //DateTime LastDateChoosen;
         SerialPort port = new SerialPort();
         Logger logger = new Logger();
-        List<Appointment> appointments = new List<Appointment>();
+        List<cls_Appointment> appointments = new List<cls_Appointment>();
         List<cls_Contact> contacts = new List<cls_Contact>();
         DAL dAL = new DAL();
 
@@ -30,7 +30,7 @@ namespace SMSProjectWinFrm
             label2.Text = "";
             label2.ForeColor = Color.Green;
 
-            outlookManagement = new OutlookManagement(textBox2);
+            outlookManagement = new cls_OutlookManagement(textBox2);
             //outlookManagement.sMSManagement = new SMSManagement();
         }
         private void button4_Click(object sender, EventArgs e)

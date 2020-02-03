@@ -120,11 +120,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Business\Apointment.cs" />
+    <Compile Include="Business\cls_Appointment.cs" />
     <Compile Include="Business\ApplicationConfigManagement.cs" />
     <Compile Include="Business\Cls_SMS.cs" />
     <Compile Include="Business\Cls_SMSToSend.cs" />
-    <Compile Include="Business\Contact.cs" />
+    <Compile Include="Business\cls_Contact.cs" />
     <Compile Include="Business\DAL.cs" />
     <Compile Include="Forms\FrmAddNewContact.cs">
       <SubType>Form</SubType>
@@ -162,7 +162,7 @@
     <Compile Include="Forms\frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="Business\OutlookManagement.cs" />
+    <Compile Include="Business\cls_OutlookManagement.cs" />
     <Compile Include="Business\Logger.cs" />
     <Compile Include="Forms\FrmSendSMStoAll.cs">
       <SubType>Form</SubType>

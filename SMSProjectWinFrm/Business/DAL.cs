@@ -86,7 +86,7 @@ namespace SMSProjectWinFrm
             command.Dispose();
             return (dr.HasRows);
         }
-        public bool isSentVisitCancelSMSToMobile(Appointment a)
+        public bool isSentVisitCancelSMSToMobile(cls_Appointment a)
         {
             string sql = "select * from Tbl_SentSMS where CategoryID = '2' and SentDate = '" + a.Date + "' and MobileNumber = '" + a.contact.Mobile + "' and PatientID = '" + a.contact.PatientID + "'";
             SqliteCommand command = new SqliteCommand(sql, m_dbConnection);
@@ -94,7 +94,7 @@ namespace SMSProjectWinFrm
             command.Dispose();
             return (dr.HasRows);
         }
-        public void AddMobileToSendVisitConfirmationSMS(Appointment a)
+        public void AddMobileToSendVisitConfirmationSMS(cls_Appointment a)
         {
             string sql = "INSERT INTO [Tbl_SentSMS] ([MobileNumber] ,[SentDate] ,[PatientID], [CategoryID]) VALUES ('" + a.contact.Mobile + "', '" + a.Date + "','" + a.contact.PatientID + "', 1);";
             SqliteCommand command1 = new SqliteCommand(sql, m_dbConnection);
@@ -179,7 +179,7 @@ namespace SMSProjectWinFrm
                 }
                 return true;
             }
-            catch (Exception err)
+            catch (Exception)
             {
                 return (false);
             }
@@ -196,7 +196,7 @@ namespace SMSProjectWinFrm
                 }
                 return true;
             }
-            catch (Exception err)
+            catch (Exception)
             {
                 return (false);
             }
@@ -213,7 +213,7 @@ namespace SMSProjectWinFrm
                 }
                 return true;
             }
-            catch (Exception err)
+            catch (Exception)
             {
                 return (false);
             }

@@ -29,7 +29,7 @@ namespace SMSProjectWinFrm
             SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
             comm.SendMessages(pdu);
         }
-        public void SendSMS(string bodyStr,Appointment a)
+        public void SendSMS(string bodyStr, cls_Appointment a)
         {
             SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, a.contact.Mobile);
             comm.SendMessages(pdu);

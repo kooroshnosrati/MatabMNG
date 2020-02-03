@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SMSProjectWinFrm
 {
-    public class Appointment
+    public class cls_Appointment
     {
-        public  Appointment()
+        public cls_Appointment()
         {
             contact = new cls_Contact();
         }

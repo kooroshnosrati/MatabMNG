@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SMSProjectWinFrm.Forms;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -61,6 +62,13 @@ namespace SMSProjectWinFrm
         private void frmMain_Load(object sender, EventArgs e)
         {
             FrmSMSCenter frm = new FrmSMSCenter();
+            frm.MdiParent = this;
+            frm.Show();
+        }
+
+        private void toolStripMenuItem4_Click(object sender, EventArgs e)
+        {
+            FrmAddNewContact frm = new FrmAddNewContact();
             frm.MdiParent = this;
             frm.Show();
         }

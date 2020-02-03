@@ -12,8 +12,9 @@ using SMSProjectWinFrm.Business;
 
 namespace SMSProjectWinFrm
 {
-    public class OutlookManagement
+    public class cls_OutlookManagement
     {
+        List<cls_Contact> contacts = new List<cls_Contact>();
         public bool IsSurfingInAppointment = false;
         Outlook.MAPIFolder defaultContactsFolder = null;
         Outlook.MAPIFolder defaultCalendarFolder = null;
@@ -22,7 +23,65 @@ namespace SMSProjectWinFrm
         Logger logger = new Logger();
         TextBox TxtSmsCounter = null;
 
-        //public SMSManagement sMSManagement { get; set; }
+
+        private void FillContacts()
+        {
+            contacts.Clear();
+            foreach (Outlook.ContactItem Ocontact in defaultContactsFolder.Items)
+            {
+                try
+                {
+                    cls_Contact contact = new cls_Contact();
+                    contact.PatientID = Ocontact.Title;
+                    contact.DiseaseName = Ocontact.JobTitle;
+                    contact.FatherName = Ocontact.FirstName;
+                    contact.LastName = Ocontact.LastName;
+                    contact.FatherName = Ocontact.MiddleName;
+                    contact.SSID = Ocontact.Suffix;
+                    contact.Phone = Ocontact.HomeTelephoneNumber;
+                    contact.Mobile = Ocontact.MobileTelephoneNumber;
+                    contact.Notes = Ocontact.Body;
+                    contacts.Add(contact);
+                }
+                catch (Exception ex)
+                {
+                    logger.ErrorLog(ex.Message);
+                }
+            }
+        }
+        private void FillAppointments()
+        {
+            DateTime startDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
+            string AimDate = startDate.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
+
+            foreach (Outlook.AppointmentItem item in defaultCalendarFolder.Items)
+            {
+                string appointmentDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
+                if (appointmentDate == AimDate)
+                {
+                    cls_Appointment a = new cls_Appointment();
+                    a.Date = AimDate;
+                    a.AppointmentDateTime = item.Start;
+                    try
+                    {
+                        a.contact.PatientID = a.contact.Mobile = new String(item.Subject.Where(Char.IsDigit).ToArray());
+                    }
+                    catch (Exception err1)
+                    {
+                        logger.ErrorLog(err1.Message + " ErrorFunction : ListOneDayAppointmentsAndSendSMS");
+                        //throw (err1);
+                    }
+                    a.Subject = item.Subject;
+                    if (!string.IsNullOrEmpty(a.contact.PatientID))
+                        a.contact.FullName = item.Subject.Replace(a.contact.PatientID, "").Trim();
+                    else
+                        a.contact.FullName = item.Subject;
+                    //a.Start = item.Start;
+
+                    FindContactAndSendVisitConfirmationSMS(a, JobID);
+                }
+            }
+        }
         private void getfolders(Outlook.Folder folder)
         {
             if (folder.Name.ToLower() == "Contacts".ToLower())
@@ -67,24 +126,26 @@ namespace SMSProjectWinFrm
                 MessageBox.Show(string.Format("Error instantiating outlook\n {0}", err.Message));
             }
         }
-        public OutlookManagement()
+        public cls_OutlookManagement()
         {
             InitializeOutlookObjects();
+            FillContacts();
+            FillAppointments();
             //dal.ClearDatabase(); //باید کامنت شود
         }
-        public OutlookManagement(ListBox listBox)
+        public cls_OutlookManagement(ListBox listBox)
         {
             listBox1 = listBox;
             InitializeOutlookObjects();
             //dal.ClearDatabase(); //باید کامنت شود
         }
-        public OutlookManagement(TextBox txtbox)
+        public cls_OutlookManagement(TextBox txtbox)
         {
             TxtSmsCounter = txtbox;
             InitializeOutlookObjects();
             //dal.ClearDatabase(); //باید کامنت شود
         }
-        public void SendVisitConfirmationSmsToContact(Appointment a, int JobID)
+        public void SendVisitConfirmationSmsToContact(cls_Appointment a, int JobID)
         {
             if (!dal.isSentSMSToMobile(a.contact.Mobile, JobID))
             {
@@ -131,7 +192,7 @@ namespace SMSProjectWinFrm
                 contact.Save();
             }
         }
-        private void FindContactAndSendVisitConfirmationSMS(Appointment a, int JobID)
+        private void FindContactAndSendVisitConfirmationSMS(cls_Appointment a, int JobID)
         {
             bool chk = false;
             string filterStr = "";
@@ -206,7 +267,7 @@ namespace SMSProjectWinFrm
                 string appointmentDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
                 if (appointmentDate == AimDate)
                 {
-                    Appointment a = new Appointment();
+                    cls_Appointment a = new cls_Appointment();
                     a.Date = AimDate;
                     a.AppointmentDateTime = item.Start;
                     try
@@ -265,7 +326,7 @@ namespace SMSProjectWinFrm
             }
             IsSurfingInAppointment = false;
         }
-        private Appointment GetContactInfo(Appointment a)
+        private cls_Appointment GetContactInfo(cls_Appointment a)
         {
             string filterStr = "";
             Outlook.ContactItem Contact = null;
@@ -328,9 +389,9 @@ namespace SMSProjectWinFrm
 
             return null;
         }
-        public List<Appointment> GetContactsForOneDayAppointments(DateTime dateTime)
+        public List<cls_Appointment> GetContactsForOneDayAppointments(DateTime dateTime)
         {
-            List<Appointment> appointments = new List<Appointment>();
+            List<cls_Appointment> appointments = new List<cls_Appointment>();
             DateTime startDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
             string AimDate = startDate.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
 
@@ -339,7 +400,7 @@ namespace SMSProjectWinFrm
                 string appointmentDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
                 if (appointmentDate == AimDate)
                 {
-                    Appointment a = new Appointment();
+                    cls_Appointment a = new cls_Appointment();
                     a.Date = AimDate;
                     a.AppointmentDateTime = item.Start;
                     try
@@ -431,6 +492,7 @@ namespace SMSProjectWinFrm
                 Outlook.ContactItem newContact = defaultContactsFolder.Application.CreateItem(Outlook.OlItemType.olContactItem) as Outlook.ContactItem;
 
                 newContact.Title = contact.PatientID;
+                newContact.JobTitle = contact.DiseaseName;
                 newContact.FirstName = contact.FirstName;
                 newContact.LastName = contact.LastName;
                 newContact.MiddleName = contact.FatherName;

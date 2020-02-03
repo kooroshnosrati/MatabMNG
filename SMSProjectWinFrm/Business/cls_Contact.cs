@@ -9,6 +9,7 @@ namespace SMSProjectWinFrm
     public class cls_Contact
     {
         public string PatientID { get; set; }
+        public string DiseaseName { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string FatherName { get; set; }
