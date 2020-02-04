@@ -14,9 +14,12 @@ namespace SMSProjectWinFrm
         }
         public string Subject { get; set; }
         public string Paid { get; set; }
-        public string StartDateTime { get; set; }
-        public string EndDateTime { get; set; }
-        public string Date { get; set; }
+        public string StartDateTimeStr { get; set; }
+        public string EndDateTimeStr { get; set; }
+        public DateTime StartDateTime { get; set; }
+        public DateTime EndDateTime { get; set; }
+        public string DateStr { get; set; }
+        public DateTime Date { get; set; }
         public DateTime AppointmentDateTime { get; set; }
         public cls_Contact contact { get; set; }
     }

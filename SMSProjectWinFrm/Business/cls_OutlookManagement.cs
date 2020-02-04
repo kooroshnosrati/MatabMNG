@@ -52,31 +52,61 @@ namespace SMSProjectWinFrm
         }
         private void FillAppointments()
         {
-            Cls_PersianDateTime pZeroDateTime = new Cls_PersianDateTime();
-            pZeroDateTime.Day = 1;
-            pZeroDateTime.Month = 1;
-            DateTime ZeroDateTime = pZeroDateTime.ToDateTime();// new DateTime(DateTime.Now.Year, 1, 1);
+            DateTime today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            DateTime todayOneYearLater = new DateTime(DateTime.Now.Year + 1, DateTime.Now.Month, DateTime.Now.Day);
+            
+            //Cls_PersianDateTime pZeroDateTime = new Cls_PersianDateTime();
+            //pZeroDateTime.Day = 1;
+            //pZeroDateTime.Month = 1;
+            //DateTime ZeroDateTime = pZeroDateTime.ToDateTime();// new DateTime(DateTime.Now.Year, 1, 1);
 
-            Cls_PersianDateTime pHandredDateTime = new Cls_PersianDateTime(ZeroDateTime.AddYears(1));
-            pHandredDateTime.Day = 1;
-            pHandredDateTime.Month = 1;
-            DateTime HandredDateTime = pHandredDateTime.ToDateTime();
+            //Cls_PersianDateTime pHandredDateTime = new Cls_PersianDateTime(ZeroDateTime.AddYears(1));
+            //pHandredDateTime.Day = 1;
+            //pHandredDateTime.Month = 1;
+            //DateTime HandredDateTime = pHandredDateTime.ToDateTime();
 
             appointments.Clear();
-            for (DateTime SlotDateTime = ZeroDateTime; SlotDateTime < HandredDateTime; SlotDateTime = SlotDateTime.AddMinutes(10))
+            for (DateTime SlotDateTime = today; SlotDateTime < todayOneYearLater; SlotDateTime = SlotDateTime.AddMinutes(10))
             {
                 cls_Appointment appointment = new cls_Appointment();
-                appointment.StartDateTime = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
-                appointment.EndDateTime = SlotDateTime.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                appointment.StartDateTimeStr = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                appointment.EndDateTimeStr = SlotDateTime.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                appointment.StartDateTime = SlotDateTime;
+                appointment.EndDateTime = SlotDateTime.AddMinutes(10);
+                appointment.Subject = " ";
+                appointment.Paid = " ";
+                appointment.Date = new DateTime(SlotDateTime.Year, SlotDateTime.Month, SlotDateTime.Day);
+                appointment.DateStr = appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
                 appointments.Add(appointment);
             }
+            
+            //string filterStr = "[Start] >= '" + today.ToString("g") + "' AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
 
-            foreach (Outlook.AppointmentItem item in defaultCalendarFolder.Items)
+            //Outlook.Items items1 = defaultCalendarFolder.Items;
+            //items1.IncludeRecurrences = true;
+            //items1.Sort("[Start]");
+            //Outlook.Items items = items1.Restrict(filterStr);
+            ////items.IncludeRecurrences = true;
+            //int k = items.Count;
+            
+            foreach (Outlook.AppointmentItem item in defaultCalendarFolder.Items) //.Restrict(filterStr)
             {
-                string appointmentDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
-                cls_Appointment appointment = appointments.Single(m => m.StartDateTime == appointmentDate);
-                appointment.Subject = item.Subject;
-                appointment.Paid = item.Location;
+                try
+                {
+                    if (item.Start < today)
+                        continue;
+                    string appointmentDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                    cls_Appointment appointment = appointments.Single(m => m.StartDateTimeStr == appointmentDate);
+                    if (item.Subject != null)
+                        appointment.Subject = item.Subject;
+                    if (item.Location != null)
+                        appointment.Paid = item.Location;
+                    appointments.
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
 
 
@@ -297,7 +327,7 @@ namespace SMSProjectWinFrm
                 if (appointmentDate == AimDate)
                 {
                     cls_Appointment a = new cls_Appointment();
-                    a.Date = AimDate;
+                    a.DateStr = AimDate;
                     a.AppointmentDateTime = item.Start;
                     try
                     {
@@ -430,7 +460,7 @@ namespace SMSProjectWinFrm
                 if (appointmentDate == AimDate)
                 {
                     cls_Appointment a = new cls_Appointment();
-                    a.Date = AimDate;
+                    a.DateStr = AimDate;
                     a.AppointmentDateTime = item.Start;
                     try
                     {
