@@ -16,7 +16,7 @@ namespace SMSProjectWinFrm
 {
     public partial class FrmAppointmentSendSMS : Form
     {
-        cls_OutlookManagement outlookManagement = null;
+        public cls_OutlookManagement outlookManagement;
         Logger logger = new Logger();
         SerialPort port = new SerialPort();
 
@@ -27,8 +27,7 @@ namespace SMSProjectWinFrm
         
         private void Form1_Load(object sender, EventArgs e)
         {
-            outlookManagement = new cls_OutlookManagement(listBox1);
-            //outlookManagement.sMSManagement = new SMSManagement();
+            outlookManagement.listBox1 = listBox1;
         }
         private void button1_Click(object sender, EventArgs e)
         {

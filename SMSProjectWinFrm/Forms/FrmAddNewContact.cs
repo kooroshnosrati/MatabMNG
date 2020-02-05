@@ -12,7 +12,7 @@ namespace SMSProjectWinFrm.Forms
 {
     public partial class FrmAddNewContact : Form
     {
-        cls_OutlookManagement outlookManagement = new cls_OutlookManagement();
+        public cls_OutlookManagement outlookManagement;
         public FrmAddNewContact()
         {
             InitializeComponent();

@@ -20,11 +20,16 @@ namespace SMSProjectWinFrm
         Outlook.MAPIFolder defaultContactsFolder = null;
         Outlook.MAPIFolder defaultCalendarFolder = null;
         DAL dal = new DAL();
-        ListBox listBox1 = null;
         Logger logger = new Logger();
-        TextBox TxtSmsCounter = null;
 
+        public ListBox listBox1 = null;
+        public TextBox TxtSmsCounter = null;
 
+        public cls_OutlookManagement()
+        {
+            InitializeOutlookObjects();
+            //dal.ClearDatabase(); //باید کامنت شود
+        }
         private void FillContacts()
         {
             contacts.Clear();
@@ -54,16 +59,6 @@ namespace SMSProjectWinFrm
         {
             DateTime today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
             DateTime todayOneYearLater = new DateTime(DateTime.Now.Year + 1, DateTime.Now.Month, DateTime.Now.Day);
-            
-            //Cls_PersianDateTime pZeroDateTime = new Cls_PersianDateTime();
-            //pZeroDateTime.Day = 1;
-            //pZeroDateTime.Month = 1;
-            //DateTime ZeroDateTime = pZeroDateTime.ToDateTime();// new DateTime(DateTime.Now.Year, 1, 1);
-
-            //Cls_PersianDateTime pHandredDateTime = new Cls_PersianDateTime(ZeroDateTime.AddYears(1));
-            //pHandredDateTime.Day = 1;
-            //pHandredDateTime.Month = 1;
-            //DateTime HandredDateTime = pHandredDateTime.ToDateTime();
 
             appointments.Clear();
             for (DateTime SlotDateTime = today; SlotDateTime < todayOneYearLater; SlotDateTime = SlotDateTime.AddMinutes(10))
@@ -79,17 +74,15 @@ namespace SMSProjectWinFrm
                 appointment.DateStr = appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
                 appointments.Add(appointment);
             }
-            
-            //string filterStr = "[Start] >= '" + today.ToString("g") + "' AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
 
-            //Outlook.Items items1 = defaultCalendarFolder.Items;
-            //items1.IncludeRecurrences = true;
-            //items1.Sort("[Start]");
-            //Outlook.Items items = items1.Restrict(filterStr);
-            ////items.IncludeRecurrences = true;
-            //int k = items.Count;
-            
-            foreach (Outlook.AppointmentItem item in defaultCalendarFolder.Items) //.Restrict(filterStr)
+            Outlook.MAPIFolder AppointmentFolder = defaultCalendarFolder;
+            Outlook.Items items1 = AppointmentFolder.Items;
+            items1.IncludeRecurrences = true;
+            items1.Sort("[Start]");
+            string filterStr = "[Start] >= '" + today.ToString("g") + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
+            Outlook.Items items = items1.Restrict(filterStr);
+
+            foreach (Outlook.AppointmentItem item in items) 
             {
                 try
                 {
@@ -101,46 +94,13 @@ namespace SMSProjectWinFrm
                         appointment.Subject = item.Subject;
                     if (item.Location != null)
                         appointment.Paid = item.Location;
-                    appointments.
                 }
                 catch (Exception)
                 {
                     throw;
                 }
             }
-
-
-                //DateTime startDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
-                //string AimDate = startDate.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
-
-                //foreach (Outlook.AppointmentItem item in defaultCalendarFolder.Items)
-                //{
-                //    string appointmentDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
-                //    if (appointmentDate == AimDate)
-                //    {
-                //        cls_Appointment a = new cls_Appointment();
-                //        a.Date = AimDate;
-                //        a.AppointmentDateTime = item.Start;
-                //        try
-                //        {
-                //            a.contact.PatientID = a.contact.Mobile = new String(item.Subject.Where(Char.IsDigit).ToArray());
-                //        }
-                //        catch (Exception err1)
-                //        {
-                //            logger.ErrorLog(err1.Message + " ErrorFunction : ListOneDayAppointmentsAndSendSMS");
-                //            //throw (err1);
-                //        }
-                //        a.Subject = item.Subject;
-                //        if (!string.IsNullOrEmpty(a.contact.PatientID))
-                //            a.contact.FullName = item.Subject.Replace(a.contact.PatientID, "").Trim();
-                //        else
-                //            a.contact.FullName = item.Subject;
-                //        //a.Start = item.Start;
-
-                //        FindContactAndSendVisitConfirmationSMS(a, JobID);
-                //    }
-                //}
-            }
+        }
         private void getfolders(Outlook.Folder folder)
         {
             if (folder.Name.ToLower() == "Contacts".ToLower())
@@ -179,7 +139,7 @@ namespace SMSProjectWinFrm
                     if (item.Name.ToLower() == acm.ReadSetting("OutlookAccount").ToLower())
                         getfolders(item);
                 }
-                //FillContacts();
+                FillContacts();
                 FillAppointments();
             }
             catch (Exception err)
@@ -187,36 +147,18 @@ namespace SMSProjectWinFrm
                 MessageBox.Show(string.Format("Error instantiating outlook\n {0}", err.Message));
             }
         }
-        public cls_OutlookManagement()
-        {
-            InitializeOutlookObjects();
-            //dal.ClearDatabase(); //باید کامنت شود
-        }
-        public cls_OutlookManagement(ListBox listBox)
-        {
-            listBox1 = listBox;
-            InitializeOutlookObjects();
-            //dal.ClearDatabase(); //باید کامنت شود
-        }
-        public cls_OutlookManagement(TextBox txtbox)
-        {
-            TxtSmsCounter = txtbox;
-            InitializeOutlookObjects();
-            //dal.ClearDatabase(); //باید کامنت شود
-        }
         public void SendVisitConfirmationSmsToContact(cls_Appointment a, int JobID)
         {
             if (!dal.isSentSMSToMobile(a.contact.Mobile, JobID))
             {
-                //.............................................. Send SMS ....................................................
                 try
                 {
-                    if (a.AppointmentDateTime > DateTime.Now)
+                    if (a.StartDateTime > DateTime.Now)
                     {
                         string TxtBodyTemplate = dal.GetSMSTextBodyTemplateByJobID(JobID);
                         if (TxtBodyTemplate != null)
                         {
-                            string bodyStr = string.Format(TxtBodyTemplate, a.contact.FullName, a.AppointmentDateTime.ToLongDateString(), a.AppointmentDateTime.ToShortTimeString());
+                            string bodyStr = string.Format(TxtBodyTemplate, a.contact.FullName, a.StartDateTime.ToLongDateString(), a.StartDateTime.ToShortTimeString());
                             Cls_SMS sms = new Cls_SMS();
                             sms.JobID = JobID;
                             sms.PatientID = int.Parse(a.contact.PatientID);
@@ -226,8 +168,6 @@ namespace SMSProjectWinFrm
                             sms.IsSent = false;
                             sms.ErrorTxt = "";
                             dal.InsertSmsInfoToSentSMSTable(sms);
-                            //sMSManagement.SendSMS(bodyStr, a);
-                            //dal.AddMobileToSendVisitConfirmationSMS(a);
                             if (listBox1 != null)
                                 listBox1.Invoke(new Action(() => listBox1.Items.Add(a.Date + " --- " + a.contact.FullName + " --- " + a.contact.Mobile + " --- " + a.contact.PatientID)));
                         }
@@ -235,12 +175,8 @@ namespace SMSProjectWinFrm
                 }
                 catch (Exception ex)
                 {
-                    //MessageBox.Show("اتصال با مودم با مشکل مواجه شده است.");
                     logger.ErrorLog(ex.Message);
-                    //throw (ex);
                 }
-                //.............................................. Send SMS ....................................................
-
             }
         }
         private void CorrectPhoneNumber(Outlook.ContactItem contact)
@@ -316,37 +252,26 @@ namespace SMSProjectWinFrm
             if (chk)
                 SendVisitConfirmationSmsToContact(a, JobID);
         }
-        private void ListOneDayAppointmentsAndSendSMS(DateTime dateTime, int JobID)
+        private void ListOneDayAppointmentsAndSendSMS(DateTime dateTime, int JobID) 
         {
-            DateTime startDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
-            string AimDate = startDate.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
-
-            foreach (Outlook.AppointmentItem item in defaultCalendarFolder.Items)
+            DateTime AbsoluteDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
+            List<cls_Appointment> oneDayAppointments = appointments.Where(m => m.Date == AbsoluteDate).ToList();
+            foreach (cls_Appointment item in oneDayAppointments)
             {
-                string appointmentDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
-                if (appointmentDate == AimDate)
+                try
                 {
-                    cls_Appointment a = new cls_Appointment();
-                    a.DateStr = AimDate;
-                    a.AppointmentDateTime = item.Start;
-                    try
-                    {
-                        a.contact.PatientID = a.contact.Mobile = new String(item.Subject.Where(Char.IsDigit).ToArray());
-                    }
-                    catch (Exception err1)
-                    {
-                        logger.ErrorLog(err1.Message + " ErrorFunction : ListOneDayAppointmentsAndSendSMS");
-                        //throw (err1);
-                    }
-                    a.Subject = item.Subject;
-                    if (!string.IsNullOrEmpty(a.contact.PatientID))
-                        a.contact.FullName = item.Subject.Replace(a.contact.PatientID, "").Trim();
-                    else
-                        a.contact.FullName = item.Subject;
-                    //a.Start = item.Start;
-
-                    FindContactAndSendVisitConfirmationSMS(a, JobID);
+                    item.contact.PatientID = item.contact.Mobile = new String(item.Subject.Where(Char.IsDigit).ToArray());
                 }
+                catch (Exception err1)
+                {
+                    logger.ErrorLog(err1.Message + " ErrorFunction : ListOneDayAppointmentsAndSendSMS");
+                }
+                if (!string.IsNullOrEmpty(item.contact.PatientID))
+                    item.contact.FullName = item.Subject.Replace(item.contact.PatientID, "").Trim();
+                else
+                    item.contact.FullName = item.Subject;
+
+                FindContactAndSendVisitConfirmationSMS(item, JobID);
             }
         }
         public void ListForwardAppointmentsAndSendSMS()
@@ -448,40 +373,32 @@ namespace SMSProjectWinFrm
 
             return null;
         }
-        public List<cls_Appointment> GetContactsForOneDayAppointments(DateTime dateTime)
+        public List<cls_Appointment> GetContactsForOneDayAppointments(DateTime dateTime) // این قسمت باید درست شود. بخش جستجوی ویزیت ها باید از طریق Restrict انجام شود.
         {
-            List<cls_Appointment> appointments = new List<cls_Appointment>();
-            DateTime startDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
-            string AimDate = startDate.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
-
-            foreach (Outlook.AppointmentItem item in defaultCalendarFolder.Items)
+            DateTime AbsoluteDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
+            List<cls_Appointment> oneDayAppointments = appointments.Where(m => m.Date == AbsoluteDate).ToList();
+            List<cls_Appointment> CanceloneDayAppointments = new List<cls_Appointment>();
+            foreach (cls_Appointment item in oneDayAppointments)
             {
-                string appointmentDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
-                if (appointmentDate == AimDate)
-                {
-                    cls_Appointment a = new cls_Appointment();
-                    a.DateStr = AimDate;
-                    a.AppointmentDateTime = item.Start;
                     try
                     {
-                        a.contact.PatientID = a.contact.Mobile = new String(item.Subject.Where(Char.IsDigit).ToArray());
+                    item.contact.PatientID = item.contact.Mobile = new String(item.Subject.Where(Char.IsDigit).ToArray());
                     }
                     catch (Exception err1)
                     {
                         throw (err1);
                     }
-                    a.Subject = item.Subject;
-                    if (!string.IsNullOrEmpty(a.contact.PatientID))
-                        a.contact.FullName = item.Subject.Replace(a.contact.PatientID, "").Trim();
+                    if (!string.IsNullOrEmpty(item.contact.PatientID))
+                        item.contact.FullName = item.Subject.Replace(item.contact.PatientID, "").Trim();
                     else
-                        a.contact.FullName = item.Subject;
-                    a = GetContactInfo(a);
-                    if (a != null)
-                        appointments.Add(a);
-                }
-            }
-            return appointments;
+                        item.contact.FullName = item.Subject;
+                    cls_Appointment aitem = GetContactInfo(item);
+                    if (aitem != null)
+                    CanceloneDayAppointments.Add(aitem);
+             }
+            return CanceloneDayAppointments;
         }
+
         public void SendAnSMSToAllContacts(int jobID, string StrSmsBody)
         {
             int counter = 0;
@@ -524,7 +441,6 @@ namespace SMSProjectWinFrm
 
             if (TxtBodyTemplate != null)
             {
-                //listBox1.Invoke(new Action(() => listBox1.Items.Clear()));
                 foreach (cls_Contact contact in contacts)
                 {
                     string bodyStr = string.Format(TxtBodyTemplate, d.ToLongDateString());
@@ -538,9 +454,6 @@ namespace SMSProjectWinFrm
                     sms.ErrorTxt = "";
                     if (!dal.isSentSMSToMobile(sms.MobileNumber, sms.JobID))
                         dal.InsertSmsInfoToSentSMSTable(sms);
-                    //if (listBox1 != null)
-                    //    listBox1.Invoke(new Action(() => listBox1.Items.Add(contact.FullName + " --- " + contact.Mobile + " --- " + contact.PatientID)));
-                        
                 }
             }
         }

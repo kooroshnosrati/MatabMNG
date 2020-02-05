@@ -13,7 +13,7 @@ namespace SMSProjectWinFrm
 {
     public partial class FrmSendSMStoAll : Form
     {
-        cls_OutlookManagement outlookManagement = new cls_OutlookManagement();
+        public cls_OutlookManagement outlookManagement;
         //DateTime LastDateChoosen;
         SerialPort port = new SerialPort();
         Logger logger = new Logger();
@@ -29,9 +29,7 @@ namespace SMSProjectWinFrm
         {
             label2.Text = "";
             label2.ForeColor = Color.Green;
-
-            outlookManagement = new cls_OutlookManagement(textBox2);
-            //outlookManagement.sMSManagement = new SMSManagement();
+            outlookManagement.TxtSmsCounter = textBox2;
         }
         private void button4_Click(object sender, EventArgs e)
         {

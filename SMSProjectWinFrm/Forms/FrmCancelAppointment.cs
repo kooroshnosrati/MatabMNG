@@ -13,7 +13,7 @@ using System.Windows.Forms;
 
 public partial class FrmCancelAppointment : Form
 {
-    cls_OutlookManagement outlookManagement;
+    public cls_OutlookManagement outlookManagement;
     DateTime LastDateChoosen;
     SerialPort port = new SerialPort();
     Logger logger = new Logger();
@@ -28,8 +28,6 @@ public partial class FrmCancelAppointment : Form
     private void FrmCancelAppointment_Load(object sender, EventArgs e)
     {
         dateTimePicker1.Value = DateTime.Now;
-        outlookManagement = new cls_OutlookManagement();
-        //outlookManagement.sMSManagement = new SMSManagement();
     }
     private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
     {
@@ -59,6 +57,7 @@ public partial class FrmCancelAppointment : Form
             button1.Invoke(new Action(() => button1.Enabled = false));
             appointments.Clear();
             appointments = outlookManagement.GetContactsForOneDayAppointments(dateTimePicker1.Value);
+            listBox1.Invoke(new Action(() => listBox1.DataSource = null));
             listBox1.Invoke(new Action(() => listBox1.Items.Clear()));
             listBox1.Invoke(new Action(() => listBox1.DataSource = null));
             if (appointments.Count > 0)

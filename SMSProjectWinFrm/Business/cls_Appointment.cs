@@ -20,7 +20,6 @@ namespace SMSProjectWinFrm
         public DateTime EndDateTime { get; set; }
         public string DateStr { get; set; }
         public DateTime Date { get; set; }
-        public DateTime AppointmentDateTime { get; set; }
         public cls_Contact contact { get; set; }
     }
 }

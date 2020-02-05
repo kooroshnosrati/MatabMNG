@@ -28,6 +28,8 @@ namespace SMSProjectWinFrm
         private void اطلاعرسانیاتوماتیکویزیتبیمارانToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FrmAppointmentSendSMS frm = new FrmAppointmentSendSMS();
+            frm.outlookManagement = outlookManagement;
+            //outlookManagement.listBox1 = frm.listBox1;
             frm.MdiParent = this;
             frm.Show();
         }
@@ -49,6 +51,7 @@ namespace SMSProjectWinFrm
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
             FrmCancelAppointment frm = new FrmCancelAppointment();
+            frm.outlookManagement = outlookManagement;
             frm.MdiParent = this;
             frm.Show();
         }
@@ -56,6 +59,8 @@ namespace SMSProjectWinFrm
         private void toolStripMenuItem3_Click(object sender, EventArgs e)
         {
             FrmSendSMStoAll frm = new FrmSendSMStoAll();
+            frm.outlookManagement = outlookManagement;
+            //frm.tx = frm.te
             frm.MdiParent = this;
             frm.Show();
         }
@@ -70,6 +75,7 @@ namespace SMSProjectWinFrm
         private void toolStripMenuItem4_Click(object sender, EventArgs e)
         {
             FrmAddNewContact frm = new FrmAddNewContact();
+            frm.outlookManagement = outlookManagement;
             frm.MdiParent = this;
             frm.Show();
         }
