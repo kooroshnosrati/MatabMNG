@@ -117,35 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="please-wait-animated-gif-5" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\please-wait-animated-gif-5.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ezgifcom-optimize" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ezgifcom-optimize.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="doctors-clipart-endocrinologist-6" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\doctors-clipart-endocrinologist-6.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="rolling" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\rolling.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="dbeb4d96a3ac25b12f5dbe71d3a0bfcc" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\dbeb4d96a3ac25b12f5dbe71d3a0bfcc.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="06MAMMOGLAM-art-superJumbo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\06MAMMOGLAM-art-superJumbo.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="please-wait-animated-gif-2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\please-wait-animated-gif-2.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="migraine_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\migraine_small.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="170403-mukherjee-hero" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\170403-mukherjee-hero.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="processing-please-wait-gif-10" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\processing-please-wait-gif-10.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
 </root>

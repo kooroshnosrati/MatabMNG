@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -13,12 +14,32 @@ namespace SMSProjectWinFrm
 {
     public partial class frmMain : Form
     {
-        cls_OutlookManagement outlookManagement = new cls_OutlookManagement();
+        bool chk = false, chk1 = false;
+        cls_OutlookManagement outlookManagement;
         public frmMain()
         {
+            Thread t = new Thread(new ThreadStart(StartSlpashForm));
+            t.Start();
             InitializeComponent();
+            outlookManagement = new cls_OutlookManagement();
+            try
+            {
+                t.Suspend();
+                t.Interrupt();
+                //t.Join();
+                t.Abort();
+            }
+            catch (Exception)
+            {
+                ;
+            }
         }
-
+        public void StartSlpashForm()
+        {
+            //FrmWarmUp frmwarmup = new FrmWarmUp();
+            //frmwarmup.ShowDialog();
+            Application.Run(new FrmWarmUp());
+        }
         private void خروجToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Environment.Exit(0);
@@ -79,5 +100,28 @@ namespace SMSProjectWinFrm
             frm.MdiParent = this;
             frm.Show();
         }
+
+        //private void frmMain_Shown(object sender, EventArgs e)
+        //{
+        //    //FrmWarmUp frmwarmup = new FrmWarmUp();
+        //    //frmwarmup.MdiParent = this;
+        //    //frmwarmup.StartPosition = FormStartPosition.CenterParent;
+        //    //frmwarmup.Show();
+
+        //    //if (backgroundWorker1.IsBusy != true)
+        //    //    backgroundWorker1.RunWorkerAsync();
+
+        //    //while (!chk)
+        //    //{
+        //    //    frmwarmup.Show();
+        //    //}
+        //    ////Thread.Sleep(5000);
+        //    ////while (!chk1)
+        //    ////    Thread.Sleep(5000);
+
+        //    //frmwarmup.Hide();
+
+        //}
+
     }
 }
