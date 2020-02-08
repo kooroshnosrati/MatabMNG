@@ -75,12 +75,14 @@ namespace SMSProjectWinFrm
                 appointments.Add(appointment);
             }
 
+            defaultCalendarFolder.Items.IncludeRecurrences = true;
             Outlook.MAPIFolder AppointmentFolder = defaultCalendarFolder;
             Outlook.Items items1 = AppointmentFolder.Items;
             items1.IncludeRecurrences = true;
             items1.Sort("[Start]");
-            string filterStr = "[Start] >= '" + today.ToString("g") + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
+            string filterStr = "[Start] >= '" + today.ToString("yyyy-MM-dd HH:mm") + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
             Outlook.Items items = items1.Restrict(filterStr);
+            items.IncludeRecurrences = true;
 
             foreach (Outlook.AppointmentItem item in items) 
             {
@@ -109,7 +111,7 @@ namespace SMSProjectWinFrm
             }
             if (folder.Name.ToLower() == "Calendar".ToLower())
             {
-                defaultCalendarFolder = folder;
+                defaultCalendarFolder = (Outlook.MAPIFolder)folder;
             }
             //string addrname = folder.AddressBookName;
             //string foldername = folder.Name;
@@ -143,7 +145,7 @@ namespace SMSProjectWinFrm
                     if (item.Name.ToLower() == acm.ReadSetting("OutlookAccount").ToLower())
                         getfolders(item);
                 }
-                FillContacts();
+                //FillContacts();
                 FillAppointments();
             }
             catch (Exception err)

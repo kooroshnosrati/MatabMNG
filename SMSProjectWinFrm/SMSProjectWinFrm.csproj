@@ -177,6 +177,12 @@
     <Compile Include="Forms\frmTestSendSMS.Designer.cs">
       <DependentUpon>frmTestSendSMS.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FrmWarmUp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FrmWarmUp.Designer.cs">
+      <DependentUpon>FrmWarmUp.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Business\SMSManagement.cs" />
@@ -204,6 +210,9 @@
     <EmbeddedResource Include="Forms\frmTestSendSMS.resx">
       <DependentUpon>frmTestSendSMS.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FrmWarmUp.resx">
+      <DependentUpon>FrmWarmUp.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -212,6 +221,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="DB\my_database.sqlite" />
     <None Include="packages.config" />
@@ -248,6 +258,16 @@
     <Content Include="Images\refresh3.png" />
     <Content Include="Images\refresh4.png" />
     <Content Include="Images\refresh5.png" />
+    <None Include="Resources\processing-please-wait-gif-10.gif" />
+    <None Include="Resources\rolling.gif" />
+    <None Include="Resources\please-wait-animated-gif-5.gif" />
+    <None Include="Resources\please-wait-animated-gif-2.gif" />
+    <None Include="Resources\migraine_small.gif" />
+    <None Include="Resources\ezgifcom-optimize.gif" />
+    <None Include="Resources\doctors-clipart-endocrinologist-6.gif" />
+    <None Include="Resources\dbeb4d96a3ac25b12f5dbe71d3a0bfcc.gif" />
+    <None Include="Resources\170403-mukherjee-hero.gif" />
+    <None Include="Resources\06MAMMOGLAM-art-superJumbo.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets')" />
