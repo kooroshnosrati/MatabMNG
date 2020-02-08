@@ -132,9 +132,13 @@ namespace SMSProjectWinFrm
             try
             {
                 //initialise an instance of Outlook object
-                Outlook._Application outLookApp = new Microsoft.Office.Interop.Outlook.Application();
+                //Outlook._Application outLookApp = new Microsoft.Office.Interop.Outlook.Application();
+                Outlook.Application outLookApp = new Outlook.Application();
+                Outlook.NameSpace oNS = outLookApp.GetNamespace("mapi");
+                oNS.Logon("Dr.Ashraf.Alimadadi@outlook.com", "Aa135!#%");
                 ApplicationConfigManagement acm = new ApplicationConfigManagement();
-                foreach (Outlook.Folder item in outLookApp.Session.Folders)
+                //foreach (Outlook.Folder item in outLookApp.Session.Folders)
+                foreach (Outlook.Folder item in oNS.Folders)
                 {
                     if (item.Name.ToLower() == acm.ReadSetting("OutlookAccount").ToLower())
                         getfolders(item);
