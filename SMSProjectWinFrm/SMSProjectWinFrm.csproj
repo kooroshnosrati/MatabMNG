@@ -133,6 +133,12 @@
     <Compile Include="Forms\FrmAddNewContact.Designer.cs">
       <DependentUpon>FrmAddNewContact.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\frmContacts.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmContacts.Designer.cs">
+      <DependentUpon>frmContacts.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FrmSMSCenter.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -188,6 +194,9 @@
     <Compile Include="Business\SMSManagement.cs" />
     <EmbeddedResource Include="Forms\FrmAddNewContact.resx">
       <DependentUpon>FrmAddNewContact.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmContacts.resx">
+      <DependentUpon>frmContacts.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FrmSMSCenter.resx">
       <DependentUpon>FrmSMSCenter.cs</DependentUpon>

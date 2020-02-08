@@ -14,8 +14,8 @@ namespace SMSProjectWinFrm
 {
     public class cls_OutlookManagement
     {
-        List<cls_Contact> contacts = new List<cls_Contact>();
-        List<cls_Appointment> appointments = new List<cls_Appointment>();
+        public List<cls_Contact> contacts = new List<cls_Contact>();
+        public List<cls_Appointment> appointments = new List<cls_Appointment>();
         public bool IsSurfingInAppointment = false;
         Outlook.MAPIFolder defaultContactsFolder = null;
         Outlook.MAPIFolder defaultCalendarFolder = null;
@@ -32,6 +32,8 @@ namespace SMSProjectWinFrm
         }
         private void FillContacts()
         {
+            int counter = 0;
+            
             defaultContactsFolder.Items.IncludeRecurrences = true;
             Outlook.MAPIFolder ContactFolder = defaultContactsFolder;
             Outlook.Items items1 = ContactFolder.Items;
@@ -44,16 +46,19 @@ namespace SMSProjectWinFrm
                 try
                 {
                     cls_Contact contact = new cls_Contact();
-                    contact.PatientID = Ocontact.Title;
-                    contact.DiseaseName = Ocontact.JobTitle;
-                    contact.FirstName = Ocontact.FirstName;
-                    contact.LastName = Ocontact.LastName;
-                    contact.FatherName = Ocontact.MiddleName;
-                    contact.SSID = Ocontact.Suffix;
-                    contact.Phone = Ocontact.HomeTelephoneNumber;
-                    contact.Mobile = Ocontact.MobileTelephoneNumber;
-                    contact.Notes = Ocontact.Body;
+                    contact.PatientID = Ocontact.Title == null ? "" : Ocontact.Title;
+                    contact.DiseaseName = Ocontact.JobTitle == null ? "" : Ocontact.JobTitle;
+                    contact.FirstName = Ocontact.FirstName == null ? "" : Ocontact.FirstName;
+                    contact.LastName = Ocontact.LastName == null ? "" : Ocontact.LastName;
+                    contact.FatherName = Ocontact.MiddleName == null ? "" : Ocontact.MiddleName;
+                    contact.SSID = Ocontact.Suffix == null ? "" : Ocontact.Suffix;
+                    contact.FullName = contact.FirstName + " " + contact.LastName;
+                    contact.Phone = Ocontact.HomeTelephoneNumber == null ? "" : Ocontact.HomeTelephoneNumber.Replace(" ", "");
+                    contact.Mobile = Ocontact.MobileTelephoneNumber == null ? "" : Ocontact.MobileTelephoneNumber.Replace(" ", "");
+                    contact.Notes = Ocontact.Body == null ? "" : Ocontact.Body;
                     contacts.Add(contact);
+                    if (counter++ > 500)
+                        break;
                 }
                 catch (Exception ex)
                 {
@@ -157,7 +162,7 @@ namespace SMSProjectWinFrm
                         getfolders(item);
                 }
                 FillContacts();
-                FillAppointments();
+                //FillAppointments();
             }
             catch (Exception err)
             {

@@ -117,6 +117,14 @@ namespace SMSProjectWinFrm
             frmwarmup.Dispose();
         }
 
+        private void toolStripMenuItem5_Click(object sender, EventArgs e)
+        {
+            frmContacts frm = new frmContacts();
+            frm.outlookManagement = outlookManagement;
+            frm.MdiParent = this;
+            frm.Show();
+        }
+
         private void toolStripMenuItem4_Click(object sender, EventArgs e)
         {
             FrmAddNewContact frm = new FrmAddNewContact();
