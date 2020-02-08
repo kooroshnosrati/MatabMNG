@@ -14,31 +14,37 @@ namespace SMSProjectWinFrm
 {
     public partial class frmMain : Form
     {
+        FrmWarmUp frmwarmup;
         bool chk = false, chk1 = false;
         cls_OutlookManagement outlookManagement;
         public frmMain()
         {
-            Thread t = new Thread(new ThreadStart(StartSlpashForm));
-            t.Start();
+            //Thread t = new Thread(new ThreadStart(StartSlpashForm));
+            //t.Start();
             InitializeComponent();
-            outlookManagement = new cls_OutlookManagement();
+            
+            //try
+            //{
+            //    //t.Suspend();
+            //    //t.Interrupt();
+            //    //t.Join();
+            //    t.Abort();
+            //}
+            //catch (Exception)
+            //{
+            //    ;
+            //}
+        }
+        public void StartSlpashForm()
+        {
             try
             {
-                t.Suspend();
-                t.Interrupt();
-                //t.Join();
-                t.Abort();
+                //Application.Run(new FrmWarmUp());
             }
             catch (Exception)
             {
                 ;
             }
-        }
-        public void StartSlpashForm()
-        {
-            //FrmWarmUp frmwarmup = new FrmWarmUp();
-            //frmwarmup.ShowDialog();
-            Application.Run(new FrmWarmUp());
         }
         private void خروجToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -88,9 +94,27 @@ namespace SMSProjectWinFrm
 
         private void frmMain_Load(object sender, EventArgs e)
         {
+            if (backgroundWorker1.IsBusy != true)
+                backgroundWorker1.RunWorkerAsync();
+
+            frmwarmup = new FrmWarmUp();
+            frmwarmup.ShowDialog();
+
             FrmSMSCenter frm = new FrmSMSCenter();
             frm.MdiParent = this;
             frm.Show();
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            outlookManagement = new cls_OutlookManagement();
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            frmwarmup.Hide();
+            frmwarmup.Close();
+            frmwarmup.Dispose();
         }
 
         private void toolStripMenuItem4_Click(object sender, EventArgs e)

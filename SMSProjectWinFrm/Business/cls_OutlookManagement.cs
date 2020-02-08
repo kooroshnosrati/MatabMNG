@@ -32,8 +32,14 @@ namespace SMSProjectWinFrm
         }
         private void FillContacts()
         {
+            defaultContactsFolder.Items.IncludeRecurrences = true;
+            Outlook.MAPIFolder ContactFolder = defaultContactsFolder;
+            Outlook.Items items1 = ContactFolder.Items;
+            items1.IncludeRecurrences = true;
+            items1.Sort("[Title]");
+
             contacts.Clear();
-            foreach (Outlook.ContactItem Ocontact in defaultContactsFolder.Items)
+            foreach (Outlook.ContactItem Ocontact in items1)
             {
                 try
                 {
@@ -80,7 +86,8 @@ namespace SMSProjectWinFrm
             Outlook.Items items1 = AppointmentFolder.Items;
             items1.IncludeRecurrences = true;
             items1.Sort("[Start]");
-            string filterStr = "[Start] >= '" + today.ToString("yyyy-MM-dd HH:mm") + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
+            //string filterStr = "[Start] >= '" + today.ToString("yyyy-MM-dd HH:mm") + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
+            string filterStr = "[Start] >= '" + today.ToString("g") + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
             Outlook.Items items = items1.Restrict(filterStr);
             items.IncludeRecurrences = true;
 
@@ -137,15 +144,19 @@ namespace SMSProjectWinFrm
                 //Outlook._Application outLookApp = new Microsoft.Office.Interop.Outlook.Application();
                 Outlook.Application outLookApp = new Outlook.Application();
                 Outlook.NameSpace oNS = outLookApp.GetNamespace("mapi");
-                oNS.Logon("Dr.Ashraf.Alimadadi@outlook.com", "Aa135!#%");
+
                 ApplicationConfigManagement acm = new ApplicationConfigManagement();
+                string usrName = acm.ReadSetting("OutlookAccount").ToLower();
+                string passWord = acm.ReadSetting("OutlookAccountPassword");
+
+                oNS.Logon(usrName, passWord);
                 //foreach (Outlook.Folder item in outLookApp.Session.Folders)
                 foreach (Outlook.Folder item in oNS.Folders)
                 {
                     if (item.Name.ToLower() == acm.ReadSetting("OutlookAccount").ToLower())
                         getfolders(item);
                 }
-                //FillContacts();
+                FillContacts();
                 FillAppointments();
             }
             catch (Exception err)
