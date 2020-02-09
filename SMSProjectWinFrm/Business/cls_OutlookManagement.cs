@@ -189,7 +189,7 @@ namespace SMSProjectWinFrm
                     if (item.Name.ToLower() == acm.ReadSetting("OutlookAccount").ToLower())
                         getfolders(item);
                 }
-                FillContacts();
+                //FillContacts();
                 FillAppointments();
             }
             catch (Exception err)
@@ -588,13 +588,6 @@ namespace SMSProjectWinFrm
                     else
                         FilterStr += "[MobileTelephoneNumber] = '" + oldContact.Mobile + "'";
                 }
-                //if (oldContact.Notes != "")
-                //{
-                //    if (FilterStr.Length > 0)
-                //        FilterStr += " and [Body] = '" + oldContact.Notes + "'";
-                //    else
-                //        FilterStr += "[Body] = '" + oldContact.Notes + "'";
-                //}
 
                 Outlook.ContactItem contact = defaultContactsFolder.Items.Find(FilterStr) as Outlook.ContactItem;
                 if (contact != null)
@@ -620,6 +613,48 @@ namespace SMSProjectWinFrm
                     oldContact.Phone = newContact.Phone;
                     oldContact.SSID = newContact.SSID;
                     oldContact.FullName = oldContact.FirstName + " " + oldContact.LastName;
+                    return true;
+                }
+            }
+            catch (Exception err)
+            {
+                logger.ErrorLog("Update Conact Info : " + err.Message);
+                return false;
+            }
+            return false;
+        }
+        public bool UpdateAppointment(cls_Appointment oldAppointment, cls_Appointment newAppointment)
+        {
+            try
+            {
+                defaultCalendarFolder.Items.IncludeRecurrences = true;
+                Outlook.MAPIFolder AppointmentFolder = defaultCalendarFolder;
+                Outlook.Items items1 = AppointmentFolder.Items;
+                items1.IncludeRecurrences = true;
+                items1.Sort("[Start]");
+                string filterStr = "[Start]='" + oldAppointment.StartDateTime.ToString("g") + "'";// and [End]='" + oldAppointment.EndDateTime.ToString("g") + "'";
+                Outlook.AppointmentItem appointment = items1.Find(filterStr);
+
+                if (appointment != null)
+                {
+                    appointment.Subject = newAppointment.Subject;
+                    appointment.Location = newAppointment.Paid;
+                    appointment.Save();
+
+                    oldAppointment.Subject = newAppointment.Subject;
+                    oldAppointment.Paid = newAppointment.Paid;
+                    return true;
+                }
+                else
+                {
+                    Outlook.AppointmentItem AddnewAppointment = defaultCalendarFolder.Items.Add(Outlook.OlItemType.olAppointmentItem) as Outlook.AppointmentItem;
+                    AddnewAppointment.Start = newAppointment.StartDateTime;
+                    AddnewAppointment.End = newAppointment.EndDateTime;
+                    AddnewAppointment.Subject = newAppointment.Subject;
+                    AddnewAppointment.Location = newAppointment.Paid;
+                    AddnewAppointment.Save();
+                    oldAppointment.Subject = newAppointment.Subject;
+                    oldAppointment.Paid = newAppointment.Paid;
                     return true;
                 }
             }

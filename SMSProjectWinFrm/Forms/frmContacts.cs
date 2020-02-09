@@ -23,13 +23,6 @@ namespace SMSProjectWinFrm
             InitializeComponent();
         }
 
-        private void BtnExit_Click(object sender, EventArgs e)
-        {
-            this.Close();
-            this.Dispose();
-        }
-
-
         private void frmContacts_Load(object sender, EventArgs e)
         {
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
@@ -186,13 +179,20 @@ namespace SMSProjectWinFrm
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+
+        private void button2_Click_1(object sender, EventArgs e)
         {
             FrmAddNewContact frm = new FrmAddNewContact();
             frm.outlookManagement = outlookManagement;
             //frm.MdiParent = this.ParentForm;
             frm.ShowDialog();
             RefreshGridView();
+        }
+
+        private void BtnExit_Click_1(object sender, EventArgs e)
+        {
+            this.Close();
+            this.Dispose();
         }
     }
 }
