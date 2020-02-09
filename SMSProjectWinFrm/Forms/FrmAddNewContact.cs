@@ -25,6 +25,7 @@ namespace SMSProjectWinFrm.Forms
             contact.DiseaseName = TxtDiseaseName.Text;
             contact.FirstName= TxtFName.Text;
             contact.LastName = TxtLName.Text;
+            contact.FullName = TxtFName + " " + TxtLName;
             contact.FatherName = TxtFatherName.Text;
             contact.SSID = TxtSSID.Text;
             contact.Phone= TxtPhone.Text;
@@ -42,6 +43,12 @@ namespace SMSProjectWinFrm.Forms
                 this.Close();
                 this.Dispose();
             }
+        }
+
+        private void BtnCancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            this.Dispose();
         }
     }
 }

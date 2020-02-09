@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SMSProjectWinFrm.Forms;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
@@ -159,19 +160,38 @@ namespace SMSProjectWinFrm
 
         private void button1_Click(object sender, EventArgs e)
         {
-            DialogResult dr = MessageBox.Show(string.Format("آیا از تغییر اطلاعات بیمار به نام {0} با شماره پرونده {1} اطمینان دارید؟", selectedContact.FullName, selectedContact.PatientID), "پیغام اخطار", MessageBoxButtons.YesNo);
-            if (dr == DialogResult.Yes)
+            cls_Contact newContact = new cls_Contact();
+            try
             {
-                selectedContact.PatientID = TxtPatientID.Text;
-                selectedContact.DiseaseName = TxtDiseaseName.Text;
-                selectedContact.FirstName = TxtFName.Text;
-                selectedContact.LastName = TxtLName.Text;
-                selectedContact.FatherName = TxtFatherName.Text;
-                selectedContact.SSID = TxtSSID.Text;
-                selectedContact.Phone = TxtPhone.Text;
-                selectedContact.Mobile = TxtMobile.Text;
-                selectedContact.Notes = TxtNotes.Text;
+                DialogResult dr = MessageBox.Show(string.Format("آیا از تغییر اطلاعات بیمار به نام {0} با شماره پرونده {1} اطمینان دارید؟", selectedContact.FullName, selectedContact.PatientID), "پیغام اخطار", MessageBoxButtons.YesNo);
+                if (dr == DialogResult.Yes)
+                {
+                    newContact.PatientID = TxtPatientID.Text;
+                    newContact.DiseaseName = TxtDiseaseName.Text;
+                    newContact.FirstName = TxtFName.Text;
+                    newContact.LastName = TxtLName.Text;
+                    newContact.FatherName = TxtFatherName.Text;
+                    newContact.SSID = TxtSSID.Text;
+                    newContact.Phone = TxtPhone.Text;
+                    newContact.Mobile = TxtMobile.Text;
+                    newContact.Notes = TxtNotes.Text;
+                    outlookManagement.UpdateContact(selectedContact, newContact);
+
+                }
+                RefreshGridView();
             }
+            catch (Exception)
+            {
+                MessageBox.Show("لطفا یکی از بیماران لیست شده را با Double Click اینتخاب کنید و بعد از تغییرات کلید ثبت را بزنید...", "پیغام خطا",MessageBoxButtons.OK,MessageBoxIcon.Error,MessageBoxDefaultButton.Button1,MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign,true);
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            FrmAddNewContact frm = new FrmAddNewContact();
+            frm.outlookManagement = outlookManagement;
+            //frm.MdiParent = this.ParentForm;
+            frm.ShowDialog();
             RefreshGridView();
         }
     }

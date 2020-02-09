@@ -29,6 +29,10 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.TxtDiseaseName = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.BtnCancel = new System.Windows.Forms.Button();
+            this.BtnSave = new System.Windows.Forms.Button();
             this.TxtNotes = new System.Windows.Forms.TextBox();
             this.TxtMobile = new System.Windows.Forms.TextBox();
             this.TxtPhone = new System.Windows.Forms.TextBox();
@@ -45,10 +49,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.BtnSave = new System.Windows.Forms.Button();
-            this.BtnCancel = new System.Windows.Forms.Button();
-            this.label9 = new System.Windows.Forms.Label();
-            this.TxtDiseaseName = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -80,6 +80,43 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "مشخصات بیمار";
+            // 
+            // TxtDiseaseName
+            // 
+            this.TxtDiseaseName.Location = new System.Drawing.Point(93, 39);
+            this.TxtDiseaseName.Name = "TxtDiseaseName";
+            this.TxtDiseaseName.Size = new System.Drawing.Size(100, 20);
+            this.TxtDiseaseName.TabIndex = 35;
+            this.TxtDiseaseName.Text = "دیابت";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(236, 42);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(61, 13);
+            this.label9.TabIndex = 34;
+            this.label9.Text = "نام بیماری :";
+            // 
+            // BtnCancel
+            // 
+            this.BtnCancel.Location = new System.Drawing.Point(6, 45);
+            this.BtnCancel.Name = "BtnCancel";
+            this.BtnCancel.Size = new System.Drawing.Size(75, 23);
+            this.BtnCancel.TabIndex = 33;
+            this.BtnCancel.Text = "انصراف";
+            this.BtnCancel.UseVisualStyleBackColor = true;
+            this.BtnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
+            // 
+            // BtnSave
+            // 
+            this.BtnSave.Location = new System.Drawing.Point(6, 16);
+            this.BtnSave.Name = "BtnSave";
+            this.BtnSave.Size = new System.Drawing.Size(75, 23);
+            this.BtnSave.TabIndex = 32;
+            this.BtnSave.Text = "ثبت";
+            this.BtnSave.UseVisualStyleBackColor = true;
+            this.BtnSave.Click += new System.EventHandler(this.BtnSave_Click);
             // 
             // TxtNotes
             // 
@@ -209,42 +246,6 @@
             this.label1.Size = new System.Drawing.Size(75, 13);
             this.label1.TabIndex = 16;
             this.label1.Text = "شماره پرونده :";
-            // 
-            // BtnSave
-            // 
-            this.BtnSave.Location = new System.Drawing.Point(6, 16);
-            this.BtnSave.Name = "BtnSave";
-            this.BtnSave.Size = new System.Drawing.Size(75, 23);
-            this.BtnSave.TabIndex = 32;
-            this.BtnSave.Text = "ثبت";
-            this.BtnSave.UseVisualStyleBackColor = true;
-            this.BtnSave.Click += new System.EventHandler(this.BtnSave_Click);
-            // 
-            // BtnCancel
-            // 
-            this.BtnCancel.Location = new System.Drawing.Point(6, 45);
-            this.BtnCancel.Name = "BtnCancel";
-            this.BtnCancel.Size = new System.Drawing.Size(75, 23);
-            this.BtnCancel.TabIndex = 33;
-            this.BtnCancel.Text = "انصراف";
-            this.BtnCancel.UseVisualStyleBackColor = true;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(236, 42);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(61, 13);
-            this.label9.TabIndex = 34;
-            this.label9.Text = "نام بیماری :";
-            // 
-            // TxtDiseaseName
-            // 
-            this.TxtDiseaseName.Location = new System.Drawing.Point(93, 39);
-            this.TxtDiseaseName.Name = "TxtDiseaseName";
-            this.TxtDiseaseName.Size = new System.Drawing.Size(100, 20);
-            this.TxtDiseaseName.TabIndex = 35;
-            this.TxtDiseaseName.Text = "دیابت";
             // 
             // FrmAddNewContact
             // 

@@ -45,6 +45,7 @@ namespace SMSProjectWinFrm
             {
                 try
                 {
+                    bool chk = false;
                     cls_Contact contact = new cls_Contact();
                     contact.PatientID = Ocontact.Title == null ? "" : Ocontact.Title;
                     contact.DiseaseName = Ocontact.JobTitle == null ? "" : Ocontact.JobTitle;
@@ -53,12 +54,39 @@ namespace SMSProjectWinFrm
                     contact.FatherName = Ocontact.MiddleName == null ? "" : Ocontact.MiddleName;
                     contact.SSID = Ocontact.Suffix == null ? "" : Ocontact.Suffix;
                     contact.FullName = contact.FirstName + " " + contact.LastName;
-                    contact.Phone = Ocontact.HomeTelephoneNumber == null ? "" : Ocontact.HomeTelephoneNumber.Replace(" ", "");
-                    contact.Mobile = Ocontact.MobileTelephoneNumber == null ? "" : Ocontact.MobileTelephoneNumber.Replace(" ", "");
+                    if (Ocontact.HomeTelephoneNumber == null)
+                        contact.Phone = "";
+                    else
+                    {
+                        if (Ocontact.HomeTelephoneNumber.IndexOf(" ") != -1)
+                        {
+                            contact.Phone = Ocontact.HomeTelephoneNumber.Replace(" ", "");
+                            Ocontact.HomeTelephoneNumber = Ocontact.HomeTelephoneNumber.Replace(" ", "");
+                            chk = true;
+                        }
+                        else
+                            contact.Phone = Ocontact.HomeTelephoneNumber;
+                    }
+                    if (Ocontact.MobileTelephoneNumber == null)
+                        contact.Mobile = "";
+                    else
+                    {
+                        if (Ocontact.MobileTelephoneNumber.IndexOf(" ") != -1)
+                        {
+                            contact.Mobile = Ocontact.MobileTelephoneNumber.Replace(" ", "");
+                            Ocontact.MobileTelephoneNumber = Ocontact.MobileTelephoneNumber.Replace(" ", "");
+                            chk = true;
+                        }
+                        else
+                            contact.Mobile = Ocontact.MobileTelephoneNumber;
+                    }
+
                     contact.Notes = Ocontact.Body == null ? "" : Ocontact.Body;
                     contacts.Add(contact);
-                    if (counter++ > 500)
-                        break;
+                    if (chk)
+                        Ocontact.Save();
+                    //if (counter++ > 500)
+                    //    break;
                 }
                 catch (Exception ex)
                 {
@@ -139,7 +167,6 @@ namespace SMSProjectWinFrm
             }
             else
                 return;
-
         }
         private void InitializeOutlookObjects()
         {
@@ -153,8 +180,9 @@ namespace SMSProjectWinFrm
                 ApplicationConfigManagement acm = new ApplicationConfigManagement();
                 string usrName = acm.ReadSetting("OutlookAccount").ToLower();
                 string passWord = acm.ReadSetting("OutlookAccountPassword");
+                string profileName = acm.ReadSetting("OutlookProfile").ToLower();
 
-                oNS.Logon(usrName, passWord);
+                oNS.Logon(profileName, passWord, true, true);
                 //foreach (Outlook.Folder item in outLookApp.Session.Folders)
                 foreach (Outlook.Folder item in oNS.Folders)
                 {
@@ -162,7 +190,7 @@ namespace SMSProjectWinFrm
                         getfolders(item);
                 }
                 FillContacts();
-                //FillAppointments();
+                FillAppointments();
             }
             catch (Exception err)
             {
@@ -483,7 +511,7 @@ namespace SMSProjectWinFrm
         {
             try
             {
-                Outlook.ContactItem newContact = defaultContactsFolder.Application.CreateItem(Outlook.OlItemType.olContactItem) as Outlook.ContactItem;
+                Outlook.ContactItem newContact = defaultContactsFolder.Items.Add(Outlook.OlItemType.olContactItem) as Outlook.ContactItem;
 
                 newContact.Title = contact.PatientID;
                 newContact.JobTitle = contact.DiseaseName;
@@ -495,13 +523,112 @@ namespace SMSProjectWinFrm
                 newContact.MobileTelephoneNumber = contact.Mobile;
                 newContact.Body = contact.Notes;
                 newContact.Save();
-                newContact.Display(true);
+                //newContact.Display(true);
+                contacts.Add(contact);
                 return true;
             }
             catch (Exception)
             {
                 return false;
             }
+        }
+        public bool UpdateContact(cls_Contact oldContact, cls_Contact newContact)
+        {
+            try
+            {
+                string FilterStr = "";
+                if (oldContact.PatientID != "")
+                    FilterStr += "[Title] = '" + oldContact.PatientID + "'";
+                if (oldContact.DiseaseName != "")
+                {
+                    if (FilterStr.Length > 0)
+                        FilterStr += " and [JobTitle] = '" + oldContact.DiseaseName + "'";
+                    else
+                        FilterStr += "[JobTitle] = '" + oldContact.DiseaseName + "'";
+                }
+                if (oldContact.FirstName != "")
+                {
+                    if (FilterStr.Length > 0)
+                        FilterStr += " and [FirstName] = '" + oldContact.FirstName + "'";
+                    else
+                        FilterStr += "[FirstName] = '" + oldContact.FirstName + "'";
+                }
+                if (oldContact.LastName != "")
+                {
+                    if (FilterStr.Length > 0)
+                        FilterStr += " and [LastName] = '" + oldContact.LastName + "'";
+                    else
+                        FilterStr += "[LastName] = '" + oldContact.LastName + "'";
+                }
+                if (oldContact.FatherName != "")
+                {
+                    if (FilterStr.Length > 0)
+                        FilterStr += " and [MiddleName] = '" + oldContact.FatherName + "'";
+                    else
+                        FilterStr += "[MiddleName] = '" + oldContact.FatherName + "'";
+                }
+                if (oldContact.SSID != "")
+                {
+                    if (FilterStr.Length > 0)
+                        FilterStr += " and [Suffix] = '" + oldContact.SSID + "'";
+                    else
+                        FilterStr += "[Suffix] = '" + oldContact.SSID + "'";
+                }
+                if (oldContact.Phone != "")
+                {
+                    if (FilterStr.Length > 0)
+                        FilterStr += " and [HomeTelephoneNumber] = '" + oldContact.Phone + "'";
+                    else
+                        FilterStr += "[HomeTelephoneNumber] = '" + oldContact.Phone + "'";
+                }
+                if (oldContact.Mobile != "")
+                {
+                    if (FilterStr.Length > 0)
+                        FilterStr += " and [MobileTelephoneNumber] = '" + oldContact.Mobile + "'";
+                    else
+                        FilterStr += "[MobileTelephoneNumber] = '" + oldContact.Mobile + "'";
+                }
+                //if (oldContact.Notes != "")
+                //{
+                //    if (FilterStr.Length > 0)
+                //        FilterStr += " and [Body] = '" + oldContact.Notes + "'";
+                //    else
+                //        FilterStr += "[Body] = '" + oldContact.Notes + "'";
+                //}
+
+                Outlook.ContactItem contact = defaultContactsFolder.Items.Find(FilterStr) as Outlook.ContactItem;
+                if (contact != null)
+                {
+                    contact.Title = newContact.PatientID;
+                    contact.JobTitle = newContact.DiseaseName;
+                    contact.FirstName = newContact.FirstName;
+                    contact.LastName = newContact.LastName;
+                    contact.MiddleName = newContact.FatherName;
+                    contact.Suffix = newContact.SSID;
+                    contact.HomeTelephoneNumber = newContact.Phone;
+                    contact.MobileTelephoneNumber = newContact.Mobile;
+                    contact.Body = newContact.Notes;
+                    contact.Save();
+
+                    oldContact.DiseaseName = newContact.DiseaseName;
+                    oldContact.FatherName = newContact.FatherName;
+                    oldContact.FirstName = newContact.FirstName;
+                    oldContact.LastName = newContact.LastName;
+                    oldContact.Mobile = newContact.Mobile;
+                    oldContact.Notes = newContact.Notes;
+                    oldContact.PatientID = newContact.PatientID;
+                    oldContact.Phone = newContact.Phone;
+                    oldContact.SSID = newContact.SSID;
+                    oldContact.FullName = oldContact.FirstName + " " + oldContact.LastName;
+                    return true;
+                }
+            }
+            catch (Exception err)
+            {
+                logger.ErrorLog("Update Conact Info : " + err.Message);
+                return false;
+            }
+            return false;
         }
     }
 

@@ -124,36 +124,5 @@ namespace SMSProjectWinFrm
             frm.MdiParent = this;
             frm.Show();
         }
-
-        private void toolStripMenuItem4_Click(object sender, EventArgs e)
-        {
-            FrmAddNewContact frm = new FrmAddNewContact();
-            frm.outlookManagement = outlookManagement;
-            frm.MdiParent = this;
-            frm.Show();
-        }
-
-        //private void frmMain_Shown(object sender, EventArgs e)
-        //{
-        //    //FrmWarmUp frmwarmup = new FrmWarmUp();
-        //    //frmwarmup.MdiParent = this;
-        //    //frmwarmup.StartPosition = FormStartPosition.CenterParent;
-        //    //frmwarmup.Show();
-
-        //    //if (backgroundWorker1.IsBusy != true)
-        //    //    backgroundWorker1.RunWorkerAsync();
-
-        //    //while (!chk)
-        //    //{
-        //    //    frmwarmup.Show();
-        //    //}
-        //    ////Thread.Sleep(5000);
-        //    ////while (!chk1)
-        //    ////    Thread.Sleep(5000);
-
-        //    //frmwarmup.Hide();
-
-        //}
-
     }
 }
