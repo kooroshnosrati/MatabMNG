@@ -151,7 +151,7 @@ namespace SMSProjectWinFrm
             }
             if (folder.Name.ToLower() == "Calendar".ToLower())
             {
-                defaultCalendarFolder = (Outlook.MAPIFolder)folder;
+                defaultCalendarFolder = folder; //(Outlook.MAPIFolder)
             }
             //string addrname = folder.AddressBookName;
             //string foldername = folder.Name;
@@ -182,15 +182,16 @@ namespace SMSProjectWinFrm
                 string passWord = acm.ReadSetting("OutlookAccountPassword");
                 string profileName = acm.ReadSetting("OutlookProfile").ToLower();
 
-                oNS.Logon(profileName, passWord, true, true);
+                //oNS.Logon(profileName, passWord, true, true);
+                oNS.Logon(profileName);
                 //foreach (Outlook.Folder item in outLookApp.Session.Folders)
                 foreach (Outlook.Folder item in oNS.Folders)
                 {
                     if (item.Name.ToLower() == acm.ReadSetting("OutlookAccount").ToLower())
                         getfolders(item);
                 }
-                //FillContacts();
-                FillAppointments();
+                FillContacts();
+                //FillAppointments();
             }
             catch (Exception err)
             {
