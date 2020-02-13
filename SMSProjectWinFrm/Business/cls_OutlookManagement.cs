@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Globalization;
 using SMSProjectWinFrm;
 using SMSProjectWinFrm.Business;
+using System.Reflection;
 
 namespace SMSProjectWinFrm
 {
@@ -119,13 +120,14 @@ namespace SMSProjectWinFrm
             Outlook.Items items1 = AppointmentFolder.Items;
             items1.IncludeRecurrences = true;
             items1.Sort("[Start]");
-            //string filterStr = "[Start] >= '" + today.ToString("yyyy-MM-dd HH:mm") + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
-            string filterStr = "[Start] >= '" + today.ToString("g") + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
+            string filterStr = "[Start] >= '" + today.ToString("yyyy-MM-dd HH:mm") + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
+            //string filterStr = "[Start] >= '" + today.ToString("g") + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
             Outlook.Items items = items1.Restrict(filterStr);
             items.IncludeRecurrences = true;
 
-            foreach (Outlook.AppointmentItem item in items) 
+            foreach (Outlook.Items Myitem in items) 
             {
+                Outlook.AppointmentItem item = (Outlook.AppointmentItem)Myitem;
                 try
                 {
                     if (item.Start < today)
@@ -183,15 +185,15 @@ namespace SMSProjectWinFrm
                 string profileName = acm.ReadSetting("OutlookProfile").ToLower();
 
                 //oNS.Logon(profileName, passWord, true, true);
-                oNS.Logon(profileName);
+                oNS.Logon(Missing.Value, Missing.Value, true, true);
                 //foreach (Outlook.Folder item in outLookApp.Session.Folders)
                 foreach (Outlook.Folder item in oNS.Folders)
                 {
                     if (item.Name.ToLower() == acm.ReadSetting("OutlookAccount").ToLower())
                         getfolders(item);
                 }
-                FillContacts();
-                //FillAppointments();
+                //FillContacts();
+                FillAppointments();
             }
             catch (Exception err)
             {
