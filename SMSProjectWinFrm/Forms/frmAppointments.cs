@@ -15,6 +15,7 @@ namespace SMSProjectWinFrm
 
     public partial class frmAppointments : Form
     {
+        int rowIndexSeleted = 0;
         DateTime selectedDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
         cls_Appointment selectedAppointment;
         bool chk = false;
@@ -35,6 +36,7 @@ namespace SMSProjectWinFrm
 
         public void RefreshGridView()
         {
+             
             List<cls_Appointment> appointment = (List<cls_Appointment>)outlookManagement.appointments.Where(a => a.Date == selectedDate).ToList();
 
             dataGridView1.DataSource = new BindingList<cls_Appointment>(appointment); ;
@@ -60,8 +62,8 @@ namespace SMSProjectWinFrm
             dataGridView1.Columns["Paid"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
             //dataGridView1.Columns[8].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-
             dataGridView1.Refresh();
+            //dataGridView1.Rows[rowIndexSeleted].Selected = true;
         }
 
         private void TxtDiseaseName_TextChanged(object sender, EventArgs e)
@@ -71,6 +73,7 @@ namespace SMSProjectWinFrm
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            rowIndexSeleted = e.RowIndex;
             selectedAppointment = new cls_Appointment();
             DateTime startDateTime = DateTime.Parse(dataGridView1.Rows[e.RowIndex].Cells["StartDateTime"].Value.ToString());
             DateTime endDateTime = DateTime.Parse(dataGridView1.Rows[e.RowIndex].Cells["EndDateTime"].Value.ToString());

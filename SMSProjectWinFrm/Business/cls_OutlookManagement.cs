@@ -10,16 +10,43 @@ using System.Globalization;
 using SMSProjectWinFrm;
 using SMSProjectWinFrm.Business;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace SMSProjectWinFrm
 {
     public class cls_OutlookManagement
     {
+        string CurrentProfileName = "";
+        List<string> Accounts = new List<string>();
+        List<cls_Store> Stores = new List<cls_Store>();
+
+        Outlook.Application OutlookApp = new Outlook.Application();
+        Outlook.NameSpace ns = null;
+
+        Outlook.Recipient CurrentUser = null;
+
+        Outlook.Stores stores = null;
+        Outlook.Store store = null;
+
+        Outlook.Accounts accounts = null;
+        Outlook.Account account = null;
+
+        Outlook.MAPIFolder rootFolder = null;
+        Outlook.Folders folders = null;
+        Outlook.MAPIFolder folder = null;
+        List<string> Folders = new List<string>();
+
+        class cls_Store
+        {
+            public string DisplayName;
+            public string FilePath;
+        }
+
         public List<cls_Contact> contacts = new List<cls_Contact>();
         public List<cls_Appointment> appointments = new List<cls_Appointment>();
         public bool IsSurfingInAppointment = false;
-        Outlook.MAPIFolder defaultContactsFolder = null;
-        Outlook.MAPIFolder defaultCalendarFolder = null;
+        //Outlook.MAPIFolder defaultContactsFolder = null;
+        //Outlook.MAPIFolder defaultCalendarFolder = null;
         DAL dal = new DAL();
         Logger logger = new Logger();
 
@@ -34,15 +61,13 @@ namespace SMSProjectWinFrm
         private void FillContacts()
         {
             int counter = 0;
-            
-            defaultContactsFolder.Items.IncludeRecurrences = true;
-            Outlook.MAPIFolder ContactFolder = defaultContactsFolder;
-            Outlook.Items items1 = ContactFolder.Items;
-            items1.IncludeRecurrences = true;
-            items1.Sort("[Title]");
+
+            Outlook.MAPIFolder mAPIFolder = ns.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderContacts);
+            Outlook.Items items = mAPIFolder.Items;
+            items.Sort("[Title]");
 
             contacts.Clear();
-            foreach (Outlook.ContactItem Ocontact in items1)
+            foreach (Outlook.ContactItem Ocontact in items)
             {
                 try
                 {
@@ -55,6 +80,10 @@ namespace SMSProjectWinFrm
                     contact.FatherName = Ocontact.MiddleName == null ? "" : Ocontact.MiddleName;
                     contact.SSID = Ocontact.Suffix == null ? "" : Ocontact.Suffix;
                     contact.FullName = contact.FirstName + " " + contact.LastName;
+                    contact.Birthday = Ocontact.Birthday == null ? DateTime.MinValue : Ocontact.Birthday;
+                    contact.Email = Ocontact.Email1Address == null ? "" : Ocontact.Email1Address;
+                    contact.Address = Ocontact.HomeAddress == null ? "" : Ocontact.HomeAddress;
+
                     if (Ocontact.HomeTelephoneNumber == null)
                         contact.Phone = "";
                     else
@@ -94,6 +123,10 @@ namespace SMSProjectWinFrm
                     logger.ErrorLog(ex.Message);
                 }
             }
+            if (mAPIFolder != null)
+                Marshal.ReleaseComObject(mAPIFolder);
+            if (items != null)
+                Marshal.ReleaseComObject(items);
         }
         private void FillAppointments()
         {
@@ -115,19 +148,17 @@ namespace SMSProjectWinFrm
                 appointments.Add(appointment);
             }
 
-            defaultCalendarFolder.Items.IncludeRecurrences = true;
-            Outlook.MAPIFolder AppointmentFolder = defaultCalendarFolder;
-            Outlook.Items items1 = AppointmentFolder.Items;
-            items1.IncludeRecurrences = true;
-            items1.Sort("[Start]");
-            string filterStr = "[Start] >= '" + today.ToString("yyyy-MM-dd HH:mm") + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
-            //string filterStr = "[Start] >= '" + today.ToString("g") + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
-            Outlook.Items items = items1.Restrict(filterStr);
-            items.IncludeRecurrences = true;
+            Outlook.MAPIFolder mAPIFolder = ns.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderCalendar);
+            Outlook.Items items = mAPIFolder.Items;
+            items.Sort("[Start]");
 
-            foreach (Outlook.Items Myitem in items) 
+            CultureInfo culture = new CultureInfo("EN-en");
+
+            string filterStr = "[Start] >= '" + today.ToString("d", culture) + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
+            Outlook.Items FilteredItems = items.Restrict(filterStr);
+
+            foreach (Outlook.AppointmentItem item in FilteredItems) 
             {
-                Outlook.AppointmentItem item = (Outlook.AppointmentItem)Myitem;
                 try
                 {
                     if (item.Start < today)
@@ -141,59 +172,66 @@ namespace SMSProjectWinFrm
                 }
                 catch (Exception)
                 {
-                    throw;
+                    ;
                 }
             }
+            if (mAPIFolder != null)
+                Marshal.ReleaseComObject(mAPIFolder);
+            if (items != null)
+                Marshal.ReleaseComObject(items);
+            if (FilteredItems != null)
+                Marshal.ReleaseComObject(FilteredItems);
         }
-        private void getfolders(Outlook.Folder folder)
-        {
-            if (folder.Name.ToLower() == "Contacts".ToLower())
-            {
-                defaultContactsFolder = folder;
-            }
-            if (folder.Name.ToLower() == "Calendar".ToLower())
-            {
-                defaultCalendarFolder = folder; //(Outlook.MAPIFolder)
-            }
-            //string addrname = folder.AddressBookName;
-            //string foldername = folder.Name;
-            //string storeID = folder.StoreID;
-            //string entryID = folder.EntryID;
-            //int kk = 0;
-            if (folder.Folders != null)
-            {
-                foreach (Outlook.Folder item in folder.Folders)
-                {
-                    getfolders(item);
-                }
-            }
-            else
-                return;
-        }
+        //private void getfolders(Outlook.Folder folder)
+        //{
+        //    if (folder.Name.ToLower() == "Contacts".ToLower())
+        //    {
+        //        defaultContactsFolder = folder;
+        //    }
+        //    if (folder.Name.ToLower() == "Calendar".ToLower())
+        //    {
+        //        defaultCalendarFolder = folder; //(Outlook.MAPIFolder)
+        //    }
+        //    //string addrname = folder.AddressBookName;
+        //    //string foldername = folder.Name;
+        //    //string storeID = folder.StoreID;
+        //    //string entryID = folder.EntryID;
+        //    //int kk = 0;
+        //    if (folder.Folders != null)
+        //    {
+        //        foreach (Outlook.Folder item in folder.Folders)
+        //        {
+        //            getfolders(item);
+        //        }
+        //    }
+        //    else
+        //        return;
+        //}
         private void InitializeOutlookObjects()
         {
             try
             {
-                //initialise an instance of Outlook object
-                //Outlook._Application outLookApp = new Microsoft.Office.Interop.Outlook.Application();
-                Outlook.Application outLookApp = new Outlook.Application();
-                Outlook.NameSpace oNS = outLookApp.GetNamespace("mapi");
+                /*You can Use one of these lines*/
+                //ns = OutlookApp.GetNamespace("mapi");
+                ns = OutlookApp.Session;
+                CurrentProfileName = ns.CurrentProfileName;
+                CurrentUser = ns.CurrentUser;
 
                 ApplicationConfigManagement acm = new ApplicationConfigManagement();
                 string usrName = acm.ReadSetting("OutlookAccount").ToLower();
-                string passWord = acm.ReadSetting("OutlookAccountPassword");
-                string profileName = acm.ReadSetting("OutlookProfile").ToLower();
-
-                //oNS.Logon(profileName, passWord, true, true);
-                oNS.Logon(Missing.Value, Missing.Value, true, true);
-                //foreach (Outlook.Folder item in outLookApp.Session.Folders)
-                foreach (Outlook.Folder item in oNS.Folders)
+                if (acm.ReadSetting("OutlookProfile").ToLower() != CurrentProfileName.ToLower())
                 {
-                    if (item.Name.ToLower() == acm.ReadSetting("OutlookAccount").ToLower())
-                        getfolders(item);
+                    MessageBox.Show("تنظیمات Outlook شما مشکل دارد...", "پیغام خطا", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign, true);
+                    System.Environment.Exit(0);
                 }
-                //FillContacts();
+                if (CurrentUser.Name.ToLower() != acm.ReadSetting("OutlookAccount").ToLower())
+                {
+                    MessageBox.Show("تنظیمات Outlook شما مشکل دارد...", "پیغام خطا", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign, true);
+                    System.Environment.Exit(0);
+                }
+
                 FillAppointments();
+                FillContacts();
             }
             catch (Exception err)
             {
@@ -248,7 +286,7 @@ namespace SMSProjectWinFrm
             if (a.contact.PatientID.Length > 0)
             {
                 filterStr = "[Title]=\"" + a.contact.PatientID + "\"";
-                Contact = defaultContactsFolder.Items.Find(filterStr);
+                Contact = OutlookContactsFind(filterStr);
             }
             else
                 Contact = null;
@@ -265,7 +303,7 @@ namespace SMSProjectWinFrm
                 if (a.contact.Mobile.Length > 0)
                 {
                     filterStr = "[MobileTelephoneNumber]=\"" + a.contact.Mobile + "\"";
-                    Contact = defaultContactsFolder.Items.Find(filterStr);
+                    Contact = OutlookContactsFind(filterStr);
                 }
                 else
                     Contact = null;
@@ -281,7 +319,7 @@ namespace SMSProjectWinFrm
                     if (a.contact.FullName.Length > 0)
                     {
                         filterStr = "[FullName]=\"" + a.contact.FullName + "\"";
-                        Contact = defaultContactsFolder.Items.Find(filterStr);
+                        Contact = OutlookContactsFind(filterStr);
                     }
                     else
                         Contact = null;
@@ -302,6 +340,9 @@ namespace SMSProjectWinFrm
                     }
                 }
             }
+            if (Contact != null)
+                Marshal.ReleaseComObject(Contact);
+
             if (chk)
                 SendVisitConfirmationSmsToContact(a, JobID);
         }
@@ -370,7 +411,7 @@ namespace SMSProjectWinFrm
             if (a.contact.PatientID.Length > 0)
             {
                 filterStr = "[Title]=\"" + a.contact.PatientID + "\"";
-                Contact = defaultContactsFolder.Items.Find(filterStr);
+                Contact = OutlookContactsFind(filterStr);
             }
             else
                 Contact = null;
@@ -379,6 +420,9 @@ namespace SMSProjectWinFrm
                 CorrectPhoneNumber(Contact);
                 a.contact.PatientID = Contact.Title;
                 a.contact.Mobile = string.IsNullOrEmpty(Contact.MobileTelephoneNumber) ? "-1" : Contact.MobileTelephoneNumber;
+
+                if (Contact != null)
+                    Marshal.ReleaseComObject(Contact);
                 return a;
             }
             else
@@ -386,7 +430,7 @@ namespace SMSProjectWinFrm
                 if (a.contact.Mobile.Length > 0)
                 {
                     filterStr = "[MobileTelephoneNumber]=\"" + a.contact.Mobile + "\"";
-                    Contact = defaultContactsFolder.Items.Find(filterStr);
+                    Contact = OutlookContactsFind(filterStr);
                 }
                 else
                     Contact = null;
@@ -395,6 +439,10 @@ namespace SMSProjectWinFrm
                     CorrectPhoneNumber(Contact);
                     a.contact.PatientID = Contact.Title;
                     a.contact.Mobile = Contact.MobileTelephoneNumber;
+
+                    if (Contact != null)
+                        Marshal.ReleaseComObject(Contact);
+
                     return a;
                 }
                 else
@@ -402,7 +450,7 @@ namespace SMSProjectWinFrm
                     if (a.contact.FullName.Length > 0)
                     {
                         filterStr = "[FullName]=\"" + a.contact.FullName + "\"";
-                        Contact = defaultContactsFolder.Items.Find(filterStr);
+                        Contact = OutlookContactsFind(filterStr);
                     }
                     else
                         Contact = null;
@@ -411,6 +459,10 @@ namespace SMSProjectWinFrm
                         CorrectPhoneNumber(Contact);
                         a.contact.PatientID = Contact.Title;
                         a.contact.Mobile = Contact.MobileTelephoneNumber;
+
+                        if (Contact != null)
+                            Marshal.ReleaseComObject(Contact);
+
                         return a;
                     }
                     else
@@ -423,6 +475,9 @@ namespace SMSProjectWinFrm
                     }
                 }
             }
+
+            if (Contact != null)
+                Marshal.ReleaseComObject(Contact);
 
             return null;
         }
@@ -455,16 +510,16 @@ namespace SMSProjectWinFrm
         public void SendAnSMSToAllContacts(int jobID, string StrSmsBody)
         {
             int counter = 0;
-            foreach (Outlook.ContactItem contact in defaultContactsFolder.Items)
+            foreach (cls_Contact contact in contacts)
             {
                 try
                 {
-                    if (!dal.isSentSMSToMobile(contact.MobileTelephoneNumber, jobID))
+                    if (!dal.isSentSMSToMobile(contact.Mobile, jobID))
                     {
                         Cls_SMS sms = new Cls_SMS();
                         sms.JobID = jobID;
-                        sms.PatientID = int.Parse(contact.Title);
-                        sms.MobileNumber = contact.MobileTelephoneNumber;
+                        sms.PatientID = int.Parse(contact.PatientID);
+                        sms.MobileNumber = contact.Mobile;
                         sms.TxtBody = StrSmsBody;
                         sms.TryCount = 0;
                         sms.IsSent = false;
@@ -485,7 +540,7 @@ namespace SMSProjectWinFrm
         }
         public long GetContactsCount()
         {
-            return defaultContactsFolder.Items.Count;
+            return contacts.Count;
         }
         public void SendCancelNotificationToContacts(List<cls_Contact> contacts, int JobID, DateTime date)
         {
@@ -512,9 +567,11 @@ namespace SMSProjectWinFrm
         }
         public bool AddNewContact(cls_Contact contact)
         {
+            Outlook.MAPIFolder mAPIFolder = ns.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderContacts);
+            Outlook.Items items = mAPIFolder.Items;
             try
             {
-                Outlook.ContactItem newContact = defaultContactsFolder.Items.Add(Outlook.OlItemType.olContactItem) as Outlook.ContactItem;
+                Outlook.ContactItem newContact = items.Add(Outlook.OlItemType.olContactItem) as Outlook.ContactItem;
 
                 newContact.Title = contact.PatientID;
                 newContact.JobTitle = contact.DiseaseName;
@@ -525,9 +582,20 @@ namespace SMSProjectWinFrm
                 newContact.HomeTelephoneNumber = contact.Phone;
                 newContact.MobileTelephoneNumber = contact.Mobile;
                 newContact.Body = contact.Notes;
+                newContact.Birthday = contact.Birthday;
+                newContact.Email1Address = contact.Email;
+                newContact.HomeAddress = contact.Address;
+
                 newContact.Save();
-                //newContact.Display(true);
                 contacts.Add(contact);
+
+                if (mAPIFolder != null)
+                    Marshal.ReleaseComObject(mAPIFolder);
+                if (items != null)
+                    Marshal.ReleaseComObject(items);
+                if (newContact!= null)
+                    Marshal.ReleaseComObject(newContact);
+
                 return true;
             }
             catch (Exception)
@@ -592,7 +660,7 @@ namespace SMSProjectWinFrm
                         FilterStr += "[MobileTelephoneNumber] = '" + oldContact.Mobile + "'";
                 }
 
-                Outlook.ContactItem contact = defaultContactsFolder.Items.Find(FilterStr) as Outlook.ContactItem;
+                Outlook.ContactItem contact = OutlookContactsFind(FilterStr) as Outlook.ContactItem;
                 if (contact != null)
                 {
                     contact.Title = newContact.PatientID;
@@ -604,6 +672,10 @@ namespace SMSProjectWinFrm
                     contact.HomeTelephoneNumber = newContact.Phone;
                     contact.MobileTelephoneNumber = newContact.Mobile;
                     contact.Body = newContact.Notes;
+                    contact.Birthday = newContact.Birthday;
+                    contact.Email1Address = newContact.Email;
+                    contact.HomeAddress = newContact.Address;
+
                     contact.Save();
 
                     oldContact.DiseaseName = newContact.DiseaseName;
@@ -615,7 +687,14 @@ namespace SMSProjectWinFrm
                     oldContact.PatientID = newContact.PatientID;
                     oldContact.Phone = newContact.Phone;
                     oldContact.SSID = newContact.SSID;
+                    oldContact.Birthday = newContact.Birthday;
+                    oldContact.Email = newContact.Email;
+                    oldContact.Address = newContact.Address;
                     oldContact.FullName = oldContact.FirstName + " " + oldContact.LastName;
+
+                    if (contact != null)
+                        Marshal.ReleaseComObject(contact);
+
                     return true;
                 }
             }
@@ -630,13 +709,15 @@ namespace SMSProjectWinFrm
         {
             try
             {
-                defaultCalendarFolder.Items.IncludeRecurrences = true;
-                Outlook.MAPIFolder AppointmentFolder = defaultCalendarFolder;
-                Outlook.Items items1 = AppointmentFolder.Items;
-                items1.IncludeRecurrences = true;
-                items1.Sort("[Start]");
-                string filterStr = "[Start]='" + oldAppointment.StartDateTime.ToString("g") + "'";// and [End]='" + oldAppointment.EndDateTime.ToString("g") + "'";
-                Outlook.AppointmentItem appointment = items1.Find(filterStr);
+                Outlook.MAPIFolder mAPIFolder = ns.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderCalendar);
+                Outlook.Items items = mAPIFolder.Items;
+                items.Sort("[Start]");
+
+                CultureInfo culture = new CultureInfo("EN-en");
+
+                string filterStr = "[Start]='" + oldAppointment.StartDateTime.ToString("g", culture) + "'";// and [End]='" + oldAppointment.EndDateTime.ToString("g") + "'";
+
+                Outlook.AppointmentItem appointment = items.Find(filterStr);
 
                 if (appointment != null)
                 {
@@ -646,11 +727,18 @@ namespace SMSProjectWinFrm
 
                     oldAppointment.Subject = newAppointment.Subject;
                     oldAppointment.Paid = newAppointment.Paid;
+
+                    if (mAPIFolder != null)
+                        Marshal.ReleaseComObject(mAPIFolder);
+                    if (items != null)
+                        Marshal.ReleaseComObject(items);
+                    if (appointment != null)
+                        Marshal.ReleaseComObject(appointment);
                     return true;
                 }
                 else
                 {
-                    Outlook.AppointmentItem AddnewAppointment = defaultCalendarFolder.Items.Add(Outlook.OlItemType.olAppointmentItem) as Outlook.AppointmentItem;
+                    Outlook.AppointmentItem AddnewAppointment = items.Add(Outlook.OlItemType.olAppointmentItem) as Outlook.AppointmentItem;
                     AddnewAppointment.Start = newAppointment.StartDateTime;
                     AddnewAppointment.End = newAppointment.EndDateTime;
                     AddnewAppointment.Subject = newAppointment.Subject;
@@ -658,6 +746,14 @@ namespace SMSProjectWinFrm
                     AddnewAppointment.Save();
                     oldAppointment.Subject = newAppointment.Subject;
                     oldAppointment.Paid = newAppointment.Paid;
+
+                    if (mAPIFolder != null)
+                        Marshal.ReleaseComObject(mAPIFolder);
+                    if (items != null)
+                        Marshal.ReleaseComObject(items);
+                    if (AddnewAppointment != null)
+                        Marshal.ReleaseComObject(AddnewAppointment);
+
                     return true;
                 }
             }
@@ -667,6 +763,29 @@ namespace SMSProjectWinFrm
                 return false;
             }
             return false;
+        }
+        public Outlook.ContactItem OutlookContactsFind(string filterStr)
+        {
+            Outlook.MAPIFolder mAPIFolder = ns.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderContacts);
+            Outlook.Items items = mAPIFolder.Items;
+            Outlook.ContactItem ResultItem = null;
+            items.Sort("[Title]");
+            try
+            {
+                ResultItem = items.Find(filterStr);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+            finally
+            {
+                if (mAPIFolder != null)
+                    Marshal.ReleaseComObject(mAPIFolder);
+                if (items != null)
+                    Marshal.ReleaseComObject(items);
+            }
+            return ResultItem;
         }
     }
 

@@ -31,6 +31,9 @@ namespace SMSProjectWinFrm.Forms
             contact.Phone= TxtPhone.Text;
             contact.Mobile= TxtMobile.Text;
             contact.Notes = TxtNotes.Text;
+            contact.Birthday = dtpBirthDay.Value;
+            contact.Email = TxtEmail.Text;
+            contact.Address = TxtAddress.Text;
             if (outlookManagement.AddNewContact(contact))
             {
                 MessageBox.Show("بیمار جدید ثبت نام شد...");
@@ -49,6 +52,11 @@ namespace SMSProjectWinFrm.Forms
         {
             this.Close();
             this.Dispose();
+        }
+
+        private void FrmAddNewContact_Load(object sender, EventArgs e)
+        {
+            dtpBirthDay.Value = DateTime.Now;
         }
     }
 }

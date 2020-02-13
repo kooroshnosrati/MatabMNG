@@ -29,6 +29,12 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.TxtAddress = new System.Windows.Forms.TextBox();
+            this.TxtEmail = new System.Windows.Forms.TextBox();
+            this.dtpBirthDay = new System.Windows.Forms.DateTimePicker();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.TxtDiseaseName = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.BtnCancel = new System.Windows.Forms.Button();
@@ -54,6 +60,12 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.TxtAddress);
+            this.groupBox1.Controls.Add(this.TxtEmail);
+            this.groupBox1.Controls.Add(this.dtpBirthDay);
+            this.groupBox1.Controls.Add(this.label12);
+            this.groupBox1.Controls.Add(this.label11);
+            this.groupBox1.Controls.Add(this.label10);
             this.groupBox1.Controls.Add(this.TxtDiseaseName);
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.BtnCancel);
@@ -76,10 +88,59 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(303, 309);
+            this.groupBox1.Size = new System.Drawing.Size(303, 478);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "مشخصات بیمار";
+            // 
+            // TxtAddress
+            // 
+            this.TxtAddress.Location = new System.Drawing.Point(6, 372);
+            this.TxtAddress.Multiline = true;
+            this.TxtAddress.Name = "TxtAddress";
+            this.TxtAddress.Size = new System.Drawing.Size(243, 100);
+            this.TxtAddress.TabIndex = 41;
+            // 
+            // TxtEmail
+            // 
+            this.TxtEmail.Location = new System.Drawing.Point(26, 337);
+            this.TxtEmail.Name = "TxtEmail";
+            this.TxtEmail.Size = new System.Drawing.Size(214, 20);
+            this.TxtEmail.TabIndex = 40;
+            // 
+            // dtpBirthDay
+            // 
+            this.dtpBirthDay.Location = new System.Drawing.Point(26, 300);
+            this.dtpBirthDay.Name = "dtpBirthDay";
+            this.dtpBirthDay.Size = new System.Drawing.Size(200, 20);
+            this.dtpBirthDay.TabIndex = 39;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(255, 375);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(36, 13);
+            this.label12.TabIndex = 38;
+            this.label12.Text = "آدرس :";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(255, 340);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(36, 13);
+            this.label11.TabIndex = 37;
+            this.label11.Text = "ایمیل :";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(232, 306);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(59, 13);
+            this.label10.TabIndex = 36;
+            this.label10.Text = "تازیخ تولد :";
             // 
             // TxtDiseaseName
             // 
@@ -120,10 +181,10 @@
             // 
             // TxtNotes
             // 
-            this.TxtNotes.Location = new System.Drawing.Point(20, 221);
+            this.TxtNotes.Location = new System.Drawing.Point(6, 221);
             this.TxtNotes.Multiline = true;
             this.TxtNotes.Name = "TxtNotes";
-            this.TxtNotes.Size = new System.Drawing.Size(173, 71);
+            this.TxtNotes.Size = new System.Drawing.Size(187, 71);
             this.TxtNotes.TabIndex = 31;
             // 
             // TxtMobile
@@ -251,7 +312,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(327, 334);
+            this.ClientSize = new System.Drawing.Size(327, 502);
             this.ControlBox = false;
             this.Controls.Add(this.groupBox1);
             this.MaximizeBox = false;
@@ -260,6 +321,7 @@
             this.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.RightToLeftLayout = true;
             this.Text = "فرم بیمار جدید";
+            this.Load += new System.EventHandler(this.FrmAddNewContact_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
@@ -289,5 +351,11 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox TxtDiseaseName;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox TxtEmail;
+        private System.Windows.Forms.DateTimePicker dtpBirthDay;
+        private System.Windows.Forms.TextBox TxtAddress;
     }
 }

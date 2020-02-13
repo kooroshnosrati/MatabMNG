@@ -29,6 +29,7 @@ namespace SMSProjectWinFrm
             dataGridView1.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
 
+            dtpBirthDay.Value = DateTime.Now;
             RefreshGridView();
         }
 
@@ -56,6 +57,11 @@ namespace SMSProjectWinFrm
             
             dataGridView1.Columns[9].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             dataGridView1.Columns[9].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+            dataGridView1.Columns[11].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dataGridView1.Columns[11].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridView1.Columns[12].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dataGridView1.Columns[12].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
             dataGridView1.Columns[8].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
 
@@ -115,6 +121,10 @@ namespace SMSProjectWinFrm
             string Phone = dataGridView1.Rows[e.RowIndex].Cells[7].Value.ToString();
             string Mobile = dataGridView1.Rows[e.RowIndex].Cells[8].Value.ToString();
             string Notes = dataGridView1.Rows[e.RowIndex].Cells[9].Value.ToString();
+            string Birthday = dataGridView1.Rows[e.RowIndex].Cells[10].Value.ToString();
+            string Email = dataGridView1.Rows[e.RowIndex].Cells[11].Value.ToString();
+            string Address = dataGridView1.Rows[e.RowIndex].Cells[12].Value.ToString();
+
             selectedContact = outlookManagement.contacts.Single(m =>
             m.PatientID == PatientID
             & m.DiseaseName == DiseaseName
@@ -136,6 +146,9 @@ namespace SMSProjectWinFrm
             TxtPhone.Text = selectedContact.Phone;
             TxtMobile.Text = selectedContact.Mobile;
             TxtNotes.Text = selectedContact.Notes;
+            dtpBirthDay.Value = selectedContact.Birthday;
+            TxtEmail.Text = selectedContact.Email;
+            TxtAddress.Text = selectedContact.Address;
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -149,6 +162,9 @@ namespace SMSProjectWinFrm
             TxtPhone.Text = "";
             TxtMobile.Text = "";
             TxtNotes.Text = "";
+            dtpBirthDay.Value = DateTime.Now ;
+            TxtEmail.Text = "";
+            TxtAddress.Text = "";
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -168,6 +184,9 @@ namespace SMSProjectWinFrm
                     newContact.Phone = TxtPhone.Text;
                     newContact.Mobile = TxtMobile.Text;
                     newContact.Notes = TxtNotes.Text;
+                    newContact.Birthday = dtpBirthDay.Value;
+                    newContact.Email = TxtEmail.Text;
+                    newContact.Address = TxtAddress.Text;
                     outlookManagement.UpdateContact(selectedContact, newContact);
 
                 }
