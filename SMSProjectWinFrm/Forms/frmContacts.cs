@@ -1,10 +1,12 @@
-﻿using SMSProjectWinFrm.Forms;
+﻿using SMSProjectWinFrm.Business;
+using SMSProjectWinFrm.Forms;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,7 +48,7 @@ namespace SMSProjectWinFrm
                 .Where(c => c.FirstName != null && c.FirstName.IndexOf(TxtFName.Text) != -1)
                 .Where(d => d.LastName != null && d.LastName.IndexOf(TxtLName.Text) != -1)
                 .Where(e => e.Mobile != null && e.Mobile.IndexOf(TxtMobile.Text) != -1)
-                .Where(f => f.DiseaseName != null && f.DiseaseName.IndexOf(TxtDiseaseName.Text) != -1)
+                .Where(f => f.DiseaseName != null && f.DiseaseName.IndexOf(cmbDiseaseName.Text) != -1)
                 .Where(g => g.FatherName != null && g.FatherName.IndexOf(TxtFatherName.Text) != -1)
                 .Where(h => h.Phone != null && h.Phone.IndexOf(TxtPhone.Text) != -1)
                 .Where(i => i.Notes != null && i.Notes.IndexOf(TxtNotes.Text) != -1).ToList();
@@ -138,7 +140,7 @@ namespace SMSProjectWinFrm
             & m.Notes == Notes);
 
             TxtPatientID.Text = selectedContact.PatientID;
-            TxtDiseaseName.Text = selectedContact.DiseaseName;
+            cmbDiseaseName.Text = selectedContact.DiseaseName;
             TxtFName.Text = selectedContact.FirstName;
             TxtLName.Text = selectedContact.LastName;
             TxtFatherName.Text = selectedContact.FatherName;
@@ -154,7 +156,7 @@ namespace SMSProjectWinFrm
         private void button3_Click(object sender, EventArgs e)
         {
             TxtPatientID.Text = "";
-            TxtDiseaseName.Text = "";
+            cmbDiseaseName.Text = "";
             TxtFName.Text = "";
             TxtLName.Text = "";
             TxtFatherName.Text = "";
@@ -176,7 +178,7 @@ namespace SMSProjectWinFrm
                 if (dr == DialogResult.Yes)
                 {
                     newContact.PatientID = TxtPatientID.Text;
-                    newContact.DiseaseName = TxtDiseaseName.Text;
+                    newContact.DiseaseName = cmbDiseaseName.Text;
                     newContact.FirstName = TxtFName.Text;
                     newContact.LastName = TxtLName.Text;
                     newContact.FatherName = TxtFatherName.Text;
@@ -212,6 +214,56 @@ namespace SMSProjectWinFrm
         {
             this.Close();
             this.Dispose();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            string SourceFilesPath = Application.StartupPath + "\\PatientRecordTemplates\\";
+            ApplicationConfigManagement acm = new ApplicationConfigManagement();
+            try
+            {
+
+                string PatientRecordsPath =  acm.ReadSetting("PatientRecords");
+                string fileName = selectedContact.PatientID;
+                string FileFullPath = "";
+                     
+                if (selectedContact.DiseaseName == "غدد")
+                {
+                    SourceFilesPath += "E.Docx";
+                     fileName += "E.Docx";
+                }
+                else
+                {
+                    SourceFilesPath += "D.Docx";
+                    fileName += "D.Docx";
+                }
+                    
+                FileFullPath = PatientRecordsPath + "\\" + fileName;
+                if (!File.Exists(FileFullPath))
+                {
+                    File.Copy(SourceFilesPath, FileFullPath);
+
+                    cls_WordManagement cls_WordManagement = new cls_WordManagement();
+                    cls_WordManagement.ChangeHeaderInfo(selectedContact, FileFullPath);
+                    System.Diagnostics.Process.Start(FileFullPath);
+                }
+                else
+                    System.Diagnostics.Process.Start(FileFullPath);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("لطفا یکی از بیماران لیست شده را با Double Click انتخاب کنید تا امکان مشاهده پرونده پزشکی بیمار انتخاب شده را دشاته باشید...", "پیغام خطا", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign, true);
+            }
+        }
+
+        private void cmbDiseaseName_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RefreshGridView();
+        }
+
+        private void cmbDiseaseName_TextChanged(object sender, EventArgs e)
+        {
+            RefreshGridView();
         }
     }
 }

@@ -22,10 +22,10 @@ namespace SMSProjectWinFrm.Forms
         {
             cls_Contact contact = new cls_Contact();
             contact.PatientID = TxtPatientID.Text;
-            contact.DiseaseName = TxtDiseaseName.Text;
+            contact.DiseaseName = cmbDiseaseName.Text;
             contact.FirstName= TxtFName.Text;
             contact.LastName = TxtLName.Text;
-            contact.FullName = TxtFName + " " + TxtLName;
+            contact.FullName = TxtFName.Text + " " + TxtLName.Text;
             contact.FatherName = TxtFatherName.Text;
             contact.SSID = TxtSSID.Text;
             contact.Phone= TxtPhone.Text;
@@ -57,6 +57,7 @@ namespace SMSProjectWinFrm.Forms
         private void FrmAddNewContact_Load(object sender, EventArgs e)
         {
             dtpBirthDay.Value = DateTime.Now;
+            cmbDiseaseName.SelectedIndex = 0;
         }
     }
 }

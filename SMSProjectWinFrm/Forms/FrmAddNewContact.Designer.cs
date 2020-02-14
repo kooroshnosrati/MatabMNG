@@ -35,7 +35,6 @@
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.TxtDiseaseName = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.BtnCancel = new System.Windows.Forms.Button();
             this.BtnSave = new System.Windows.Forms.Button();
@@ -55,18 +54,19 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.cmbDiseaseName = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cmbDiseaseName);
             this.groupBox1.Controls.Add(this.TxtAddress);
             this.groupBox1.Controls.Add(this.TxtEmail);
             this.groupBox1.Controls.Add(this.dtpBirthDay);
             this.groupBox1.Controls.Add(this.label12);
             this.groupBox1.Controls.Add(this.label11);
             this.groupBox1.Controls.Add(this.label10);
-            this.groupBox1.Controls.Add(this.TxtDiseaseName);
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.BtnCancel);
             this.groupBox1.Controls.Add(this.BtnSave);
@@ -141,14 +141,6 @@
             this.label10.Size = new System.Drawing.Size(59, 13);
             this.label10.TabIndex = 36;
             this.label10.Text = "تازیخ تولد :";
-            // 
-            // TxtDiseaseName
-            // 
-            this.TxtDiseaseName.Location = new System.Drawing.Point(93, 39);
-            this.TxtDiseaseName.Name = "TxtDiseaseName";
-            this.TxtDiseaseName.Size = new System.Drawing.Size(100, 20);
-            this.TxtDiseaseName.TabIndex = 35;
-            this.TxtDiseaseName.Text = "دیابت";
             // 
             // label9
             // 
@@ -308,6 +300,17 @@
             this.label1.TabIndex = 16;
             this.label1.Text = "شماره پرونده :";
             // 
+            // cmbDiseaseName
+            // 
+            this.cmbDiseaseName.FormattingEnabled = true;
+            this.cmbDiseaseName.Items.AddRange(new object[] {
+            "دیابت",
+            "غدد"});
+            this.cmbDiseaseName.Location = new System.Drawing.Point(93, 38);
+            this.cmbDiseaseName.Name = "cmbDiseaseName";
+            this.cmbDiseaseName.Size = new System.Drawing.Size(121, 21);
+            this.cmbDiseaseName.TabIndex = 42;
+            // 
             // FrmAddNewContact
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -349,7 +352,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox TxtDiseaseName;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
@@ -357,5 +359,6 @@
         private System.Windows.Forms.TextBox TxtEmail;
         private System.Windows.Forms.DateTimePicker dtpBirthDay;
         private System.Windows.Forms.TextBox TxtAddress;
+        private System.Windows.Forms.ComboBox cmbDiseaseName;
     }
 }
