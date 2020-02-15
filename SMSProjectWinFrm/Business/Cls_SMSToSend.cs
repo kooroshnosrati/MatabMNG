@@ -40,5 +40,9 @@ namespace SMSProjectWinFrm.Business
                 }
             }
         }
+        public void ResetUnsendSMS()
+        {
+            dal.ResetUnsendSMS();
+    }
     }
 }

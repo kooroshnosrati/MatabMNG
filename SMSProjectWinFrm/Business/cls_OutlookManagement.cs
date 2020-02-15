@@ -24,6 +24,7 @@ namespace SMSProjectWinFrm
         Outlook.NameSpace ns = null;
 
         Outlook.Recipient CurrentUser = null;
+        List<string> CurrentAccounts = new List<string>();
 
         Outlook.Stores stores = null;
         Outlook.Store store = null;
@@ -153,6 +154,7 @@ namespace SMSProjectWinFrm
             items.Sort("[Start]");
 
             CultureInfo culture = new CultureInfo("EN-en");
+            //CultureInfo culture = CultureInfo.CurrentUICulture;
 
             string filterStr = "[Start] >= '" + today.ToString("d", culture) + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
             Outlook.Items FilteredItems = items.Restrict(filterStr);
@@ -182,31 +184,6 @@ namespace SMSProjectWinFrm
             if (FilteredItems != null)
                 Marshal.ReleaseComObject(FilteredItems);
         }
-        //private void getfolders(Outlook.Folder folder)
-        //{
-        //    if (folder.Name.ToLower() == "Contacts".ToLower())
-        //    {
-        //        defaultContactsFolder = folder;
-        //    }
-        //    if (folder.Name.ToLower() == "Calendar".ToLower())
-        //    {
-        //        defaultCalendarFolder = folder; //(Outlook.MAPIFolder)
-        //    }
-        //    //string addrname = folder.AddressBookName;
-        //    //string foldername = folder.Name;
-        //    //string storeID = folder.StoreID;
-        //    //string entryID = folder.EntryID;
-        //    //int kk = 0;
-        //    if (folder.Folders != null)
-        //    {
-        //        foreach (Outlook.Folder item in folder.Folders)
-        //        {
-        //            getfolders(item);
-        //        }
-        //    }
-        //    else
-        //        return;
-        //}
         private void InitializeOutlookObjects()
         {
             try
@@ -214,17 +191,23 @@ namespace SMSProjectWinFrm
                 /*You can Use one of these lines*/
                 //ns = OutlookApp.GetNamespace("mapi");
                 ns = OutlookApp.Session;
-                CurrentProfileName = ns.CurrentProfileName;
-                CurrentUser = ns.CurrentUser;
+                //CurrentProfileName = ns.CurrentProfileName;
+                //CurrentUser = ns.CurrentUser;
+                foreach (Outlook.Account account in ns.Accounts)
+                {
+                    CurrentAccounts.Add(account.SmtpAddress);
+                }
+                
 
                 ApplicationConfigManagement acm = new ApplicationConfigManagement();
-                string usrName = acm.ReadSetting("OutlookAccount").ToLower();
-                if (acm.ReadSetting("OutlookProfile").ToLower() != CurrentProfileName.ToLower())
-                {
-                    MessageBox.Show("تنظیمات Outlook شما مشکل دارد...", "پیغام خطا", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign, true);
-                    System.Environment.Exit(0);
-                }
-                if (CurrentUser.Name.ToLower() != acm.ReadSetting("OutlookAccount").ToLower())
+                //string usrName = acm.ReadSetting("OutlookAccount").ToLower();
+                //if (acm.ReadSetting("OutlookProfile").ToLower() != CurrentProfileName.ToLower())
+                //{
+                //    MessageBox.Show("تنظیمات Outlook شما مشکل دارد...", "پیغام خطا", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign, true);
+                //    System.Environment.Exit(0);
+                //}
+                
+                if (CurrentAccounts.IndexOf(acm.ReadSetting("OutlookAccount").ToLower()) != -1)
                 {
                     MessageBox.Show("تنظیمات Outlook شما مشکل دارد...", "پیغام خطا", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign, true);
                     System.Environment.Exit(0);

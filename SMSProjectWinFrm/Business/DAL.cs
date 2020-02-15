@@ -218,5 +218,22 @@ namespace SMSProjectWinFrm
                 return (false);
             }
         }
+        public bool ResetUnsendSMS()
+        {
+            try
+            {
+                string sql = "Update Tbl_SentSMS set TryCount = 0 where IsSent = 0";
+                using (SqliteCommand command = new SqliteCommand(sql, m_dbConnection))
+                {
+                    command.CommandType = CommandType.Text;
+                    command.ExecuteNonQuery();
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return (false);
+            }
+        }
     }
 }
