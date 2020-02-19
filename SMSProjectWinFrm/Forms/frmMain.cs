@@ -19,32 +19,7 @@ namespace SMSProjectWinFrm
         cls_OutlookManagement outlookManagement;
         public frmMain()
         {
-            //Thread t = new Thread(new ThreadStart(StartSlpashForm));
-            //t.Start();
             InitializeComponent();
-            
-            //try
-            //{
-            //    //t.Suspend();
-            //    //t.Interrupt();
-            //    //t.Join();
-            //    t.Abort();
-            //}
-            //catch (Exception)
-            //{
-            //    ;
-            //}
-        }
-        public void StartSlpashForm()
-        {
-            try
-            {
-                //Application.Run(new FrmWarmUp());
-            }
-            catch (Exception)
-            {
-                ;
-            }
         }
         private void خروجToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -96,9 +71,11 @@ namespace SMSProjectWinFrm
         {
             if (backgroundWorker1.IsBusy != true)
                 backgroundWorker1.RunWorkerAsync();
-
+            this.Hide();
             frmwarmup = new FrmWarmUp();
             frmwarmup.ShowDialog();
+
+            this.Show();
 
             FrmSMSCenter frm = new FrmSMSCenter();
             frm.MdiParent = this;

@@ -111,11 +111,18 @@ namespace SMSProjectWinFrm
                         else
                             contact.Mobile = Ocontact.MobileTelephoneNumber;
                     }
+                    
+                    if (!string.IsNullOrEmpty(Ocontact.MobileTelephoneNumber))
+                    {
+                        contact.Mobile = Ocontact.MobileTelephoneNumber = Ocontact.MobileTelephoneNumber.StartsWith("0") ? Ocontact.MobileTelephoneNumber.Replace(" ", "") : "0" + Ocontact.MobileTelephoneNumber.Replace(" ", "");
+                        chk = true;
+                    }
 
                     contact.Notes = Ocontact.Body == null ? "" : Ocontact.Body;
                     contacts.Add(contact);
                     if (chk)
                         Ocontact.Save();
+                    
                     //if (counter++ > 500)
                     //    break;
                 }
@@ -135,7 +142,7 @@ namespace SMSProjectWinFrm
             DateTime todayOneYearLater = new DateTime(DateTime.Now.Year + 1, DateTime.Now.Month, DateTime.Now.Day);
 
             appointments.Clear();
-            for (DateTime SlotDateTime = today; SlotDateTime < todayOneYearLater; SlotDateTime = SlotDateTime.AddMinutes(10))
+            for (DateTime SlotDateTime = today.AddYears(-1); SlotDateTime < todayOneYearLater; SlotDateTime = SlotDateTime.AddMinutes(10))
             {
                 cls_Appointment appointment = new cls_Appointment();
                 appointment.StartDateTimeStr = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
@@ -156,15 +163,15 @@ namespace SMSProjectWinFrm
             CultureInfo culture = new CultureInfo("EN-en");
             //CultureInfo culture = CultureInfo.CurrentUICulture;
 
-            string filterStr = "[Start] >= '" + today.ToString("d", culture) + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
+            string filterStr = "[Start] >= '" + today.AddYears(-1).ToString("d", culture) + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
             Outlook.Items FilteredItems = items.Restrict(filterStr);
 
             foreach (Outlook.AppointmentItem item in FilteredItems) 
             {
                 try
                 {
-                    if (item.Start < today)
-                        continue;
+                    //if (item.Start < today)
+                    //    continue;
                     string appointmentDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
                     cls_Appointment appointment = appointments.Single(m => m.StartDateTimeStr == appointmentDate);
                     if (item.Subject != null)

@@ -57,20 +57,7 @@ namespace SMSProjectWinFrm
                     backgroundWorker1.CancelAsync();
             }
         }
-        //private void button1_Click(object sender, EventArgs e)
-        //{
-        //    button1.Enabled = false;
-        //    button2.Enabled = true;
-        //    if (backgroundWorker1.IsBusy != true)
-        //        backgroundWorker1.RunWorkerAsync();
-        //}
-        //private void button2_Click(object sender, EventArgs e)
-        //{
-        //    button1.Enabled = true;
-        //    button2.Enabled = false;
-        //    if (backgroundWorker1.WorkerSupportsCancellation == true)
-        //        backgroundWorker1.CancelAsync();
-        //}
+        
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
@@ -85,10 +72,6 @@ namespace SMSProjectWinFrm
                 {
                     logger.ErrorLog(err.Message + "---" + err.InnerException);
                     listBox1.Invoke(new Action(() => listBox1.Items.Insert(0, err.Message + "---" + err.InnerException)));
-                    //if (backgroundWorker1.WorkerSupportsCancellation == true)
-                    //    backgroundWorker1.CancelAsync();
-                    //e.Cancel = true;
-                    //break;
                 }
                 
             }
@@ -110,8 +93,8 @@ namespace SMSProjectWinFrm
             {
                 MessageBox.Show("خطای ارتباط با مودم .... \n\r لطفا از ارتباط مودم با سیستم اطمینان حاصل نمایید....");
                 logger.ErrorLog(ex.Message);
-                if (backgroundWorker1.WorkerSupportsCancellation == true)
-                    backgroundWorker1.CancelAsync();
+                //if (backgroundWorker1.WorkerSupportsCancellation == true)
+                //    backgroundWorker1.CancelAsync();
             }
         }
         private void button3_Click(object sender, EventArgs e)
