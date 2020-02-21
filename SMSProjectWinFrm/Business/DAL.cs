@@ -86,14 +86,14 @@ namespace SMSProjectWinFrm
             command.Dispose();
             return (dr.HasRows);
         }
-        public bool isSentVisitCancelSMSToMobile(cls_Appointment a)
-        {
-            string sql = "select * from Tbl_SentSMS where CategoryID = '2' and SentDate = '" + a.Date + "' and MobileNumber = '" + a.contact.Mobile + "' and PatientID = '" + a.contact.PatientID + "'";
-            SqliteCommand command = new SqliteCommand(sql, m_dbConnection);
-            SqliteDataReader dr = command.ExecuteReader();
-            command.Dispose();
-            return (dr.HasRows);
-        }
+        //public bool isSentGroupNotificationForOneDayAppointments(cls_Appointment a)
+        //{
+        //    string sql = "select * from Tbl_SentSMS where CategoryID = '2' and SentDate = '" + a.Date + "' and MobileNumber = '" + a.contact.Mobile + "' and PatientID = '" + a.contact.PatientID + "'";
+        //    SqliteCommand command = new SqliteCommand(sql, m_dbConnection);
+        //    SqliteDataReader dr = command.ExecuteReader();
+        //    command.Dispose();
+        //    return (dr.HasRows);
+        //}
         public void AddMobileToSendVisitConfirmationSMS(cls_Appointment a)
         {
             string sql = "INSERT INTO [Tbl_SentSMS] ([MobileNumber] ,[SentDate] ,[PatientID], [CategoryID]) VALUES ('" + a.contact.Mobile + "', '" + a.Date + "','" + a.contact.PatientID + "', 1);";
@@ -105,7 +105,7 @@ namespace SMSProjectWinFrm
         public List<Cls_SMS> GetSmsNotSent()
         {
             List<Cls_SMS> SMSs = new List<Cls_SMS>();
-            string sql = @"SELECT s.ID, s.JobID,j.JobDate,s.PatientID, s.MobileNumber, s.TxtBody, s.TryCount FROM   Tbl_Jobs as j INNER JOIN Tbl_SentSMS as s ON j.ID = s.JobID WHERE s.IsSent = 0 and s.TryCount < 3 ORDER BY j.JobDate;";
+            string sql = @"SELECT s.ID, s.JobID,j.JobDate,s.PatientID, s.MobileNumber, s.TxtBody, s.TryCount FROM   Tbl_Jobs as j INNER JOIN Tbl_SentSMS as s ON j.ID = s.JobID WHERE s.IsSent = 0 and s.TryCount < 3 ORDER BY j.CategoryID, j.JobDate;";
 
             using (SqliteCommand command = new SqliteCommand(sql, m_dbConnection))
             {
@@ -234,6 +234,51 @@ namespace SMSProjectWinFrm
             {
                 return (false);
             }
+        }
+        public int GetSmsCountSentOnDay(DateTime dateTime)
+        {
+            string sql = "";
+            int count = 0;
+            DateTime d = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
+            try
+            {
+                sql = @"SELECT Count FROM Tbl_SMSCountPerDay WHERE date = '" + d + "'";
+                using (SqliteCommand command = new SqliteCommand(sql, m_dbConnection))
+                {
+                    SqliteDataReader dr = command.ExecuteReader();
+                    if(dr.HasRows)
+                    {
+                        bool chk =dr.Read();
+                        count = dr.GetInt32(0);
+                        command.Dispose();
+                    }
+                }
+                return count;
+            }
+            catch (Exception err)
+            {
+                sql = "INSERT INTO [Tbl_SMSCountPerDay] ([date], [Count]) VALUES('" + d + "', 0);";
+                using (SqliteCommand command = new SqliteCommand(sql, m_dbConnection))
+                {
+                    command.CommandType = CommandType.Text;
+                    command.ExecuteNonQuery();
+                    return 0;
+                }
+            }
+        }
+        public bool IncrementSmsCountSentOnDay(DateTime dateTime)
+        {
+            DateTime d = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
+            int count = GetSmsCountSentOnDay(dateTime);
+            ++count;
+            string sql = "UPDATE [Tbl_SMSCountPerDay] SET Count = " + count + " WHERE date = '" + d + "'"; ;
+            using (SqliteCommand command = new SqliteCommand(sql, m_dbConnection))
+            {
+                command.CommandType = CommandType.Text;
+                command.ExecuteNonQuery();
+                return true;
+            }
+            return false;
         }
     }
 }

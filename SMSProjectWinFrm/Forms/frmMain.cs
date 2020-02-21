@@ -52,7 +52,7 @@ namespace SMSProjectWinFrm
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            FrmCancelAppointment frm = new FrmCancelAppointment();
+            FrmGroupNotificationForAppointments frm = new FrmGroupNotificationForAppointments();
             frm.outlookManagement = outlookManagement;
             frm.MdiParent = this;
             frm.Show();

@@ -475,7 +475,7 @@ namespace SMSProjectWinFrm
         {
             DateTime AbsoluteDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
             List<cls_Appointment> oneDayAppointments = appointments.Where(m => m.Date == AbsoluteDate).ToList();
-            List<cls_Appointment> CanceloneDayAppointments = new List<cls_Appointment>();
+            List<cls_Appointment> GroupNotificationForOneDayAppointments = new List<cls_Appointment>();
             foreach (cls_Appointment item in oneDayAppointments)
             {
                     try
@@ -492,11 +492,10 @@ namespace SMSProjectWinFrm
                         item.contact.FullName = item.Subject;
                     cls_Appointment aitem = GetContactInfo(item);
                     if (aitem != null)
-                    CanceloneDayAppointments.Add(aitem);
+                    GroupNotificationForOneDayAppointments.Add(aitem);
              }
-            return CanceloneDayAppointments;
+            return GroupNotificationForOneDayAppointments;
         }
-
         public void SendAnSMSToAllContacts(int jobID, string StrSmsBody)
         {
             int counter = 0;
@@ -532,16 +531,16 @@ namespace SMSProjectWinFrm
         {
             return contacts.Count;
         }
-        public void SendCancelNotificationToContacts(List<cls_Contact> contacts, int JobID, DateTime date)
+        public void SendGroupNotificationForOneDayAppointmentsToContacts(List<cls_Contact> contacts, int JobID, DateTime date, string TxtBody)
         {
             DateTime d = new DateTime(date.Year, date.Month, date.Day);
-            string TxtBodyTemplate = dal.GetSMSTextBodyTemplateByJobID(JobID);
+            //string TxtBodyTemplate = dal.GetSMSTextBodyTemplateByJobID(JobID);
 
-            if (TxtBodyTemplate != null)
+            if (TxtBody != null)
             {
                 foreach (cls_Contact contact in contacts)
                 {
-                    string bodyStr = string.Format(TxtBodyTemplate, d.ToLongDateString());
+                    string bodyStr = TxtBody;// string.Format(TxtBodyTemplate, d.ToLongDateString());
                     Cls_SMS sms = new Cls_SMS();
                     sms.JobID = JobID;
                     sms.PatientID = int.Parse(contact.PatientID);

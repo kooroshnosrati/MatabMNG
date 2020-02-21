@@ -88,7 +88,7 @@
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(252, 22);
-            this.toolStripMenuItem1.Text = "اعلام کنسلی ویزیت بیماران";
+            this.toolStripMenuItem1.Text = "ارسال پیامک گروهی به بیمارانی که در یک روز مشخص نوبت ویزیت دارند";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // toolStripMenuItem3

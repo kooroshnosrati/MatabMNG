@@ -163,11 +163,11 @@
     <Compile Include="Forms\FrmAppointmentSendSMS.Designer.cs">
       <DependentUpon>FrmAppointmentSendSMS.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FrmCancelAppointment.cs">
+    <Compile Include="Forms\FrmGroupNotificationForAppointments.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FrmCancelAppointment.Designer.cs">
-      <DependentUpon>FrmCancelAppointment.cs</DependentUpon>
+    <Compile Include="Forms\FrmGroupNotificationForAppointments.Designer.cs">
+      <DependentUpon>FrmGroupNotificationForAppointments.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\frmConfiguration.cs">
       <SubType>Form</SubType>
@@ -219,8 +219,8 @@
     <EmbeddedResource Include="Forms\FrmAppointmentSendSMS.resx">
       <DependentUpon>FrmAppointmentSendSMS.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FrmCancelAppointment.resx">
-      <DependentUpon>FrmCancelAppointment.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\FrmGroupNotificationForAppointments.resx">
+      <DependentUpon>FrmGroupNotificationForAppointments.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmConfiguration.resx">
       <DependentUpon>frmConfiguration.cs</DependentUpon>

@@ -1,5 +1,5 @@
-﻿    partial class FrmCancelAppointment
-    {
+﻿    partial class FrmGroupNotificationForAppointments
+{
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -53,7 +53,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(77, 13);
             this.label1.TabIndex = 1;
-            this.label1.Text = "تاریخ کنسلی : ";
+            this.label1.Text = "تاریخ : ";
             // 
             // label2
             // 
@@ -122,10 +122,10 @@
             this.button2.Text = "خروج";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // FrmCancelAppointment
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+        // 
+        // FrmGroupNotificationForAppointments
+        // 
+        this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(724, 286);
             this.ControlBox = false;
@@ -141,11 +141,11 @@
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(178)));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "FrmCancelAppointment";
+            this.Name = "FrmGroupNotificationForAppointments";
             this.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.RightToLeftLayout = true;
-            this.Text = "فرم اطلاع رسانی اعلام کنسلی ویزیت بیماران";
-            this.Load += new System.EventHandler(this.FrmCancelAppointment_Load);
+            this.Text = "فرم اطلاع رسانی پیامک گروهی برای یک روز مشخص";
+            this.Load += new System.EventHandler(this.FrmGroupNotificationForAppointments_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

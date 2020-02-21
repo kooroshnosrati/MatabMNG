@@ -46,16 +46,20 @@ namespace SMSProjectWinFrm
         private void Form1_Load(object sender, EventArgs e)
         {
             sMsToSend.sMSManagement = new SMSManagement();
-            if (LoadGSMModem())
-            {
-                if (backgroundWorker1.IsBusy != true)
-                    backgroundWorker1.RunWorkerAsync();
-            }
-            else
-            {
-                if (backgroundWorker1.WorkerSupportsCancellation == true)
-                    backgroundWorker1.CancelAsync();
-            }
+            sMsToSend.SentList = listBox2;
+            sMsToSend.TxtCount = TxtCount;
+            sMsToSend.TxtTimeToEnd = TxtTimeToEnd;
+            LoadGSMModem();
+            //if (LoadGSMModem())
+            //{
+            //    if (backgroundWorker1.IsBusy != true)
+            //        backgroundWorker1.RunWorkerAsync();
+            //}
+            //else
+            //{
+            //    if (backgroundWorker1.WorkerSupportsCancellation == true)
+            //        backgroundWorker1.CancelAsync();
+            //}
         }
         
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -66,17 +70,28 @@ namespace SMSProjectWinFrm
                 try
                 {
                     sMsToSend.DoSend();
-                    Thread.Sleep(10000);
+                    Thread.Sleep(1000);
                 }
                 catch (Exception err)
                 {
+                    if (err.Message == "تعداد پیامک های ارسالی از حد مجاز بیشتر شده است...")
+                    {
+                        logger.ErrorLog(err.Message + "---" + err.InnerException);
+                        listBox1.Invoke(new Action(() => listBox1.Items.Insert(0, err.Message + "---" + err.InnerException)));
+                        e.Cancel = true;
+                        break;
+                    }
+                    
                     logger.ErrorLog(err.Message + "---" + err.InnerException);
                     listBox1.Invoke(new Action(() => listBox1.Items.Insert(0, err.Message + "---" + err.InnerException)));
                 }
                 
             }
-            MessageBox.Show("لطفا یک بار برنامه را ببندید و دوباره اجرا نمایید...");
             e.Cancel = true;
+            button2.Invoke(new Action(() => button2.Enabled = true));
+            button4.Invoke(new Action(() => button4.Enabled = false));
+            if (backgroundWorker1.WorkerSupportsCancellation == true)
+                backgroundWorker1.CancelAsync();
         }
         private void CmbPortName_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -86,8 +101,8 @@ namespace SMSProjectWinFrm
                 CmbPortName.Invoke(new Action(() => PortName = CmbPortName.Text));
                 sMsToSend.sMSManagement.Close();
                 sMsToSend.sMSManagement.Open(PortName);
-                if (backgroundWorker1.IsBusy != true)
-                    backgroundWorker1.RunWorkerAsync();
+                //if (backgroundWorker1.IsBusy != true)
+                //    backgroundWorker1.RunWorkerAsync();
             }
             catch (Exception ex)
             {
@@ -105,6 +120,23 @@ namespace SMSProjectWinFrm
         private void button1_Click(object sender, EventArgs e)
         {
             sMsToSend.ResetUnsendSMS();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            button2.Enabled = false;
+            button4.Enabled = true;
+            if (backgroundWorker1.IsBusy != true)
+                backgroundWorker1.RunWorkerAsync();
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            button2.Enabled = true;
+            button4.Enabled = false;
+            if (backgroundWorker1.WorkerSupportsCancellation == true)
+                backgroundWorker1.CancelAsync();
         }
     }
 }

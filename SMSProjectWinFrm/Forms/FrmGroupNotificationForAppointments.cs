@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-public partial class FrmCancelAppointment : Form
+public partial class FrmGroupNotificationForAppointments : Form
 {
     public cls_OutlookManagement outlookManagement;
     DateTime LastDateChoosen;
@@ -21,11 +21,11 @@ public partial class FrmCancelAppointment : Form
     List<cls_Contact> contacts = new List<cls_Contact>();
     DAL dal = new DAL();
     bool chk = false;
-    public FrmCancelAppointment()
+    public FrmGroupNotificationForAppointments()
     {
         InitializeComponent();
     }
-    private void FrmCancelAppointment_Load(object sender, EventArgs e)
+    private void FrmGroupNotificationForAppointments_Load(object sender, EventArgs e)
     {
         dateTimePicker1.Value = DateTime.Now;
     }
@@ -33,7 +33,7 @@ public partial class FrmCancelAppointment : Form
     {
         if (new DateTime(dateTimePicker1.Value.Year, dateTimePicker1.Value.Month, dateTimePicker1.Value.Day) < new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day))
         {
-            MessageBox.Show("لطفا تاریخ مناسب برای اعلام کنسلی ویزیت بیماران انتخاب بفرمایید...");
+            MessageBox.Show("لطفا تاریخ مناسب انتخاب بفرمایید...");
             return;
         }
         if (!backgroundWorker1.IsBusy)
@@ -110,7 +110,7 @@ public partial class FrmCancelAppointment : Form
         int jobID = dal.isJobCreated(LastDateChoosen, 2, true);
         if (jobID == -1)
             jobID = dal.JobCreat(LastDateChoosen, 2, true);
-        outlookManagement.SendCancelNotificationToContacts(contacts, jobID, LastDateChoosen);
-        MessageBox.Show(string.Format("ارسال پیغام کنسل شدن ویزیت در تاریخ {0} انجام شد...", LastDateChoosen.ToLongDateString()));
+        outlookManagement.SendGroupNotificationForOneDayAppointmentsToContacts(contacts, jobID, LastDateChoosen, textBox1.Text);
+        MessageBox.Show(string.Format("ارسال پیغام گروهی بیمارانی که در تاریخ {0} نوبت ویزیت دارند انجام شد...", LastDateChoosen.ToLongDateString()));
     }
 }
