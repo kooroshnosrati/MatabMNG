@@ -10,5 +10,8 @@
 &lt;/SerializableConnectionString&gt;</DesignTimeValue>
       <Value Profile="(Default)">Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Database1.mdf;Integrated Security=True</Value>
     </Setting>
+    <Setting Name="SMSProjectWinFrm_com_parsgreen_login_SendSMS_SendSMS" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">https://login.parsgreen.com/Api/SendSMS.asmx</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -220,8 +220,8 @@ namespace SMSProjectWinFrm
                     System.Environment.Exit(0);
                 }
 
-                FillAppointments();
-                FillContacts();
+                //FillAppointments();
+                //FillContacts();
             }
             catch (Exception err)
             {
