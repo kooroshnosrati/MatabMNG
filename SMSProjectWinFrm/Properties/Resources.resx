@@ -124,6 +124,9 @@
   <data name="ezgifcom-optimize" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ezgifcom-optimize.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="processing-please-wait-gif-10" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\processing-please-wait-gif-10.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="doctors-clipart-endocrinologist-6" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\doctors-clipart-endocrinologist-6.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -145,7 +148,7 @@
   <data name="170403-mukherjee-hero" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\170403-mukherjee-hero.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="processing-please-wait-gif-10" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\processing-please-wait-gif-10.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="refresh3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Images\refresh3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
