@@ -21,33 +21,33 @@ namespace SMSProjectWinFrm
             InitializeComponent();
         }
 
-        private void LoadGSMModem()
-        {
-            try
-            {
-                CmbPortName.Items.Clear();
-                string[] ports = SerialPort.GetPortNames();
-                foreach (string port in ports)
-                    CmbPortName.Items.Add(port);
-                CmbPortName.SelectedIndex = 0;
-            }
-            catch (Exception ex)
-            {
-                logger.ErrorLog(ex.Message);
-            }
-        }
+        //private void LoadGSMModem()
+        //{
+        //    try
+        //    {
+        //        CmbPortName.Items.Clear();
+        //        string[] ports = SerialPort.GetPortNames();
+        //        foreach (string port in ports)
+        //            CmbPortName.Items.Add(port);
+        //        CmbPortName.SelectedIndex = 0;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.ErrorLog(ex.Message);
+        //    }
+        //}
 
         private void frmTestSendSMS_Load(object sender, EventArgs e)
         {
             ApplicationConfigManagement acm = new ApplicationConfigManagement();
             textBox1.Text = acm.ReadSetting("TestMessage");
             textBox2.Text = acm.ReadSetting("TestPhone");
-            LoadGSMModem();
+            //LoadGSMModem();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            LoadGSMModem();
+            //LoadGSMModem();
         }
 
         private void button4_Click(object sender, EventArgs e)
