@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -41,6 +42,7 @@ namespace SMSProjectWinFrm.Business
                         ++counter;
                         sMSManagement.SendSMS(sms.TxtBody, sms.MobileNumber);
                         //sMSManagement.SendSMS(sms.TxtBody, "09195614157");
+                        Thread.Sleep(10000);
                         dal.IncrementSmsCountSentOnDay(DateTime.Now);
                         dal.SetSuccessSentSMS(sms);
                         TimeSpan ts = DateTime.Now - dtStart;
