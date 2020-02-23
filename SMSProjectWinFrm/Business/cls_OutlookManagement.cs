@@ -163,7 +163,8 @@ namespace SMSProjectWinFrm
             CultureInfo culture = new CultureInfo("EN-en");
             //CultureInfo culture = CultureInfo.CurrentUICulture;
 
-            string filterStr = "[Start] >= '" + today.AddYears(-1).ToString("d", culture) + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
+            //string filterStr = "[Start] >= '" + today.AddYears(-1).ToString("d", culture) + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
+            string filterStr = "[Start] >= '" + today.AddYears(-1).ToString("g") + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
             Outlook.Items FilteredItems = items.Restrict(filterStr);
 
             foreach (Outlook.AppointmentItem item in FilteredItems) 
@@ -220,8 +221,8 @@ namespace SMSProjectWinFrm
                     System.Environment.Exit(0);
                 }
 
-                //FillAppointments();
-                //FillContacts();
+                FillAppointments();
+                FillContacts();
             }
             catch (Exception err)
             {

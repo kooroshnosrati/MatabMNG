@@ -19,37 +19,37 @@ namespace SMSProjectWinFrm
         Cls_SMSToSend sMsToSend = new Cls_SMSToSend();
         //SMSManagement sms = new SMSManagement();
         Logger logger = new Logger();
-        SerialPort port = new SerialPort();
+        //SerialPort port = new SerialPort();
 
         public FrmSMSCenter()
         {
             InitializeComponent();
         }
-        private bool LoadGSMModem()
-        {
-            try
-            {
-                CmbPortName.Items.Clear();
-                string[] ports = SerialPort.GetPortNames();
-                foreach (string port in ports)
-                    CmbPortName.Items.Add(port);
-                CmbPortName.SelectedIndex = 0;
-                return true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("خطای ارتباط با مودم .... \n\r لطفا از ارتباط مودم با سیستم اطمینان حاصل نمایید....");
-                logger.ErrorLog(ex.Message);
-                return false;
-            }
-        }
+        //private bool LoadGSMModem()
+        //{
+        //    try
+        //    {
+        //        CmbPortName.Items.Clear();
+        //        string[] ports = SerialPort.GetPortNames();
+        //        foreach (string port in ports)
+        //            CmbPortName.Items.Add(port);
+        //        CmbPortName.SelectedIndex = 0;
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("خطای ارتباط با مودم .... \n\r لطفا از ارتباط مودم با سیستم اطمینان حاصل نمایید....");
+        //        logger.ErrorLog(ex.Message);
+        //        return false;
+        //    }
+        //}
         private void Form1_Load(object sender, EventArgs e)
         {
             sMsToSend.sMSManagement = new SMSManagement();
             sMsToSend.SentList = listBox2;
             sMsToSend.TxtCount = TxtCount;
             sMsToSend.TxtTimeToEnd = TxtTimeToEnd;
-            LoadGSMModem();
+            //LoadGSMModem();
             //if (LoadGSMModem())
             //{
             //    if (backgroundWorker1.IsBusy != true)
@@ -93,28 +93,28 @@ namespace SMSProjectWinFrm
             if (backgroundWorker1.WorkerSupportsCancellation == true)
                 backgroundWorker1.CancelAsync();
         }
-        private void CmbPortName_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                string PortName = "";
-                CmbPortName.Invoke(new Action(() => PortName = CmbPortName.Text));
-                sMsToSend.sMSManagement.Close();
-                sMsToSend.sMSManagement.Open(PortName);
-                //if (backgroundWorker1.IsBusy != true)
-                //    backgroundWorker1.RunWorkerAsync();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("خطای ارتباط با مودم .... \n\r لطفا از ارتباط مودم با سیستم اطمینان حاصل نمایید....");
-                logger.ErrorLog(ex.Message);
-                //if (backgroundWorker1.WorkerSupportsCancellation == true)
-                //    backgroundWorker1.CancelAsync();
-            }
-        }
+        //private void CmbPortName_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        string PortName = "";
+        //        CmbPortName.Invoke(new Action(() => PortName = CmbPortName.Text));
+        //        sMsToSend.sMSManagement.Close();
+        //        sMsToSend.sMSManagement.Open(PortName);
+        //        //if (backgroundWorker1.IsBusy != true)
+        //        //    backgroundWorker1.RunWorkerAsync();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("خطای ارتباط با مودم .... \n\r لطفا از ارتباط مودم با سیستم اطمینان حاصل نمایید....");
+        //        logger.ErrorLog(ex.Message);
+        //        //if (backgroundWorker1.WorkerSupportsCancellation == true)
+        //        //    backgroundWorker1.CancelAsync();
+        //    }
+        //}
         private void button3_Click(object sender, EventArgs e)
         {
-            LoadGSMModem();
+            //LoadGSMModem();
         }
 
         private void button1_Click(object sender, EventArgs e)
