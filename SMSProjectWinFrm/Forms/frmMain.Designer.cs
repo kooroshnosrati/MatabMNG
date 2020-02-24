@@ -40,6 +40,7 @@
             this.تنظیماتToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.خروجToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,6 +65,7 @@
             this.toolStripMenuItem3,
             this.toolStripMenuItem5,
             this.toolStripMenuItem4,
+            this.toolStripMenuItem6,
             this.toolStripMenuItem2,
             this.تنظیماتToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -73,54 +75,54 @@
             // اطلاعرسانیاتوماتیکویزیتبیمارانToolStripMenuItem
             // 
             this.اطلاعرسانیاتوماتیکویزیتبیمارانToolStripMenuItem.Name = "اطلاعرسانیاتوماتیکویزیتبیمارانToolStripMenuItem";
-            this.اطلاعرسانیاتوماتیکویزیتبیمارانToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.اطلاعرسانیاتوماتیکویزیتبیمارانToolStripMenuItem.Size = new System.Drawing.Size(432, 22);
             this.اطلاعرسانیاتوماتیکویزیتبیمارانToolStripMenuItem.Text = "اطلاع رسانی اتوماتیک ویزیت بیماران";
             this.اطلاعرسانیاتوماتیکویزیتبیمارانToolStripMenuItem.Click += new System.EventHandler(this.اطلاعرسانیاتوماتیکویزیتبیمارانToolStripMenuItem_Click);
             // 
             // تستارسالپیامکToolStripMenuItem
             // 
             this.تستارسالپیامکToolStripMenuItem.Name = "تستارسالپیامکToolStripMenuItem";
-            this.تستارسالپیامکToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.تستارسالپیامکToolStripMenuItem.Size = new System.Drawing.Size(432, 22);
             this.تستارسالپیامکToolStripMenuItem.Text = "تست ارسال پیامک";
             this.تستارسالپیامکToolStripMenuItem.Click += new System.EventHandler(this.تستارسالپیامکToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(252, 22);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(432, 22);
             this.toolStripMenuItem1.Text = "ارسال پیامک گروهی به بیمارانی که در یک روز مشخص نوبت ویزیت دارند";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(252, 22);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(432, 22);
             this.toolStripMenuItem3.Text = "ارسال پیامک به همه بیماران";
             this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(252, 22);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(432, 22);
             this.toolStripMenuItem5.Text = "مشخصات بیماران";
             this.toolStripMenuItem5.Click += new System.EventHandler(this.toolStripMenuItem5_Click);
             // 
             // toolStripMenuItem4
             // 
             this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(252, 22);
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(432, 22);
             this.toolStripMenuItem4.Text = "مدیریت نوبت دهی بیماران";
             this.toolStripMenuItem4.Click += new System.EventHandler(this.toolStripMenuItem4_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(249, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(429, 6);
             // 
             // تنظیماتToolStripMenuItem
             // 
             this.تنظیماتToolStripMenuItem.Name = "تنظیماتToolStripMenuItem";
-            this.تنظیماتToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.تنظیماتToolStripMenuItem.Size = new System.Drawing.Size(432, 22);
             this.تنظیماتToolStripMenuItem.Text = "تنظیمات";
             this.تنظیماتToolStripMenuItem.Click += new System.EventHandler(this.تنظیماتToolStripMenuItem_Click);
             // 
@@ -136,6 +138,13 @@
             this.backgroundWorker1.WorkerSupportsCancellation = true;
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
+            // toolStripMenuItem6
+            // 
+            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(432, 22);
+            this.toolStripMenuItem6.Text = "پنل ارسال پیامک";
+            this.toolStripMenuItem6.Click += new System.EventHandler(this.toolStripMenuItem6_Click);
             // 
             // frmMain
             // 
@@ -174,5 +183,6 @@
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem6;
     }
 }

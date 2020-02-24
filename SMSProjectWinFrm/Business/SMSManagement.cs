@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using GsmComm.GsmCommunication;
 using GsmComm.PduConverter;
@@ -15,15 +17,45 @@ namespace SMSProjectWinFrm
         com.parsgreen.login.SendSMS.SendSMS sendSMS = new com.parsgreen.login.SendSMS.SendSMS();
 
         public GsmCommMain comm;
-        public void Open(string PortName)
+        public bool Open()
         {
-            comm = new GsmCommMain(PortName, 19200, 500);
-            comm.Open();
+            bool chk = false;
+            try
+            {
+                string[] ports = SerialPort.GetPortNames();
+                foreach (string port in ports)
+                {
+                    try
+                    {
+                        comm = new GsmCommMain(port, 19200, 500);
+                        comm.Open();
+                        chk = true;
+                        break;
+                    }
+                    catch (Exception)
+                    {
+                        ;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("هیچ پورتی وجود ندارد...");
+            }
+            
+            if (!chk)
+                MessageBox.Show("خطای ارتباط با مودم .... \n\r لطفا از ارتباط مودم با سیستم اطمینان حاصل نمایید....");
+            
+            return chk;
         }
         public void Close()
         {
-            if (comm != null && comm.IsOpen())
+            while(comm != null && (comm.IsConnected() || comm.IsOpen()))
+            {
+                comm.ResetToDefaultConfig();
+                //comm.ReleaseProtocol();
                 comm.Close();
+            }
             comm = null;
         }
 
@@ -44,8 +76,13 @@ namespace SMSProjectWinFrm
                     default:
                         break;
                 }
-                SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
-                comm.SendMessages(pdu);
+                if (Open())
+                {
+                    SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
+                    comm.SendMessages(pdu);
+                    Thread.Sleep(5000);
+                }
+                Close();
             }
         }
         public void SendSMS(string bodyStr, cls_Appointment a)

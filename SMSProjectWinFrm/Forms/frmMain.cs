@@ -77,9 +77,7 @@ namespace SMSProjectWinFrm
 
             this.Show();
 
-            FrmSMSCenter frm = new FrmSMSCenter();
-            frm.MdiParent = this;
-            frm.Show();
+
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -98,6 +96,13 @@ namespace SMSProjectWinFrm
         {
             frmAppointments frm = new frmAppointments();
             frm.outlookManagement = outlookManagement;
+            frm.MdiParent = this;
+            frm.Show();
+        }
+
+        private void toolStripMenuItem6_Click(object sender, EventArgs e)
+        {
+            FrmSMSCenter frm = new FrmSMSCenter();
             frm.MdiParent = this;
             frm.Show();
         }

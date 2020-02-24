@@ -18,7 +18,7 @@ namespace SMSProjectWinFrm
     {
         public cls_OutlookManagement outlookManagement;
         Logger logger = new Logger();
-        SerialPort port = new SerialPort();
+        //SerialPort port = new SerialPort();
 
         public FrmAppointmentSendSMS()
         {

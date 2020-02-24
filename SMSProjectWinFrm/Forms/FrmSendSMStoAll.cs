@@ -15,7 +15,7 @@ namespace SMSProjectWinFrm
     {
         public cls_OutlookManagement outlookManagement;
         //DateTime LastDateChoosen;
-        SerialPort port = new SerialPort();
+        //SerialPort port = new SerialPort();
         Logger logger = new Logger();
         List<cls_Appointment> appointments = new List<cls_Appointment>();
         List<cls_Contact> contacts = new List<cls_Contact>();
