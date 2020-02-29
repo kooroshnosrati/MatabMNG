@@ -139,7 +139,7 @@ namespace SMSProjectWinFrm
         private void FillAppointments()
         {
             DateTime today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-            DateTime todayOneYearLater = new DateTime(DateTime.Now.Year + 1, DateTime.Now.Month, DateTime.Now.Day);
+            DateTime todayOneYearLater = today.AddYears(1);// new DateTime(DateTime.Now.Year + 1, DateTime.Now.Month, DateTime.Now.Day);
 
             appointments.Clear();
             for (DateTime SlotDateTime = today.AddYears(-1); SlotDateTime < todayOneYearLater; SlotDateTime = SlotDateTime.AddMinutes(10))
