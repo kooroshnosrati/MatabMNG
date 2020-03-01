@@ -30,10 +30,10 @@
         {
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cmbDiseaseName = new System.Windows.Forms.ComboBox();
             this.button4 = new System.Windows.Forms.Button();
             this.TxtEmail = new System.Windows.Forms.TextBox();
             this.TxtAddress = new System.Windows.Forms.TextBox();
-            this.dtpBirthDay = new System.Windows.Forms.DateTimePicker();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -58,7 +58,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.cmbDiseaseName = new System.Windows.Forms.ComboBox();
+            this.TxtBirthday = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -69,21 +69,21 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 200);
+            this.dataGridView1.Location = new System.Drawing.Point(0, 196);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.dataGridView1.Size = new System.Drawing.Size(1293, 412);
+            this.dataGridView1.Size = new System.Drawing.Size(1289, 412);
             this.dataGridView1.TabIndex = 8;
             this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.TxtBirthday);
             this.groupBox1.Controls.Add(this.cmbDiseaseName);
             this.groupBox1.Controls.Add(this.button4);
             this.groupBox1.Controls.Add(this.TxtEmail);
             this.groupBox1.Controls.Add(this.TxtAddress);
-            this.groupBox1.Controls.Add(this.dtpBirthDay);
             this.groupBox1.Controls.Add(this.label12);
             this.groupBox1.Controls.Add(this.label11);
             this.groupBox1.Controls.Add(this.label10);
@@ -115,6 +115,19 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "مشخصات بیمار";
             // 
+            // cmbDiseaseName
+            // 
+            this.cmbDiseaseName.FormattingEnabled = true;
+            this.cmbDiseaseName.Items.AddRange(new object[] {
+            "دیابت",
+            "غدد"});
+            this.cmbDiseaseName.Location = new System.Drawing.Point(900, 99);
+            this.cmbDiseaseName.Name = "cmbDiseaseName";
+            this.cmbDiseaseName.Size = new System.Drawing.Size(121, 21);
+            this.cmbDiseaseName.TabIndex = 49;
+            this.cmbDiseaseName.SelectedIndexChanged += new System.EventHandler(this.cmbDiseaseName_SelectedIndexChanged);
+            this.cmbDiseaseName.TextChanged += new System.EventHandler(this.cmbDiseaseName_TextChanged);
+            // 
             // button4
             // 
             this.button4.Location = new System.Drawing.Point(116, 97);
@@ -139,13 +152,6 @@
             this.TxtAddress.Name = "TxtAddress";
             this.TxtAddress.Size = new System.Drawing.Size(185, 147);
             this.TxtAddress.TabIndex = 46;
-            // 
-            // dtpBirthDay
-            // 
-            this.dtpBirthDay.Location = new System.Drawing.Point(827, 133);
-            this.dtpBirthDay.Name = "dtpBirthDay";
-            this.dtpBirthDay.Size = new System.Drawing.Size(200, 21);
-            this.dtpBirthDay.TabIndex = 45;
             // 
             // label12
             // 
@@ -360,25 +366,19 @@
             this.label1.TabIndex = 19;
             this.label1.Text = "نام :";
             // 
-            // cmbDiseaseName
+            // TxtBirthday
             // 
-            this.cmbDiseaseName.FormattingEnabled = true;
-            this.cmbDiseaseName.Items.AddRange(new object[] {
-            "دیابت",
-            "غدد"});
-            this.cmbDiseaseName.Location = new System.Drawing.Point(900, 99);
-            this.cmbDiseaseName.Name = "cmbDiseaseName";
-            this.cmbDiseaseName.Size = new System.Drawing.Size(121, 21);
-            this.cmbDiseaseName.TabIndex = 49;
-            this.cmbDiseaseName.SelectedIndexChanged += new System.EventHandler(this.cmbDiseaseName_SelectedIndexChanged);
-            this.cmbDiseaseName.TextChanged += new System.EventHandler(this.cmbDiseaseName_TextChanged);
+            this.TxtBirthday.Location = new System.Drawing.Point(927, 136);
+            this.TxtBirthday.Name = "TxtBirthday";
+            this.TxtBirthday.Size = new System.Drawing.Size(100, 21);
+            this.TxtBirthday.TabIndex = 50;
             // 
             // frmContacts
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(1293, 612);
+            this.ClientSize = new System.Drawing.Size(1289, 608);
             this.ControlBox = false;
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.dataGridView1);
@@ -426,10 +426,10 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.DateTimePicker dtpBirthDay;
         private System.Windows.Forms.TextBox TxtEmail;
         private System.Windows.Forms.TextBox TxtAddress;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.ComboBox cmbDiseaseName;
+        private System.Windows.Forms.TextBox TxtBirthday;
     }
 }

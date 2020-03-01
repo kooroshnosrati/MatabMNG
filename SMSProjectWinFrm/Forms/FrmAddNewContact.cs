@@ -31,7 +31,7 @@ namespace SMSProjectWinFrm.Forms
             contact.Phone= TxtPhone.Text;
             contact.Mobile= TxtMobile.Text;
             contact.Notes = TxtNotes.Text;
-            contact.Birthday = dtpBirthDay.Value;
+            contact.Birthday = TxtBirthday.Text;
             contact.Email = TxtEmail.Text;
             contact.Address = TxtAddress.Text;
             if (outlookManagement.AddNewContact(contact))
@@ -56,7 +56,7 @@ namespace SMSProjectWinFrm.Forms
 
         private void FrmAddNewContact_Load(object sender, EventArgs e)
         {
-            dtpBirthDay.Value = DateTime.Now;
+            //dtpBirthDay.Value = DateTime.Now.ToString(;
             cmbDiseaseName.SelectedIndex = 0;
         }
     }

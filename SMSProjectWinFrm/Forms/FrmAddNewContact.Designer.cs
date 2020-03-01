@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cmbDiseaseName = new System.Windows.Forms.ComboBox();
             this.TxtAddress = new System.Windows.Forms.TextBox();
             this.TxtEmail = new System.Windows.Forms.TextBox();
-            this.dtpBirthDay = new System.Windows.Forms.DateTimePicker();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -54,16 +54,16 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.cmbDiseaseName = new System.Windows.Forms.ComboBox();
+            this.TxtBirthday = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.TxtBirthday);
             this.groupBox1.Controls.Add(this.cmbDiseaseName);
             this.groupBox1.Controls.Add(this.TxtAddress);
             this.groupBox1.Controls.Add(this.TxtEmail);
-            this.groupBox1.Controls.Add(this.dtpBirthDay);
             this.groupBox1.Controls.Add(this.label12);
             this.groupBox1.Controls.Add(this.label11);
             this.groupBox1.Controls.Add(this.label10);
@@ -93,6 +93,17 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "مشخصات بیمار";
             // 
+            // cmbDiseaseName
+            // 
+            this.cmbDiseaseName.FormattingEnabled = true;
+            this.cmbDiseaseName.Items.AddRange(new object[] {
+            "دیابت",
+            "غدد"});
+            this.cmbDiseaseName.Location = new System.Drawing.Point(93, 38);
+            this.cmbDiseaseName.Name = "cmbDiseaseName";
+            this.cmbDiseaseName.Size = new System.Drawing.Size(121, 21);
+            this.cmbDiseaseName.TabIndex = 42;
+            // 
             // TxtAddress
             // 
             this.TxtAddress.Location = new System.Drawing.Point(6, 372);
@@ -107,13 +118,6 @@
             this.TxtEmail.Name = "TxtEmail";
             this.TxtEmail.Size = new System.Drawing.Size(214, 20);
             this.TxtEmail.TabIndex = 40;
-            // 
-            // dtpBirthDay
-            // 
-            this.dtpBirthDay.Location = new System.Drawing.Point(26, 300);
-            this.dtpBirthDay.Name = "dtpBirthDay";
-            this.dtpBirthDay.Size = new System.Drawing.Size(200, 20);
-            this.dtpBirthDay.TabIndex = 39;
             // 
             // label12
             // 
@@ -300,16 +304,12 @@
             this.label1.TabIndex = 16;
             this.label1.Text = "شماره پرونده :";
             // 
-            // cmbDiseaseName
+            // TxtBirthday
             // 
-            this.cmbDiseaseName.FormattingEnabled = true;
-            this.cmbDiseaseName.Items.AddRange(new object[] {
-            "دیابت",
-            "غدد"});
-            this.cmbDiseaseName.Location = new System.Drawing.Point(93, 38);
-            this.cmbDiseaseName.Name = "cmbDiseaseName";
-            this.cmbDiseaseName.Size = new System.Drawing.Size(121, 21);
-            this.cmbDiseaseName.TabIndex = 42;
+            this.TxtBirthday.Location = new System.Drawing.Point(126, 303);
+            this.TxtBirthday.Name = "TxtBirthday";
+            this.TxtBirthday.Size = new System.Drawing.Size(100, 20);
+            this.TxtBirthday.TabIndex = 43;
             // 
             // FrmAddNewContact
             // 
@@ -357,8 +357,8 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox TxtEmail;
-        private System.Windows.Forms.DateTimePicker dtpBirthDay;
         private System.Windows.Forms.TextBox TxtAddress;
         private System.Windows.Forms.ComboBox cmbDiseaseName;
+        private System.Windows.Forms.TextBox TxtBirthday;
     }
 }

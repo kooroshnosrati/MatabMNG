@@ -31,7 +31,7 @@ namespace SMSProjectWinFrm
             dataGridView1.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
 
-            dtpBirthDay.Value = DateTime.Now;
+            //dtpBirthDay.Value = DateTime.Now;
             RefreshGridView();
         }
 
@@ -148,7 +148,7 @@ namespace SMSProjectWinFrm
             TxtPhone.Text = selectedContact.Phone;
             TxtMobile.Text = selectedContact.Mobile;
             TxtNotes.Text = selectedContact.Notes;
-            dtpBirthDay.Value = selectedContact.Birthday;
+            TxtBirthday.Text = selectedContact.Birthday;
             TxtEmail.Text = selectedContact.Email;
             TxtAddress.Text = selectedContact.Address;
         }
@@ -164,7 +164,7 @@ namespace SMSProjectWinFrm
             TxtPhone.Text = "";
             TxtMobile.Text = "";
             TxtNotes.Text = "";
-            dtpBirthDay.Value = DateTime.Now ;
+            TxtBirthday.Text = "";
             TxtEmail.Text = "";
             TxtAddress.Text = "";
         }
@@ -186,7 +186,7 @@ namespace SMSProjectWinFrm
                     newContact.Phone = TxtPhone.Text;
                     newContact.Mobile = TxtMobile.Text;
                     newContact.Notes = TxtNotes.Text;
-                    newContact.Birthday = dtpBirthDay.Value;
+                    newContact.Birthday = TxtBirthday.Text;
                     newContact.Email = TxtEmail.Text;
                     newContact.Address = TxtAddress.Text;
                     outlookManagement.UpdateContact(selectedContact, newContact);

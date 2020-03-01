@@ -81,7 +81,27 @@ namespace SMSProjectWinFrm
                     contact.FatherName = Ocontact.MiddleName == null ? "" : Ocontact.MiddleName;
                     contact.SSID = Ocontact.Suffix == null ? "" : Ocontact.Suffix;
                     contact.FullName = contact.FirstName + " " + contact.LastName;
-                    contact.Birthday = Ocontact.Birthday == null ? DateTime.MinValue : Ocontact.Birthday;
+
+                    contact.Birthday = Ocontact.User1 == null ? "" : Ocontact.User1;
+                    //if (Ocontact.Birthday == DateTime.MinValue || Ocontact.Birthday > DateTime.Now)
+                    //{
+                    //    chk = true;
+                    //    Ocontact.User1 = null;
+                    //    Ocontact.Birthday = DateTime.MinValue;
+                    //    contact.Birthday = null;
+                    //}
+                    //else
+                    //{
+                    //    if (Ocontact.Birthday.Year != 1899)
+                    //    {
+                    //        chk = true;
+                    //        Ocontact.User1 = Ocontact.Birthday.ToString("yyyy", new CultureInfo("fa-IR"));
+                    //        contact.Birthday = Ocontact.Birthday;
+                    //    }
+                    //    else
+                    //        Ocontact.User1 = null;
+                    //}
+
                     contact.Email = Ocontact.Email1Address == null ? "" : Ocontact.Email1Address;
                     contact.Address = Ocontact.HomeAddress == null ? "" : Ocontact.HomeAddress;
 
@@ -182,6 +202,8 @@ namespace SMSProjectWinFrm
                 }
                 catch (Exception)
                 {
+                    if (item.Subject.ToLower().IndexOf("birthday") != -1)
+                        item.Delete();
                     ;
                 }
             }
@@ -221,7 +243,7 @@ namespace SMSProjectWinFrm
                     System.Environment.Exit(0);
                 }
 
-                FillAppointments();
+                //FillAppointments();
                 FillContacts();
             }
             catch (Exception err)
@@ -572,7 +594,7 @@ namespace SMSProjectWinFrm
                 newContact.HomeTelephoneNumber = contact.Phone;
                 newContact.MobileTelephoneNumber = contact.Mobile;
                 newContact.Body = contact.Notes;
-                newContact.Birthday = contact.Birthday;
+                newContact.User1 = contact.Birthday;
                 newContact.Email1Address = contact.Email;
                 newContact.HomeAddress = contact.Address;
 
@@ -662,7 +684,7 @@ namespace SMSProjectWinFrm
                     contact.HomeTelephoneNumber = newContact.Phone;
                     contact.MobileTelephoneNumber = newContact.Mobile;
                     contact.Body = newContact.Notes;
-                    contact.Birthday = newContact.Birthday;
+                    contact.User1 = newContact.Birthday; 
                     contact.Email1Address = newContact.Email;
                     contact.HomeAddress = newContact.Address;
 

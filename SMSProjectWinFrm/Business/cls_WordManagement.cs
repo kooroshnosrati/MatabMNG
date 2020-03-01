@@ -34,8 +34,8 @@ namespace SMSProjectWinFrm.Business
                     headerRange.Find.Execute(ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref replaceAll, ref missing, ref missing, ref missing, ref missing);
 
                     headerRange.Find.Text = "{1}";
-                    CultureInfo culture = new CultureInfo("fa-IR");
-                    headerRange.Find.Replacement.Text = contact.Birthday.ToString("d", culture);
+                    //CultureInfo culture = new CultureInfo("fa-IR");
+                    headerRange.Find.Replacement.Text = contact.Birthday;
                     headerRange.Find.Execute(ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref replaceAll, ref missing, ref missing, ref missing, ref missing);
 
                     headerRange.Find.Text = "{2}";
