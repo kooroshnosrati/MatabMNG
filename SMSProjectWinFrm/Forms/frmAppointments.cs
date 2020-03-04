@@ -64,6 +64,13 @@ namespace SMSProjectWinFrm
             //dataGridView1.Columns[8].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridView1.Refresh();
             //dataGridView1.Rows[rowIndexSeleted].Selected = true;
+
+            dataGridView1.ClearSelection();
+            int nRowIndex = rowIndexSeleted;
+
+            dataGridView1.Rows[nRowIndex].Selected = true;
+            dataGridView1.Rows[nRowIndex].Cells[0].Selected = true;
+            dataGridView1.FirstDisplayedScrollingRowIndex = nRowIndex;
         }
 
         private void TxtDiseaseName_TextChanged(object sender, EventArgs e)

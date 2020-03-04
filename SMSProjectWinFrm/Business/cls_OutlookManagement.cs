@@ -180,11 +180,18 @@ namespace SMSProjectWinFrm
             Outlook.Items items = mAPIFolder.Items;
             items.Sort("[Start]");
 
-            CultureInfo culture = new CultureInfo("EN-en");
-            //CultureInfo culture = CultureInfo.CurrentUICulture;
-
-            //string filterStr = "[Start] >= '" + today.AddYears(-1).ToString("d", culture) + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
-            string filterStr = "[Start] >= '" + today.AddYears(-1).ToString("g") + "'"; // AND [End] <= '" + todayOneYearLater.ToString("g") + "'";
+            ApplicationConfigManagement acm = new ApplicationConfigManagement();
+            string dateCultureFormat = acm.ReadSetting("DateCultureFormat").ToLower();
+            string filterStr = "";
+            if (dateCultureFormat == "d")
+            {
+                CultureInfo culture = new CultureInfo("EN-en");
+                filterStr = "[Start] >= '" + today.AddYears(-1).ToString("dd/MM/yyyy", culture) + "'"; 
+            }
+            else if (dateCultureFormat == "g")
+            {
+                filterStr = "[Start] >= '" + today.AddYears(-1).ToString("g") + "'"; 
+            }
             Outlook.Items FilteredItems = items.Restrict(filterStr);
 
             foreach (Outlook.AppointmentItem item in FilteredItems) 
@@ -193,6 +200,8 @@ namespace SMSProjectWinFrm
                 {
                     //if (item.Start < today)
                     //    continue;
+                    CultureInfo culture1 = new CultureInfo("EN-en");
+                    string kk = item.Start.ToString(culture1);
                     string appointmentDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
                     cls_Appointment appointment = appointments.Single(m => m.StartDateTimeStr == appointmentDate);
                     if (item.Subject != null)
@@ -243,7 +252,7 @@ namespace SMSProjectWinFrm
                     System.Environment.Exit(0);
                 }
 
-                //FillAppointments();
+                FillAppointments();
                 FillContacts();
             }
             catch (Exception err)
@@ -725,49 +734,63 @@ namespace SMSProjectWinFrm
                 Outlook.Items items = mAPIFolder.Items;
                 items.Sort("[Start]");
 
-                CultureInfo culture = new CultureInfo("EN-en");
-
-                string filterStr = "[Start]='" + oldAppointment.StartDateTime.ToString("g", culture) + "'";// and [End]='" + oldAppointment.EndDateTime.ToString("g") + "'";
-
-                Outlook.AppointmentItem appointment = items.Find(filterStr);
-
-                if (appointment != null)
+                ApplicationConfigManagement acm = new ApplicationConfigManagement();
+                string dateCultureFormat = acm.ReadSetting("DateCultureFormat").ToLower();
+                string filterStr = "";
+                if (dateCultureFormat == "d")
                 {
-                    appointment.Subject = newAppointment.Subject;
-                    appointment.Location = newAppointment.Paid;
-                    appointment.Save();
-
-                    oldAppointment.Subject = newAppointment.Subject;
-                    oldAppointment.Paid = newAppointment.Paid;
-
-                    if (mAPIFolder != null)
-                        Marshal.ReleaseComObject(mAPIFolder);
-                    if (items != null)
-                        Marshal.ReleaseComObject(items);
-                    if (appointment != null)
-                        Marshal.ReleaseComObject(appointment);
-                    return true;
+                    CultureInfo culture = new CultureInfo("EN-en");
+                    string StartStr = oldAppointment.StartDateTime.ToString("dd/MM/yyyy", culture);
+                    string EndStr = oldAppointment.StartDateTime.AddDays(1).ToString("dd/MM/yyyy", culture);
+                    filterStr = "[Start] >= '" + StartStr + "' AND [End] < '" + EndStr + "'";
                 }
-                else
+                else if (dateCultureFormat == "g")
                 {
-                    Outlook.AppointmentItem AddnewAppointment = items.Add(Outlook.OlItemType.olAppointmentItem) as Outlook.AppointmentItem;
-                    AddnewAppointment.Start = newAppointment.StartDateTime;
-                    AddnewAppointment.End = newAppointment.EndDateTime;
-                    AddnewAppointment.Subject = newAppointment.Subject;
-                    AddnewAppointment.Location = newAppointment.Paid;
-                    AddnewAppointment.Save();
-                    oldAppointment.Subject = newAppointment.Subject;
-                    oldAppointment.Paid = newAppointment.Paid;
-
-                    if (mAPIFolder != null)
-                        Marshal.ReleaseComObject(mAPIFolder);
-                    if (items != null)
-                        Marshal.ReleaseComObject(items);
-                    if (AddnewAppointment != null)
-                        Marshal.ReleaseComObject(AddnewAppointment);
-
-                    return true;
+                    filterStr = "[Start]='" + oldAppointment.StartDateTime.ToString("g") + "'";
                 }
+                //Outlook.AppointmentItem appointment = items.Find(filterStr);
+                Outlook.Items appointments = items.Restrict(filterStr);
+                foreach (Outlook.AppointmentItem appointment in appointments)
+                {
+                    if (appointment != null && appointment.Subject == oldAppointment.Subject)
+                    {
+                        appointment.Subject = newAppointment.Subject;
+                        appointment.Location = newAppointment.Paid;
+                        appointment.Save();
+
+                        oldAppointment.Subject = newAppointment.Subject;
+                        oldAppointment.Paid = newAppointment.Paid;
+
+                        if (mAPIFolder != null)
+                            Marshal.ReleaseComObject(mAPIFolder);
+                        if (items != null)
+                            Marshal.ReleaseComObject(items);
+                        if (appointment != null)
+                            Marshal.ReleaseComObject(appointment);
+                        return true;
+                    }
+                    else
+                    {
+                    }
+                }
+                Outlook.AppointmentItem AddnewAppointment = items.Add(Outlook.OlItemType.olAppointmentItem) as Outlook.AppointmentItem;
+                AddnewAppointment.Start = newAppointment.StartDateTime;
+                AddnewAppointment.End = newAppointment.EndDateTime;
+                AddnewAppointment.Subject = newAppointment.Subject;
+                AddnewAppointment.Location = newAppointment.Paid;
+                AddnewAppointment.Save();
+                oldAppointment.Subject = newAppointment.Subject;
+                oldAppointment.Paid = newAppointment.Paid;
+
+                if (mAPIFolder != null)
+                    Marshal.ReleaseComObject(mAPIFolder);
+                if (items != null)
+                    Marshal.ReleaseComObject(items);
+                if (AddnewAppointment != null)
+                    Marshal.ReleaseComObject(AddnewAppointment);
+
+                return true;
+
             }
             catch (Exception err)
             {
