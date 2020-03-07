@@ -83,25 +83,6 @@ namespace SMSProjectWinFrm
                     contact.FullName = contact.FirstName + " " + contact.LastName;
 
                     contact.Birthday = Ocontact.User1 == null ? "" : Ocontact.User1;
-                    //if (Ocontact.Birthday == DateTime.MinValue || Ocontact.Birthday > DateTime.Now)
-                    //{
-                    //    chk = true;
-                    //    Ocontact.User1 = null;
-                    //    Ocontact.Birthday = DateTime.MinValue;
-                    //    contact.Birthday = null;
-                    //}
-                    //else
-                    //{
-                    //    if (Ocontact.Birthday.Year != 1899)
-                    //    {
-                    //        chk = true;
-                    //        Ocontact.User1 = Ocontact.Birthday.ToString("yyyy", new CultureInfo("fa-IR"));
-                    //        contact.Birthday = Ocontact.Birthday;
-                    //    }
-                    //    else
-                    //        Ocontact.User1 = null;
-                    //}
-
                     contact.Email = Ocontact.Email1Address == null ? "" : Ocontact.Email1Address;
                     contact.Address = Ocontact.HomeAddress == null ? "" : Ocontact.HomeAddress;
 
@@ -132,14 +113,23 @@ namespace SMSProjectWinFrm
                             contact.Mobile = Ocontact.MobileTelephoneNumber;
                     }
                     
-                    if (!string.IsNullOrEmpty(Ocontact.MobileTelephoneNumber))
+                    if (!string.IsNullOrEmpty(Ocontact.MobileTelephoneNumber) && !Ocontact.MobileTelephoneNumber.StartsWith("0"))
                     {
                         contact.Mobile = Ocontact.MobileTelephoneNumber = Ocontact.MobileTelephoneNumber.StartsWith("0") ? Ocontact.MobileTelephoneNumber.Replace(" ", "") : "0" + Ocontact.MobileTelephoneNumber.Replace(" ", "");
                         chk = true;
                     }
 
                     contact.Notes = Ocontact.Body == null ? "" : Ocontact.Body;
-                    contacts.Add(contact);
+                    try
+                    {
+                        cls_Contact cls_Contact = contacts.Single(m => m.PatientID == contact.PatientID);
+                        logger.ErrorLog(string.Format("Patient ID Conflict {0}", contact.PatientID));
+                    }
+                    catch (Exception)
+                    {
+                        contacts.Add(contact);
+                    }
+
                     if (chk)
                         Ocontact.Save();
                     
