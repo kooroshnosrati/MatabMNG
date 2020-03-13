@@ -45,8 +45,9 @@ namespace SMSProjectWinFrm
         //}
         private void Form1_Load(object sender, EventArgs e)
         {
-            sMsToSend.sMSManagement = new SMSManagement();
+            //sMsToSend.sMSManagement = new SMSManagement();
             sMsToSend.SentList = listBox2;
+            sMsToSend.ErrorList = listBox1;
             sMsToSend.TxtCount = TxtCount;
             sMsToSend.TxtTimeToEnd = TxtTimeToEnd;
             //LoadGSMModem();

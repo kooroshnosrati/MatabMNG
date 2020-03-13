@@ -13,10 +13,20 @@ namespace SMSProjectWinFrm
 {
     public class SMSManagement
     {
+        Logger logger = new Logger();
         ApplicationConfigManagement acm = new ApplicationConfigManagement();
         com.parsgreen.login.SendSMS.SendSMS sendSMS = new com.parsgreen.login.SendSMS.SendSMS();
 
         public GsmCommMain comm;
+        bool IsPortOpen = false;
+        public SMSManagement()
+        {
+            IsPortOpen = Open();
+        }
+        ~SMSManagement()
+        {
+            Close();
+        }
         public bool Open()
         {
             bool chk = false;
@@ -61,8 +71,10 @@ namespace SMSProjectWinFrm
 
         public void SendSMS(string bodyStr, string Phone)
         {
+            Thread.Sleep(10000);
             string ResultStr = "";
-            int Result = sendSMS.Send(acm.ReadSetting("Signeture"), Phone, bodyStr, ref ResultStr);
+            string Signeture = acm.ReadSetting("Signeture");
+            int Result = sendSMS.Send(Signeture, Phone, bodyStr, ref ResultStr);
             if (Result != 1)
             {
                 switch (Result)
@@ -74,15 +86,14 @@ namespace SMSProjectWinFrm
                         MessageBox.Show("اعتبار سرویس شما تمام شده است لطفا آن را شارژ کنید...");
                         break;
                     default:
+                        logger.ErrorLog(string.Format("ParsGreen Send SMS . Phone:{0} BodyText:{1} Error:{2}", Phone, bodyStr, Result));
                         break;
                 }
-                if (Open())
+                if (IsPortOpen)
                 {
                     SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
                     comm.SendMessages(pdu);
-                    Thread.Sleep(5000);
                 }
-                Close();
             }
         }
         public void SendSMS(string bodyStr, cls_Appointment a)

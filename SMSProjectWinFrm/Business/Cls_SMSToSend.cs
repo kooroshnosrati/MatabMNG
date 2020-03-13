@@ -10,10 +10,11 @@ namespace SMSProjectWinFrm.Business
 {
     public class Cls_SMSToSend
     {
+        Logger Logger = new Logger();
         public SMSManagement sMSManagement = new SMSManagement();
         DAL dal = new DAL();
         public List<Cls_SMS> SMSsToSend { get; set; }
-        public ListBox SentList;
+        public ListBox SentList, ErrorList;
         public TextBox TxtCount, TxtTimeToEnd;
         public Cls_SMSToSend()
         {
@@ -42,7 +43,7 @@ namespace SMSProjectWinFrm.Business
                         ++counter;
                         sMSManagement.SendSMS(sms.TxtBody, sms.MobileNumber);
                         //sMSManagement.SendSMS(sms.TxtBody, "09195614157");
-                        Thread.Sleep(10000);
+                        //Thread.Sleep(10000);
                         dal.IncrementSmsCountSentOnDay(DateTime.Now);
                         dal.SetSuccessSentSMS(sms);
                         TimeSpan ts = DateTime.Now - dtStart;
@@ -82,7 +83,9 @@ namespace SMSProjectWinFrm.Business
                         int totalSeconds = (int)(((double)(SMSsToSend.Count - counter) * ts.TotalSeconds));
                         TimeSpan tsTimeToEnd = new TimeSpan((long)totalSeconds * (long)10000000);
                         TxtTimeToEnd.Invoke(new Action(() => TxtTimeToEnd.Text = string.Format("{0}:{1}:{2}", tsTimeToEnd.Hours, tsTimeToEnd.Minutes, tsTimeToEnd.Seconds)));
-                        throw new Exception(ErrorMessage);
+                        Logger.ErrorLog(ErrorMessage);
+                        ErrorList.Invoke(new Action(() => ErrorList.Items.Insert(0, string.Format("ID={0} JobID={1} PatientID={2} Mobile={3} Time={4}", sms.ID, sms.JobID, sms.PatientID, sms.MobileNumber, ts.TotalSeconds))));
+                        //throw new Exception(ErrorMessage);
                     }
                     else
                         throw new Exception(ErrorMessage);
