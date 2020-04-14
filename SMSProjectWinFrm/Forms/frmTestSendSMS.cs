@@ -56,7 +56,8 @@ namespace SMSProjectWinFrm
         private void button4_Click(object sender, EventArgs e)
         {
             string ResultStr = "";
-            sMSManagement.SendSMS(textBox1.Text, textBox2.Text);
+            bool SendStatus = false;
+            sMSManagement.SendSMS(textBox1.Text, textBox2.Text, ref SendStatus);
             //com.parsgreen.login.SendSMS.SendSMS sendSMS = new com.parsgreen.login.SendSMS.SendSMS();
             //sendSMS.Send("BAD97BEB-291D-40F1-A560-73512A7D3B3C", "09195614157", textBox1.Text, ref ResultStr);
         }

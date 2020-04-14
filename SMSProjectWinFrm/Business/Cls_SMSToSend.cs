@@ -34,20 +34,26 @@ namespace SMSProjectWinFrm.Business
 
             foreach (Cls_SMS sms in SMSsToSend)
             {
+                bool SendStatus = false;
                 SmsCountOverFlow = false;
                 DateTime dtStart = DateTime.Now;
+                string ReturnValue = "";
                 try
                 {
                     if (smsCountOnDay < MaxSmsCountPerDay)
                     {
                         ++counter;
-                        sMSManagement.SendSMS(sms.TxtBody, sms.MobileNumber);
+                        ReturnValue = sMSManagement.SendSMS(sms.TxtBody, sms.MobileNumber, ref SendStatus);
+                        if (!SendStatus)
+                            throw new Exception(ReturnValue);
                         //sMSManagement.SendSMS(sms.TxtBody, "09195614157");
                         //Thread.Sleep(10000);
                         dal.IncrementSmsCountSentOnDay(DateTime.Now);
                         dal.SetSuccessSentSMS(sms);
                         TimeSpan ts = DateTime.Now - dtStart;
+                        SentList.Invoke(new Action(() => SentList.Items.Insert(0, ReturnValue)));
                         SentList.Invoke(new Action(() => SentList.Items.Insert(0, string.Format("ID={0} JobID={1} PatientID={2} Mobile={3} Time={4}", sms.ID, sms.JobID, sms.PatientID, sms.MobileNumber, ts.TotalSeconds))));
+                        
                         TxtCount.Invoke(new Action(() => TxtCount.Text = (SMSsToSend.Count - counter).ToString()));
 
                         int totalSeconds = (int)(((double)(SMSsToSend.Count - counter) * ts.TotalSeconds));
@@ -66,7 +72,6 @@ namespace SMSProjectWinFrm.Business
                         SmsCountOverFlow = true;
                         throw new Exception(ErrorMessage);
                     }
-                        
                 }
                 catch (Exception err)
                 {
@@ -84,7 +89,9 @@ namespace SMSProjectWinFrm.Business
                         TimeSpan tsTimeToEnd = new TimeSpan((long)totalSeconds * (long)10000000);
                         TxtTimeToEnd.Invoke(new Action(() => TxtTimeToEnd.Text = string.Format("{0}:{1}:{2}", tsTimeToEnd.Hours, tsTimeToEnd.Minutes, tsTimeToEnd.Seconds)));
                         Logger.ErrorLog(ErrorMessage);
+                        ErrorList.Invoke(new Action(() => ErrorList.Items.Insert(0, ReturnValue)));
                         ErrorList.Invoke(new Action(() => ErrorList.Items.Insert(0, string.Format("ID={0} JobID={1} PatientID={2} Mobile={3} Time={4}", sms.ID, sms.JobID, sms.PatientID, sms.MobileNumber, ts.TotalSeconds))));
+                        
                         //throw new Exception(ErrorMessage);
                     }
                     else
