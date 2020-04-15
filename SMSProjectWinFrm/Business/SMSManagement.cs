@@ -95,7 +95,7 @@ namespace SMSProjectWinFrm
                         ReturnStr += "خطا ";
                         break;
                     case "3":
-                        ReturnStr += "BlackList ";
+                        ReturnStr += "بلک لیست ";
                         break;
                 }
                 ReturnStr += " --- ";
@@ -104,7 +104,7 @@ namespace SMSProjectWinFrm
             {
                 ReturnStr = "";
             }
-            ReturnStr += "ReturnValue:";
+            ReturnStr += "مقداربرگشتی:";
             if (Result != 1)
             {
                 switch (Result)
@@ -162,10 +162,17 @@ namespace SMSProjectWinFrm
                 }
                 if (IsPortOpen)
                 {
-                    SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
-                    comm.SendMessages(pdu);
-                    ReturnStr += " --- از طریق گوشی محلی ارسال شد";
-                    sendStatus = true;
+                    try
+                    {
+                        SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
+                        comm.SendMessages(pdu);
+                        ReturnStr += " --- از طریق گوشی محلی ارسال شد";
+                        sendStatus = true;
+                    }
+                    catch (Exception err)
+                    {
+                        ReturnStr += " --- خطای ارسال از طریق گوشی محلی --- " + err.Message;
+                    }
                 }
             }
             else
