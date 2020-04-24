@@ -73,6 +73,7 @@
             this.listBox2.FormattingEnabled = true;
             this.listBox2.Location = new System.Drawing.Point(0, 104);
             this.listBox2.Name = "listBox2";
+            this.listBox2.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.listBox2.Size = new System.Drawing.Size(500, 238);
             this.listBox2.TabIndex = 7;
             // 

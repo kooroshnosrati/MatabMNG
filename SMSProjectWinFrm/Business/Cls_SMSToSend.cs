@@ -53,6 +53,7 @@ namespace SMSProjectWinFrm.Business
                         TimeSpan ts = DateTime.Now - dtStart;
                         SentList.Invoke(new Action(() => SentList.Items.Insert(0, ReturnValue)));
                         SentList.Invoke(new Action(() => SentList.Items.Insert(0, string.Format("ID={0} JobID={1} PatientID={2} Mobile={3} Time={4}", sms.ID, sms.JobID, sms.PatientID, sms.MobileNumber, ts.TotalSeconds))));
+
                         
                         TxtCount.Invoke(new Action(() => TxtCount.Text = (SMSsToSend.Count - counter).ToString()));
 
