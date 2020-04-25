@@ -25,6 +25,10 @@ namespace SMSProjectWinFrm
         {
             InitializeComponent();
         }
+        ~FrmSMSCenter()
+        {
+            sMsToSend.Dispose();
+        }
         //private bool LoadGSMModem()
         //{
         //    try
@@ -127,11 +131,12 @@ namespace SMSProjectWinFrm
         }
         private void button5_Click(object sender, EventArgs e)
         {
-            //sMsToSend.sMSManagement.Close();
-            //Thread.Sleep(5000);
+            sMsToSend.Dispose();
+            Thread.Sleep(2000);
             this.Dispose();
             this.Close();
             this.Hide();
+            
         }
     }
 }

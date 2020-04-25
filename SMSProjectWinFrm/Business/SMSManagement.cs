@@ -11,37 +11,39 @@ using GsmComm.PduConverter.SmartMessaging;
 
 namespace SMSProjectWinFrm
 {
-    public class SMSManagement
+    public class SMSManagement : IDisposable
     {
         Logger logger = new Logger();
         ApplicationConfigManagement acm = new ApplicationConfigManagement();
         com.parsgreen.login.SendSMS.SendSMS sendSMS = new com.parsgreen.login.SendSMS.SendSMS();
-
         public GsmCommMain comm;
         bool IsPortOpen = false;
+        string GSMport = "";
+
         public SMSManagement()
         {
-            //IsPortOpen = Open();
+            IsPortOpen = Open();
         }
         ~SMSManagement()
         {
             Close();
         }
-        public bool Open(string port)
-        {
-            try
-            {
-                comm = new GsmCommMain(port, 19200, 500);
-                comm.Open();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return true;
-            }
-        }
+        //public bool Open(string port)
+        //{
+        //    try
+        //    {
+        //        comm = new GsmCommMain(port, 19200, 500);
+        //        comm.Open();
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return true;
+        //    }
+        //}
         public bool Open()
         {
+            Close();
             bool chk = false;
             try
             {
@@ -52,25 +54,26 @@ namespace SMSProjectWinFrm
                     {
                         comm = new GsmCommMain(port, 19200, 500);
                         comm.Open();
+                        SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage("تست سلامت جی اس ام", true, "09195614157");
+                        comm.SendMessages(pdu);
                         chk = true;
+                        GSMport = port;
+                        logger.ErrorLog("Valid Port of GSM is : " + GSMport);
                         break;
                     }
-                    catch (Exception)
+                    catch (Exception err)
                     {
-                        ;
+                        Close();
                     }
                 }
             }
             catch (Exception ex)
             {
                 logger.ErrorLog("هیچ پورتی وجود ندارد...");
-                //MessageBox.Show("هیچ پورتی وجود ندارد...");
             }
 
             if (!chk)
                 logger.ErrorLog("خطای ارتباط با مودم .... \n\r لطفا از ارتباط مودم با سیستم اطمینان حاصل نمایید....");
-            //MessageBox.Show("خطای ارتباط با مودم .... \n\r لطفا از ارتباط مودم با سیستم اطمینان حاصل نمایید....");
-
             return chk;
         }
         public void Close()
@@ -90,41 +93,40 @@ namespace SMSProjectWinFrm
             }
             comm = null;
         }
-
-        public string SendSMSWithGSM(string bodyStr, string Phone, ref bool SendStatus)
-        {
-            string ErrorStr = "";
-            string[] ports = SerialPort.GetPortNames();
-            foreach (string port in ports)
-            {
-                try
-                {
-                    if (Open(port))
-                    {
-                        try
-                        {
-                            //SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
-                            SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, "09195614157");
-                            comm.SendMessages(pdu);
-                            SendStatus = true;
-                            Close();
-                            return "ارسال شد";
-                        }
-                        catch (Exception err)
-                        {
-                            Close();
-                            ErrorStr += string.Format(" مشکل دز خطای ارسال در پورت {0} متن خطا : " + err.Message, port);
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    Close();
-                    ErrorStr += string.Format(" پورت {0} باز نشد ", port);
-                }
-            }
-            return ErrorStr;
-        }
+        //public string SendSMSWithGSM(string bodyStr, string Phone, ref bool SendStatus)
+        //{
+        //    string ErrorStr = "";
+        //    string[] ports = SerialPort.GetPortNames();
+        //    foreach (string port in ports)
+        //    {
+        //        try
+        //        {
+        //            if (Open(port))
+        //            {
+        //                try
+        //                {
+        //                    //SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
+        //                    SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, "09195614157");
+        //                    comm.SendMessages(pdu);
+        //                    SendStatus = true;
+        //                    Close();
+        //                    return "ارسال شد";
+        //                }
+        //                catch (Exception err)
+        //                {
+        //                    Close();
+        //                    ErrorStr += string.Format(" مشکل دز خطای ارسال در پورت {0} متن خطا : " + err.Message, port);
+        //                }
+        //            }
+        //        }
+        //        catch (Exception)
+        //        {
+        //            Close();
+        //            ErrorStr += string.Format(" پورت {0} باز نشد ", port);
+        //        }
+        //    }
+        //    return ErrorStr;
+        //}
         public string SendSMS(string bodyStr, string Phone, ref bool SendStatus)
         {
             bool sendStatus = false;
@@ -132,8 +134,8 @@ namespace SMSProjectWinFrm
             string ReturnStr = "";
             string ResultStr = "";
             string Signeture = acm.ReadSetting("Signeture");
-            //int Result = sendSMS.Send(Signeture, Phone, bodyStr, ref ResultStr);
-            int Result = 0;
+            int Result = sendSMS.Send(Signeture, Phone, bodyStr, ref ResultStr);
+            //int Result = 0;
             try
             {
                 string[] ResultStrNodes = ResultStr.Split(';');
@@ -215,29 +217,32 @@ namespace SMSProjectWinFrm
                         logger.ErrorLog(string.Format("ParsGreen Send SMS . Phone:{0} BodyText:{1} Error:{2}", Phone, bodyStr, Result));
                         break;
                 }
-                bool isSentByGSM = false;
-                string returnStr = SendSMSWithGSM(bodyStr, Phone, ref isSentByGSM);
-                if (isSentByGSM)
-                {
-                    ReturnStr += " --- از طریق گوشی محلی ارسال شد";
-                    sendStatus = true;
-                }
-                else
-                    ReturnStr += " --- خطای ارسال از طریق گوشی محلی --- " + returnStr;
-                //if (IsPortOpen)
+
+
+
+                //bool isSentByGSM = false;
+                //string returnStr = SendSMSWithGSM(bodyStr, Phone, ref isSentByGSM);
+                //if (isSentByGSM)
                 //{
-                //    try
-                //    {
-                //        SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
-                //        comm.SendMessages(pdu);
-                //        ReturnStr += " --- از طریق گوشی محلی ارسال شد";
-                //        sendStatus = true;
-                //    }
-                //    catch (Exception err)
-                //    {
-                //        ReturnStr += " --- خطای ارسال از طریق گوشی محلی --- " + err.Message;
-                //    }
+                //    ReturnStr += " --- از طریق گوشی محلی ارسال شد";
+                //    sendStatus = true;
                 //}
+                //else
+                //    ReturnStr += " --- خطای ارسال از طریق گوشی محلی --- " + returnStr;
+                if (IsPortOpen)
+                {
+                    try
+                    {
+                        SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
+                        comm.SendMessages(pdu);
+                        ReturnStr += " --- از طریق گوشی محلی ارسال شد";
+                        sendStatus = true;
+                    }
+                    catch (Exception err)
+                    {
+                        ReturnStr += " --- خطای ارسال از طریق گوشی محلی --- " + err.Message;
+                    }
+                }
             }
             else
             {
@@ -253,11 +258,45 @@ namespace SMSProjectWinFrm
             bool SendStatus = false;
             SendSMS(bodyStr, a.contact.Mobile, ref SendStatus);
         }
-
         public void TestSndSMS()
         {
             bool SendStatus = false;
             SendSMS(acm.ReadSetting("TestMessage"), acm.ReadSetting("TestPhone"), ref SendStatus);
         }
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects).
+                    Close();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+
+                disposedValue = true;
+            }
+        }
+        
+        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // ~SMSManagement()
+        // {
+        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+        //   Dispose(false);
+        // }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }
