@@ -22,7 +22,7 @@ namespace SMSProjectWinFrm.Business
         }
         ~Cls_SMSToSend()
         {
-            sMSManagement.Close();
+            //sMSManagement.Close();
             sMSManagement.Dispose();
         }
         public void DoSend()
@@ -119,7 +119,7 @@ namespace SMSProjectWinFrm.Business
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
-                    sMSManagement.Close();
+                    //sMSManagement.Close();
                     sMSManagement.Dispose();
                 }
 

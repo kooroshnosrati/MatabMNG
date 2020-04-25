@@ -16,7 +16,7 @@ namespace SMSProjectWinFrm
         Logger logger = new Logger();
         ApplicationConfigManagement acm = new ApplicationConfigManagement();
         com.parsgreen.login.SendSMS.SendSMS sendSMS = new com.parsgreen.login.SendSMS.SendSMS();
-        public GsmCommMain comm;
+        //public GsmCommMain comm;
         bool IsPortOpen = false;
         string GSMport = "";
 
@@ -26,24 +26,34 @@ namespace SMSProjectWinFrm
         }
         ~SMSManagement()
         {
-            Close();
+            //Close();
         }
-        //public bool Open(string port)
-        //{
-        //    try
-        //    {
-        //        comm = new GsmCommMain(port, 19200, 500);
-        //        comm.Open();
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return true;
-        //    }
-        //}
+        public GsmCommMain Open(string port)
+        {
+            GsmCommMain comm;
+            try
+            {
+                //Close();
+                comm = new GsmCommMain(port, 19200, 500);
+                comm.Open();
+                return comm;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
         public bool Open()
         {
-            Close();
+            //ApplicationConfigManagement acm = new ApplicationConfigManagement();
+            //GSMport = acm.ReadSetting("GSMport");
+            //if (GSMport.Length > 0 )
+            //{
+            //    return true;
+            //}
+
+            GsmCommMain comm = null;
+            //Close();
             bool chk = false;
             try
             {
@@ -54,16 +64,19 @@ namespace SMSProjectWinFrm
                     {
                         comm = new GsmCommMain(port, 19200, 500);
                         comm.Open();
-                        SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage("تست سلامت جی اس ام", true, "09195614157");
+                        SmsSubmitPdu[] pdu1 = SmartMessageFactory.CreateConcatTextMessage("آقای/خانم نورمحمدی.", true, "09195614157");
+                        comm.SendMessages(pdu1);
+                        SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage("آقای/خانم نورمحمدی \r\nنوبت ويزيت شما براي خانم دكتر علي مددي تاريخ يكشنبه, 7 اردیبهشت 1399 ساعت 09:20 ق.ظ میباشد.", true, "09195614157");
                         comm.SendMessages(pdu);
                         chk = true;
                         GSMport = port;
                         logger.ErrorLog("Valid Port of GSM is : " + GSMport);
+                        Close(ref comm);
                         break;
                     }
                     catch (Exception err)
                     {
-                        Close();
+                        Close(ref comm);
                     }
                 }
             }
@@ -76,13 +89,13 @@ namespace SMSProjectWinFrm
                 logger.ErrorLog("خطای ارتباط با مودم .... \n\r لطفا از ارتباط مودم با سیستم اطمینان حاصل نمایید....");
             return chk;
         }
-        public void Close()
+        public void Close(ref GsmCommMain comm)
         {
             try
             {
                 while (comm != null && (comm.IsConnected() || comm.IsOpen()))
                 {
-                    comm.ResetToDefaultConfig();
+                    //comm.ResetToDefaultConfig();
                     //comm.ReleaseProtocol();
                     comm.Close();
                 }
@@ -93,40 +106,34 @@ namespace SMSProjectWinFrm
             }
             comm = null;
         }
-        //public string SendSMSWithGSM(string bodyStr, string Phone, ref bool SendStatus)
-        //{
-        //    string ErrorStr = "";
-        //    string[] ports = SerialPort.GetPortNames();
-        //    foreach (string port in ports)
-        //    {
-        //        try
-        //        {
-        //            if (Open(port))
-        //            {
-        //                try
-        //                {
-        //                    //SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
-        //                    SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, "09195614157");
-        //                    comm.SendMessages(pdu);
-        //                    SendStatus = true;
-        //                    Close();
-        //                    return "ارسال شد";
-        //                }
-        //                catch (Exception err)
-        //                {
-        //                    Close();
-        //                    ErrorStr += string.Format(" مشکل دز خطای ارسال در پورت {0} متن خطا : " + err.Message, port);
-        //                }
-        //            }
-        //        }
-        //        catch (Exception)
-        //        {
-        //            Close();
-        //            ErrorStr += string.Format(" پورت {0} باز نشد ", port);
-        //        }
-        //    }
-        //    return ErrorStr;
-        //}
+        public string SendSMSWithGSM(string bodyStr, string Phone, ref bool SendStatus)
+        {
+            string ReturnStr = "";
+            //GsmCommMain comm = new GsmCommMain(GSMport, 19200, 500);
+            //comm.Open();
+            //SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, "09195614157");
+            //comm.SendMessages(pdu);
+
+            GsmCommMain comm = Open(GSMport);
+            try
+            {
+                if (comm != null)
+                {
+                    //SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
+                    SmsSubmitPdu[] pdu1 = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, "09195614157");
+                    comm.SendMessages(pdu1);
+                    Close(ref comm);
+                }
+                ReturnStr += " --- از طریق گوشی محلی ارسال شد";
+                SendStatus = true;
+            }
+            catch (Exception err)
+            {
+                Close(ref comm);
+                ReturnStr += " --- خطای ارسال از طریق گوشی محلی --- " + err.Message;
+            }
+            return ReturnStr;
+        }
         public string SendSMS(string bodyStr, string Phone, ref bool SendStatus)
         {
             bool sendStatus = false;
@@ -134,8 +141,8 @@ namespace SMSProjectWinFrm
             string ReturnStr = "";
             string ResultStr = "";
             string Signeture = acm.ReadSetting("Signeture");
-            int Result = sendSMS.Send(Signeture, Phone, bodyStr, ref ResultStr);
-            //int Result = 0;
+            //int Result = sendSMS.Send(Signeture, Phone, bodyStr, ref ResultStr);
+            int Result = 0;
             try
             {
                 string[] ResultStrNodes = ResultStr.Split(';');
@@ -231,17 +238,7 @@ namespace SMSProjectWinFrm
                 //    ReturnStr += " --- خطای ارسال از طریق گوشی محلی --- " + returnStr;
                 if (IsPortOpen)
                 {
-                    try
-                    {
-                        SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
-                        comm.SendMessages(pdu);
-                        ReturnStr += " --- از طریق گوشی محلی ارسال شد";
-                        sendStatus = true;
-                    }
-                    catch (Exception err)
-                    {
-                        ReturnStr += " --- خطای ارسال از طریق گوشی محلی --- " + err.Message;
-                    }
+                    ReturnStr += SendSMSWithGSM(bodyStr, Phone, ref sendStatus);
                 }
             }
             else
@@ -272,7 +269,7 @@ namespace SMSProjectWinFrm
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
-                    Close();
+                    //Close();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
