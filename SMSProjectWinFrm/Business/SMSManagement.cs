@@ -148,8 +148,8 @@ namespace SMSProjectWinFrm
             {
                 if (comm != null)
                 {
-                    //SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
-                    SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, "09195614157");
+                    SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
+                    //SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, "09195614157");
                     comm.SendMessages(pdu);
                     ReturnStr += " --- از طریق گوشی محلی ارسال شد";
                     SendStatus = true;
