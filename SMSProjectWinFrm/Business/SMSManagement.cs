@@ -100,7 +100,7 @@ namespace SMSProjectWinFrm
                     {
                         comm = new GsmCommMain(port, 19200, 500);
                         comm.Open();
-                        SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage("تست سلامت جی اس ام", true, "09195614157");
+                        SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage("تست سلامت جی اس ام Port:" + port, true, "09195614157");
                         comm.SendMessages(pdu);
                         chk = true;
                         GSMport = port;
@@ -144,20 +144,13 @@ namespace SMSProjectWinFrm
         public string SendSMSWithGSM(string bodyStr, string Phone, ref bool SendStatus)
         {
             string ReturnStr = "";
-            //GsmCommMain comm = new GsmCommMain(GSMport, 19200, 500);
-            //comm.Open();
-            //SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, "09195614157");
-            //comm.SendMessages(pdu);
-
-            //GsmCommMain comm = Open(GSMport);
             try
             {
                 if (comm != null)
                 {
-                    SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
-                    //SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, "09195614157");
+                    //SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, Phone);
+                    SmsSubmitPdu[] pdu = SmartMessageFactory.CreateConcatTextMessage(bodyStr, true, "09195614157");
                     comm.SendMessages(pdu);
-                    //Close(); //ref comm
                     ReturnStr += " --- از طریق گوشی محلی ارسال شد";
                     SendStatus = true;
                 }
@@ -166,7 +159,6 @@ namespace SMSProjectWinFrm
             }
             catch (Exception err)
             {
-                //Close(); //ref comm
                 ReturnStr += " --- خطای ارسال از طریق گوشی محلی --- " + err.Message;
             }
             return ReturnStr;
@@ -177,37 +169,38 @@ namespace SMSProjectWinFrm
             Thread.Sleep(10000);
             string ReturnStr = "";
             string ResultStr = "";
+            string SMSCPanelStr = acm.ReadSetting("SMSCPanel").ToLower();
+            string GSMPanelStr = acm.ReadSetting("GSMPanel").ToLower();
             string Signeture = acm.ReadSetting("Signeture");
-            int Result = sendSMS.Send(Signeture, Phone, bodyStr, ref ResultStr);
-            //int Result = 0;
-            try
+            int Result = 0;
+            if (SMSCPanelStr.ToLower() == "true")
             {
-                string[] ResultStrNodes = ResultStr.Split(';');
-                ReturnStr = "وضعیت ارسال با پنل:";
-                switch (ResultStrNodes[1])
+                Result = sendSMS.Send(Signeture, Phone, bodyStr, ref ResultStr);
+                try
                 {
-                    case "0":
-                        ReturnStr += "موفق ";
-                        break;
-                    case "1":
-                        ReturnStr += "ناموفق ";
-                        break;
-                    case "2":
-                        ReturnStr += "خطا ";
-                        break;
-                    case "3":
-                        ReturnStr += "بلک لیست ";
-                        break;
+                    string[] ResultStrNodes = ResultStr.Split(';');
+                    ReturnStr = "وضعیت ارسال با پنل:";
+                    switch (ResultStrNodes[1])
+                    {
+                        case "0":
+                            ReturnStr += "موفق ";
+                            break;
+                        case "1":
+                            ReturnStr += "ناموفق ";
+                            break;
+                        case "2":
+                            ReturnStr += "خطا ";
+                            break;
+                        case "3":
+                            ReturnStr += "بلک لیست ";
+                            break;
+                    }
+                    ReturnStr += " --- ";
                 }
-                ReturnStr += " --- ";
-            }
-            catch (Exception)
-            {
-                ReturnStr = "";
-            }
-            ReturnStr += "مقداربرگشتی:";
-            if (Result != 1)
-            {
+                catch (Exception)
+                {
+                    ReturnStr = "";
+                }
                 switch (Result)
                 {
                     case -1:
@@ -261,22 +254,16 @@ namespace SMSProjectWinFrm
                         logger.ErrorLog(string.Format("ParsGreen Send SMS . Phone:{0} BodyText:{1} Error:{2}", Phone, bodyStr, Result));
                         break;
                 }
+            }
+            else
+                ReturnStr += " اجازه ارسال با پنل اینترنتی داده نشده است. ";
 
-
-
-                //bool isSentByGSM = false;
-                //string returnStr = SendSMSWithGSM(bodyStr, Phone, ref isSentByGSM);
-                //if (isSentByGSM)
-                //{
-                //    ReturnStr += " --- از طریق گوشی محلی ارسال شد";
-                //    sendStatus = true;
-                //}
-                //else
-                //    ReturnStr += " --- خطای ارسال از طریق گوشی محلی --- " + returnStr;
-                if (IsPortOpen)
-                {
+            if (Result != 1 && IsPortOpen)
+            {
+                if (GSMPanelStr.ToLower() == "true")
                     ReturnStr += SendSMSWithGSM(bodyStr, Phone, ref sendStatus);
-                }
+                else
+                    ReturnStr += " اجازه ارسال با گوشی محلی داده نشده است. ";
             }
             else
             {
