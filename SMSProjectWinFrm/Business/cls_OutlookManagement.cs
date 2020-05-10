@@ -123,7 +123,7 @@ namespace SMSProjectWinFrm
                     try
                     {
                         cls_Contact cls_Contact = contacts.Single(m => m.PatientID == contact.PatientID);
-                        logger.ErrorLog(string.Format("Patient ID Conflict {0}", contact.PatientID));
+                        //logger.ErrorLog(string.Format("Patient ID Conflict {0}", contact.PatientID));
                     }
                     catch (Exception)
                     {
