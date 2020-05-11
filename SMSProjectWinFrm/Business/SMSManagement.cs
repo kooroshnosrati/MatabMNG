@@ -265,10 +265,15 @@ namespace SMSProjectWinFrm
                 else
                     ReturnStr += " اجازه ارسال با گوشی محلی داده نشده است. ";
             }
-            else
+            else if (Result == 1)
             {
                 ReturnStr += "از طریق پنل ارسال شد";
                 sendStatus = true;
+            }
+            else
+            {
+                ReturnStr += "خطایی در ارسال از طریق پنل و گوشی پیش آمده. لطفا سیستم را مجددا اجرا نمایید...";
+                //sendStatus = true;
             }
 
             SendStatus = sendStatus;
@@ -302,7 +307,7 @@ namespace SMSProjectWinFrm
                 disposedValue = true;
             }
         }
-        
+
         // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
         // ~SMSManagement()
         // {
