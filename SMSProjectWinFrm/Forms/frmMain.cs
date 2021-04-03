@@ -107,6 +107,20 @@ namespace SMSProjectWinFrm
             frm.Show();
         }
 
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                toolStripStatusLabel1.Text = "آماده سازی مشخصات بیماران " + outlookManagement.contacts.Count + ". تعداد کل: " + outlookManagement.ContactTotalCount;
+                toolStripStatusLabel3.Text = "آماده سازی ویزیت ها . بروز رسانی برای روز " + outlookManagement.AppointmentInitialDate;
+            }
+            catch (Exception)
+            {
+                ;
+            }
+
+        }
+
         private void toolStripMenuItem5_Click(object sender, EventArgs e)
         {
             frmContacts frm = new frmContacts();

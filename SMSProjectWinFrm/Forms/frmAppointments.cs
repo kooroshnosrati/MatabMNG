@@ -36,41 +36,47 @@ namespace SMSProjectWinFrm
 
         public void RefreshGridView()
         {
-             
-            List<cls_Appointment> appointment = (List<cls_Appointment>)outlookManagement.appointments.Where(a => a.Date == selectedDate).ToList();
+            try
+            {
+                List<cls_Appointment> appointment = (List<cls_Appointment>)outlookManagement.appointments.ToList().Where(a => a.Date == selectedDate).ToList();
 
-            dataGridView1.DataSource = new BindingList<cls_Appointment>(appointment); ;
+                dataGridView1.DataSource = new BindingList<cls_Appointment>(appointment); ;
 
-            dataGridView1.Columns["StartDateTime"].DisplayIndex = 0;
-            dataGridView1.Columns["EndDateTime"].DisplayIndex = 1;
-            dataGridView1.Columns["Subject"].DisplayIndex = 2;
-            dataGridView1.Columns["Paid"].DisplayIndex = 3;
+                dataGridView1.Columns["StartDateTime"].DisplayIndex = 0;
+                dataGridView1.Columns["EndDateTime"].DisplayIndex = 1;
+                dataGridView1.Columns["Subject"].DisplayIndex = 2;
+                dataGridView1.Columns["Paid"].DisplayIndex = 3;
 
-            dataGridView1.Columns["StartDateTimeStr"].Visible = false;
-            dataGridView1.Columns["EndDateTimeStr"].Visible = false;
-            dataGridView1.Columns["DateStr"].Visible = false;
-            dataGridView1.Columns["Date"].Visible = false;
-            dataGridView1.Columns["contact"].Visible = false;
+                dataGridView1.Columns["StartDateTimeStr"].Visible = false;
+                dataGridView1.Columns["EndDateTimeStr"].Visible = false;
+                dataGridView1.Columns["DateStr"].Visible = false;
+                dataGridView1.Columns["Date"].Visible = false;
+                dataGridView1.Columns["contact"].Visible = false;
 
-            dataGridView1.Columns["StartDateTime"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            dataGridView1.Columns["StartDateTime"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dataGridView1.Columns["EndDateTime"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            dataGridView1.Columns["EndDateTime"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dataGridView1.Columns["Subject"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            dataGridView1.Columns["Subject"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dataGridView1.Columns["Paid"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            dataGridView1.Columns["Paid"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGridView1.Columns["StartDateTime"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                dataGridView1.Columns["StartDateTime"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGridView1.Columns["EndDateTime"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                dataGridView1.Columns["EndDateTime"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGridView1.Columns["Subject"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                dataGridView1.Columns["Subject"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGridView1.Columns["Paid"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                dataGridView1.Columns["Paid"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
-            //dataGridView1.Columns[8].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridView1.Refresh();
-            //dataGridView1.Rows[rowIndexSeleted].Selected = true;
+                //dataGridView1.Columns[8].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                dataGridView1.Refresh();
+                //dataGridView1.Rows[rowIndexSeleted].Selected = true;
 
-            dataGridView1.ClearSelection();
-            int nRowIndex = rowIndexSeleted;
+                dataGridView1.ClearSelection();
+                int nRowIndex = rowIndexSeleted;
 
-            dataGridView1.Rows[nRowIndex].Selected = true;
-            dataGridView1.Rows[nRowIndex].Cells[0].Selected = true;
-            dataGridView1.FirstDisplayedScrollingRowIndex = nRowIndex;
+                dataGridView1.Rows[nRowIndex].Selected = true;
+                dataGridView1.Rows[nRowIndex].Cells[0].Selected = true;
+                dataGridView1.FirstDisplayedScrollingRowIndex = nRowIndex;
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("لطفا از فرم خارج شده و مجددا سعی نمایید.");
+            }
         }
 
         private void TxtDiseaseName_TextChanged(object sender, EventArgs e)

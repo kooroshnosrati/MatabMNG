@@ -42,32 +42,39 @@ namespace SMSProjectWinFrm
 
         public void RefreshGridView()
         {
-            List<cls_Contact> contacts = (List<cls_Contact>)outlookManagement.contacts
-                .Where(a => a.PatientID != null && a.PatientID.IndexOf(TxtPatientID.Text) != -1)
-                .Where(b => b.SSID != null && b.SSID.IndexOf(TxtSSID.Text) != -1)
-                .Where(c => c.FirstName != null && c.FirstName.IndexOf(TxtFName.Text) != -1)
-                .Where(d => d.LastName != null && d.LastName.IndexOf(TxtLName.Text) != -1)
-                .Where(e => e.Mobile != null && e.Mobile.IndexOf(TxtMobile.Text) != -1)
-                .Where(f => f.DiseaseName != null && f.DiseaseName.IndexOf(cmbDiseaseName.Text) != -1)
-                .Where(g => g.FatherName != null && g.FatherName.IndexOf(TxtFatherName.Text) != -1)
-                .Where(h => h.Phone != null && h.Phone.IndexOf(TxtPhone.Text) != -1)
-                .Where(i => i.Notes != null && i.Notes.IndexOf(TxtNotes.Text) != -1).ToList();
+            try
+            {
+                List<cls_Contact> contacts = (List<cls_Contact>)outlookManagement.contacts.ToList()
+                    .Where(a => a.PatientID != null && a.PatientID.IndexOf(TxtPatientID.Text) != -1)
+                    .Where(b => b.SSID != null && b.SSID.IndexOf(TxtSSID.Text) != -1)
+                    .Where(c => c.FirstName != null && c.FirstName.IndexOf(TxtFName.Text) != -1)
+                    .Where(d => d.LastName != null && d.LastName.IndexOf(TxtLName.Text) != -1)
+                    .Where(e => e.Mobile != null && e.Mobile.IndexOf(TxtMobile.Text) != -1)
+                    .Where(f => f.DiseaseName != null && f.DiseaseName.IndexOf(cmbDiseaseName.Text) != -1)
+                    .Where(g => g.FatherName != null && g.FatherName.IndexOf(TxtFatherName.Text) != -1)
+                    .Where(h => h.Phone != null && h.Phone.IndexOf(TxtPhone.Text) != -1)
+                    .Where(i => i.Notes != null && i.Notes.IndexOf(TxtNotes.Text) != -1).ToList();
 
 
-            BindingList<cls_Contact> list = new BindingList<cls_Contact>(contacts);
-            dataGridView1.DataSource = list;
-            
-            dataGridView1.Columns[9].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            dataGridView1.Columns[9].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                BindingList<cls_Contact> list = new BindingList<cls_Contact>(contacts);
+                dataGridView1.DataSource = list;
 
-            dataGridView1.Columns[11].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            dataGridView1.Columns[11].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dataGridView1.Columns[12].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            dataGridView1.Columns[12].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGridView1.Columns[9].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                dataGridView1.Columns[9].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
-            dataGridView1.Columns[8].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                dataGridView1.Columns[11].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                dataGridView1.Columns[11].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGridView1.Columns[12].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                dataGridView1.Columns[12].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
-            dataGridView1.Refresh();
+                dataGridView1.Columns[8].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+
+                dataGridView1.Refresh();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("لطفا از فرم خارج شده و مجددا سعی نمایید." + Environment.NewLine + e.Message);
+            }
         }
 
         private void TxtSSID_TextChanged(object sender, EventArgs e)

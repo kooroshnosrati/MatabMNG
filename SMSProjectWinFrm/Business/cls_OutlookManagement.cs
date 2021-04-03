@@ -11,6 +11,7 @@ using SMSProjectWinFrm;
 using SMSProjectWinFrm.Business;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace SMSProjectWinFrm
 {
@@ -44,7 +45,10 @@ namespace SMSProjectWinFrm
         }
 
         public List<cls_Contact> contacts = new List<cls_Contact>();
+        public int ContactTotalCount;
         public List<cls_Appointment> appointments = new List<cls_Appointment>();
+        public string AppointmentInitialDate;
+
         public bool IsSurfingInAppointment = false;
         //Outlook.MAPIFolder defaultContactsFolder = null;
         //Outlook.MAPIFolder defaultCalendarFolder = null;
@@ -65,8 +69,8 @@ namespace SMSProjectWinFrm
 
             Outlook.MAPIFolder mAPIFolder = ns.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderContacts);
             Outlook.Items items = mAPIFolder.Items;
-            items.Sort("[Title]");
-
+            items.Sort("[Title]", true);
+            ContactTotalCount = items.Count;
             contacts.Clear();
             foreach (Outlook.ContactItem Ocontact in items)
             {
@@ -112,7 +116,7 @@ namespace SMSProjectWinFrm
                         else
                             contact.Mobile = Ocontact.MobileTelephoneNumber;
                     }
-                    
+
                     if (!string.IsNullOrEmpty(Ocontact.MobileTelephoneNumber) && !Ocontact.MobileTelephoneNumber.StartsWith("0"))
                     {
                         contact.Mobile = Ocontact.MobileTelephoneNumber = Ocontact.MobileTelephoneNumber.StartsWith("0") ? Ocontact.MobileTelephoneNumber.Replace(" ", "") : "0" + Ocontact.MobileTelephoneNumber.Replace(" ", "");
@@ -132,7 +136,7 @@ namespace SMSProjectWinFrm
 
                     if (chk)
                         Ocontact.Save();
-                    
+
                     //if (counter++ > 500)
                     //    break;
                 }
@@ -149,26 +153,15 @@ namespace SMSProjectWinFrm
         private void FillAppointments()
         {
             DateTime today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            string todayENCulture = today.AddDays(-1).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
             DateTime todayOneYearLater = today.AddYears(1);// new DateTime(DateTime.Now.Year + 1, DateTime.Now.Month, DateTime.Now.Day);
 
             appointments.Clear();
-            for (DateTime SlotDateTime = today.AddYears(-1); SlotDateTime < todayOneYearLater; SlotDateTime = SlotDateTime.AddMinutes(10))
-            {
-                cls_Appointment appointment = new cls_Appointment();
-                appointment.StartDateTimeStr = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
-                appointment.EndDateTimeStr = SlotDateTime.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
-                appointment.StartDateTime = SlotDateTime;
-                appointment.EndDateTime = SlotDateTime.AddMinutes(10);
-                appointment.Subject = " ";
-                appointment.Paid = " ";
-                appointment.Date = new DateTime(SlotDateTime.Year, SlotDateTime.Month, SlotDateTime.Day);
-                appointment.DateStr = appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
-                appointments.Add(appointment);
-            }
+
 
             Outlook.MAPIFolder mAPIFolder = ns.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderCalendar);
             Outlook.Items items = mAPIFolder.Items;
-            items.Sort("[Start]");
+            items.Sort("[Start]", true);
 
             ApplicationConfigManagement acm = new ApplicationConfigManagement();
             string dateCultureFormat = acm.ReadSetting("DateCultureFormat").ToLower();
@@ -176,15 +169,41 @@ namespace SMSProjectWinFrm
             if (dateCultureFormat == "d")
             {
                 CultureInfo culture = new CultureInfo("EN-en");
-                filterStr = "[Start] >= '" + today.AddYears(-1).ToString("dd/MM/yyyy", culture) + "'"; 
+                filterStr = "[Start] >= '" + today.AddYears(-1).ToString("dd/MM/yyyy", culture) + "'";
             }
             else if (dateCultureFormat == "g")
             {
-                filterStr = "[Start] >= '" + today.AddYears(-1).ToString("g") + "'"; 
+                filterStr = "[Start] >= '" + today.AddYears(-1).ToString("g") + "'";
             }
             Outlook.Items FilteredItems = items.Restrict(filterStr);
+            DateTime lastAppointmentDate = FilteredItems.GetFirst().Start;
 
-            foreach (Outlook.AppointmentItem item in FilteredItems) 
+            for (DateTime SlotDateTime = today; SlotDateTime < today.AddMonths(1); SlotDateTime = SlotDateTime.AddMinutes(10))
+            {
+                string startDate = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                AppointmentInitialDate = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
+                cls_Appointment appointment;
+                try
+                {
+                    appointment = appointments.Single(m => m.StartDateTimeStr == startDate);
+                }
+                catch (Exception)
+                {
+                    appointment = new cls_Appointment();
+                    appointment.StartDateTimeStr = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                    appointment.EndDateTimeStr = SlotDateTime.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                    appointment.StartDateTime = SlotDateTime;
+                    appointment.EndDateTime = SlotDateTime.AddMinutes(10);
+                    appointment.Subject = " ";
+                    appointment.Paid = " ";
+                    appointment.Date = new DateTime(SlotDateTime.Year, SlotDateTime.Month, SlotDateTime.Day);
+                    appointment.DateStr = appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                    appointments.Add(appointment);
+                }
+            }
+
+
+            foreach (Outlook.AppointmentItem item in FilteredItems)
             {
                 try
                 {
@@ -193,11 +212,36 @@ namespace SMSProjectWinFrm
                     CultureInfo culture1 = new CultureInfo("EN-en");
                     string kk = item.Start.ToString(culture1);
                     string appointmentDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
-                    cls_Appointment appointment = appointments.Single(m => m.StartDateTimeStr == appointmentDate);
-                    if (item.Subject != null)
-                        appointment.Subject = item.Subject;
-                    if (item.Location != null)
-                        appointment.Paid = item.Location;
+                    AppointmentInitialDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) ;
+                    TimeSpan temptsp = today - item.Start;
+                    if (temptsp.TotalSeconds > 0)
+                        break;
+                    cls_Appointment appointment;
+                    try
+                    {
+                        appointment = appointments.Single(m => m.StartDateTimeStr == appointmentDate);
+                        if (item.Subject != null)
+                            appointment.Subject = item.Subject;
+                        if (item.Location != null)
+                            appointment.Paid = item.Location;
+                    }
+                    catch (Exception)
+                    {
+                        appointment = new cls_Appointment();
+                        appointment.StartDateTimeStr = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                        appointment.EndDateTimeStr = item.Start.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + item.Start.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                        appointment.StartDateTime = item.Start;
+                        appointment.EndDateTime = item.Start.AddMinutes(10);
+                        appointment.Subject = " ";
+                        appointment.Paid = " ";
+                        appointment.Date = new DateTime(item.Start.Year, item.Start.Month, item.Start.Day);
+                        appointment.DateStr = appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                        if (item.Subject != null)
+                            appointment.Subject = item.Subject;
+                        if (item.Location != null)
+                            appointment.Paid = item.Location;
+                    }
+                    appointments.Add(appointment);
                 }
                 catch (Exception)
                 {
@@ -206,6 +250,101 @@ namespace SMSProjectWinFrm
                     ;
                 }
             }
+
+            for (DateTime SlotDateTime = today; SlotDateTime < todayOneYearLater; SlotDateTime = SlotDateTime.AddMinutes(10))
+            {
+                string startDate = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                AppointmentInitialDate = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
+                cls_Appointment appointment;
+                try
+                {
+                    appointment = appointments.Single(m => m.StartDateTimeStr == startDate);
+                }
+                catch (Exception)
+                {
+                    appointment = new cls_Appointment();
+                    appointment.StartDateTimeStr = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                    appointment.EndDateTimeStr = SlotDateTime.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                    appointment.StartDateTime = SlotDateTime;
+                    appointment.EndDateTime = SlotDateTime.AddMinutes(10);
+                    appointment.Subject = " ";
+                    appointment.Paid = " ";
+                    appointment.Date = new DateTime(SlotDateTime.Year, SlotDateTime.Month, SlotDateTime.Day);
+                    appointment.DateStr = appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                    appointments.Add(appointment);
+                }
+            }
+
+            foreach (Outlook.AppointmentItem item in FilteredItems)
+            {
+                try
+                {
+                    //if (item.Start < today)
+                    //    continue;
+                    CultureInfo culture1 = new CultureInfo("EN-en");
+                    string kk = item.Start.ToString(culture1);
+                    string appointmentDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                    AppointmentInitialDate = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
+                    cls_Appointment appointment;
+                    try
+                    {
+                        appointment = appointments.Single(m => m.StartDateTimeStr == appointmentDate);
+                        if (item.Subject != null)
+                            appointment.Subject = item.Subject;
+                        if (item.Location != null)
+                            appointment.Paid = item.Location;
+                    }
+                    catch (Exception)
+                    {
+                        appointment = new cls_Appointment();
+                        appointment.StartDateTimeStr = item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + item.Start.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                        appointment.EndDateTimeStr = item.Start.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + item.Start.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                        appointment.StartDateTime = item.Start;
+                        appointment.EndDateTime = item.Start.AddMinutes(10);
+                        appointment.Subject = " ";
+                        appointment.Paid = " ";
+                        appointment.Date = new DateTime(item.Start.Year, item.Start.Month, item.Start.Day);
+                        appointment.DateStr = appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                        if (item.Subject != null)
+                            appointment.Subject = item.Subject;
+                        if (item.Location != null)
+                            appointment.Paid = item.Location;
+                    }
+                    appointments.Add(appointment);
+                }
+                catch (Exception)
+                {
+                    if (item.Subject.ToLower().IndexOf("birthday") != -1)
+                        item.Delete();
+                    ;
+                }
+            }
+
+            //for (DateTime SlotDateTime = today.AddYears(-1); SlotDateTime < today; SlotDateTime = SlotDateTime.AddMinutes(10))
+            //{
+            //    string startDate = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+            //    AppointmentInitialDate = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
+            //    cls_Appointment appointment;
+            //    try
+            //    {
+            //        appointment = appointments.Single(m => m.StartDateTimeStr == startDate);
+            //    }
+            //    catch (Exception)
+            //    {
+            //        appointment = new cls_Appointment();
+            //        appointment.StartDateTimeStr = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+            //        appointment.EndDateTimeStr = SlotDateTime.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.AddMinutes(10).ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+            //        appointment.StartDateTime = SlotDateTime;
+            //        appointment.EndDateTime = SlotDateTime.AddMinutes(10);
+            //        appointment.Subject = " ";
+            //        appointment.Paid = " ";
+            //        appointment.Date = new DateTime(SlotDateTime.Year, SlotDateTime.Month, SlotDateTime.Day);
+            //        appointment.DateStr = appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+            //        appointments.Add(appointment);
+            //    }
+            //}
+
+
             if (mAPIFolder != null)
                 Marshal.ReleaseComObject(mAPIFolder);
             if (items != null)
@@ -226,7 +365,7 @@ namespace SMSProjectWinFrm
                 {
                     CurrentAccounts.Add(account.SmtpAddress);
                 }
-                
+
 
                 ApplicationConfigManagement acm = new ApplicationConfigManagement();
                 //string usrName = acm.ReadSetting("OutlookAccount").ToLower();
@@ -235,15 +374,20 @@ namespace SMSProjectWinFrm
                 //    MessageBox.Show("تنظیمات Outlook شما مشکل دارد...", "پیغام خطا", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign, true);
                 //    System.Environment.Exit(0);
                 //}
-                
+
                 if (CurrentAccounts.IndexOf(acm.ReadSetting("OutlookAccount").ToLower()) != -1)
                 {
                     MessageBox.Show("تنظیمات Outlook شما مشکل دارد...", "پیغام خطا", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign, true);
                     System.Environment.Exit(0);
                 }
 
-                FillAppointments();
-                FillContacts();
+                Thread th = new Thread(new ThreadStart(this.FillAppointments));
+                th.Start();
+                Thread th1 = new Thread(new ThreadStart(this.FillContacts));
+                th1.Start();
+
+                //FillAppointments();
+                //FillContacts();
             }
             catch (Exception err)
             {
@@ -358,7 +502,7 @@ namespace SMSProjectWinFrm
             if (chk)
                 SendVisitConfirmationSmsToContact(a, JobID);
         }
-        private void ListOneDayAppointmentsAndSendSMS(DateTime dateTime, int JobID) 
+        private void ListOneDayAppointmentsAndSendSMS(DateTime dateTime, int JobID)
         {
             DateTime AbsoluteDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
             List<cls_Appointment> oneDayAppointments = appointments.Where(m => m.Date == AbsoluteDate).ToList();
@@ -390,9 +534,9 @@ namespace SMSProjectWinFrm
                     for (short TimeAfterToSendSMS = 0; TimeAfterToSendSMS < 5; TimeAfterToSendSMS++)
                     {
                         DateTime now = DateTime.Now.AddDays(TimeAfterToSendSMS);
-                        
+
                         int jobID = dal.isJobCreated(now, 1, true);
-                        if ( jobID == -1)
+                        if (jobID == -1)
                             jobID = dal.JobCreat(now, 1, true);
                         ListOneDayAppointmentsAndSendSMS(now, jobID);
                     }
@@ -402,7 +546,7 @@ namespace SMSProjectWinFrm
                     for (short TimeAfterToSendSMS = 0; TimeAfterToSendSMS < 3; TimeAfterToSendSMS++)
                     {
                         DateTime now = DateTime.Now.AddDays(TimeAfterToSendSMS);
-                        
+
                         int jobID = dal.isJobCreated(now, 1, true);
                         if (jobID == -1)
                             jobID = dal.JobCreat(now, 1, true);
@@ -500,22 +644,22 @@ namespace SMSProjectWinFrm
             List<cls_Appointment> GroupNotificationForOneDayAppointments = new List<cls_Appointment>();
             foreach (cls_Appointment item in oneDayAppointments)
             {
-                    try
-                    {
+                try
+                {
                     item.contact.PatientID = item.contact.Mobile = new String(item.Subject.Where(Char.IsDigit).ToArray());
-                    }
-                    catch (Exception err1)
-                    {
-                        throw (err1);
-                    }
-                    if (!string.IsNullOrEmpty(item.contact.PatientID))
-                        item.contact.FullName = item.Subject.Replace(item.contact.PatientID, "").Trim();
-                    else
-                        item.contact.FullName = item.Subject;
-                    cls_Appointment aitem = GetContactInfo(item);
-                    if (aitem != null)
+                }
+                catch (Exception err1)
+                {
+                    throw (err1);
+                }
+                if (!string.IsNullOrEmpty(item.contact.PatientID))
+                    item.contact.FullName = item.Subject.Replace(item.contact.PatientID, "").Trim();
+                else
+                    item.contact.FullName = item.Subject;
+                cls_Appointment aitem = GetContactInfo(item);
+                if (aitem != null)
                     GroupNotificationForOneDayAppointments.Add(aitem);
-             }
+            }
             return GroupNotificationForOneDayAppointments;
         }
         public void SendAnSMSToAllContacts(int jobID, string StrSmsBody)
@@ -604,7 +748,7 @@ namespace SMSProjectWinFrm
                     Marshal.ReleaseComObject(mAPIFolder);
                 if (items != null)
                     Marshal.ReleaseComObject(items);
-                if (newContact!= null)
+                if (newContact != null)
                     Marshal.ReleaseComObject(newContact);
 
                 return true;
@@ -683,7 +827,7 @@ namespace SMSProjectWinFrm
                     contact.HomeTelephoneNumber = newContact.Phone;
                     contact.MobileTelephoneNumber = newContact.Mobile;
                     contact.Body = newContact.Notes;
-                    contact.User1 = newContact.Birthday; 
+                    contact.User1 = newContact.Birthday;
                     contact.Email1Address = newContact.Email;
                     contact.HomeAddress = newContact.Address;
 
