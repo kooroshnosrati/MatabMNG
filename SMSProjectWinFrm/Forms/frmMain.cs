@@ -111,8 +111,11 @@ namespace SMSProjectWinFrm
         {
             try
             {
-                toolStripStatusLabel1.Text = "آماده سازی مشخصات بیماران " + outlookManagement.contacts.Count + ". تعداد کل: " + outlookManagement.ContactTotalCount;
-                toolStripStatusLabel3.Text = "آماده سازی ویزیت ها . بروز رسانی برای روز " + outlookManagement.AppointmentInitialDate;
+                if (outlookManagement != null)
+                {
+                    toolStripStatusLabel1.Text = "آماده سازی مشخصات بیماران " + outlookManagement.contacts.Count + ". تعداد کل: " + outlookManagement.ContactTotalCount;
+                    toolStripStatusLabel3.Text = "آماده سازی ویزیت ها . بروز رسانی برای روز " + outlookManagement.AppointmentInitialDate;
+                }
             }
             catch (Exception)
             {

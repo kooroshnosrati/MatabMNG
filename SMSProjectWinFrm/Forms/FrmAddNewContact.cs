@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SMSProjectWinFrm.Business;
 
 namespace SMSProjectWinFrm.Forms
 {
@@ -37,6 +39,45 @@ namespace SMSProjectWinFrm.Forms
             if (outlookManagement.AddNewContact(contact))
             {
                 MessageBox.Show("بیمار جدید ثبت نام شد...");
+
+                string SourceFilesPath = Application.StartupPath + "\\PatientRecordTemplates\\";
+                ApplicationConfigManagement acm = new ApplicationConfigManagement();
+                try
+                {
+
+                    string PatientRecordsPath = acm.ReadSetting("PatientRecords");
+                    string fileName = contact.PatientID;
+                    string FileFullPath = "";
+
+                    if (contact.DiseaseName == "غدد")
+                    {
+                        SourceFilesPath += "E.Docx";
+                        fileName += "E.Docx";
+                    }
+                    else
+                    {
+                        SourceFilesPath += "D.Docx";
+                        fileName += "D.Docx";
+                    }
+
+                    FileFullPath = PatientRecordsPath + "\\" + fileName;
+                    if (!File.Exists(FileFullPath))
+                    {
+                        File.Copy(SourceFilesPath, FileFullPath);
+
+                        cls_WordManagement cls_WordManagement = new cls_WordManagement();
+                        cls_WordManagement.ChangeHeaderInfo(contact, FileFullPath);
+                        System.Diagnostics.Process.Start(FileFullPath);
+                    }
+                    else
+                        System.Diagnostics.Process.Start(FileFullPath);
+                }
+                catch (Exception err)
+                {
+                    MessageBox.Show(err.Message, "پیغام خطا", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign, true);
+                }
+
+
                 this.Close();
                 this.Dispose();
             }
@@ -46,6 +87,9 @@ namespace SMSProjectWinFrm.Forms
                 this.Close();
                 this.Dispose();
             }
+
+
+
         }
 
         private void BtnCancel_Click(object sender, EventArgs e)

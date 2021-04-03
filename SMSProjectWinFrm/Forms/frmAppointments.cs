@@ -75,7 +75,7 @@ namespace SMSProjectWinFrm
             }
             catch (Exception)
             {
-                MessageBox.Show("لطفا از فرم خارج شده و مجددا سعی نمایید.");
+                MessageBox.Show("لطفا کمی تامل فرمایید تا اطلاعات ویزیت ها تکمیل شود.");
             }
         }
 
@@ -92,7 +92,7 @@ namespace SMSProjectWinFrm
             DateTime endDateTime = DateTime.Parse(dataGridView1.Rows[e.RowIndex].Cells["EndDateTime"].Value.ToString());
             string subject = dataGridView1.Rows[e.RowIndex].Cells["Subject"].Value.ToString();
             string paid = dataGridView1.Rows[e.RowIndex].Cells["Paid"].Value.ToString();
-            selectedAppointment = outlookManagement.appointments.Single(m => m.StartDateTime == startDateTime & m.EndDateTime == endDateTime);
+            selectedAppointment = outlookManagement.appointments.ToList().Single(m => m.StartDateTime == startDateTime & m.EndDateTime == endDateTime);
             TxtStartDateTime.Text = startDateTime.ToString();
             TxtSubject.Text = subject;
             TxtPaid.Text = paid;

@@ -71,9 +71,9 @@ namespace SMSProjectWinFrm
 
                 dataGridView1.Refresh();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                MessageBox.Show("لطفا از فرم خارج شده و مجددا سعی نمایید." + Environment.NewLine + e.Message);
+                MessageBox.Show("لطفا کمی تامل فرمایید تا اطلاعات بیماران تکمیل شود.");
             }
         }
 
@@ -134,7 +134,7 @@ namespace SMSProjectWinFrm
             string Email = dataGridView1.Rows[e.RowIndex].Cells[11].Value.ToString();
             string Address = dataGridView1.Rows[e.RowIndex].Cells[12].Value.ToString();
 
-            selectedContact = outlookManagement.contacts.Single(m =>
+            selectedContact = outlookManagement.contacts.ToList().Single(m =>
             m.PatientID == PatientID
             & m.DiseaseName == DiseaseName
             & m.FirstName == FirstName

@@ -178,7 +178,7 @@ namespace SMSProjectWinFrm
             Outlook.Items FilteredItems = items.Restrict(filterStr);
             DateTime lastAppointmentDate = FilteredItems.GetFirst().Start;
 
-            for (DateTime SlotDateTime = today; SlotDateTime < today.AddMonths(1); SlotDateTime = SlotDateTime.AddMinutes(10))
+            for (DateTime SlotDateTime = today; SlotDateTime < today.AddDays(7); SlotDateTime = SlotDateTime.AddMinutes(10))
             {
                 string startDate = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
                 AppointmentInitialDate = SlotDateTime.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern);
@@ -220,10 +220,6 @@ namespace SMSProjectWinFrm
                     try
                     {
                         appointment = appointments.Single(m => m.StartDateTimeStr == appointmentDate);
-                        if (item.Subject != null)
-                            appointment.Subject = item.Subject;
-                        if (item.Location != null)
-                            appointment.Paid = item.Location;
                     }
                     catch (Exception)
                     {
@@ -236,11 +232,11 @@ namespace SMSProjectWinFrm
                         appointment.Paid = " ";
                         appointment.Date = new DateTime(item.Start.Year, item.Start.Month, item.Start.Day);
                         appointment.DateStr = appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
-                        if (item.Subject != null)
-                            appointment.Subject = item.Subject;
-                        if (item.Location != null)
-                            appointment.Paid = item.Location;
                     }
+                    if (item.Subject != null)
+                        appointment.Subject = item.Subject;
+                    if (item.Location != null)
+                        appointment.Paid = item.Location;
                     appointments.Add(appointment);
                 }
                 catch (Exception)
