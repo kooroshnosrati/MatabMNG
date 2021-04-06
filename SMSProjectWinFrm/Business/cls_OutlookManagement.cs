@@ -186,6 +186,7 @@ namespace SMSProjectWinFrm
                 try
                 {
                     appointment = appointments.Single(m => m.StartDateTimeStr == startDate);
+                    int kk = 0;
                 }
                 catch (Exception)
                 {
@@ -220,6 +221,10 @@ namespace SMSProjectWinFrm
                     try
                     {
                         appointment = appointments.Single(m => m.StartDateTimeStr == appointmentDate);
+                        if (item.Subject != null)
+                            appointment.Subject = item.Subject;
+                        if (item.Location != null)
+                            appointment.Paid = item.Location;
                     }
                     catch (Exception)
                     {
@@ -232,12 +237,8 @@ namespace SMSProjectWinFrm
                         appointment.Paid = " ";
                         appointment.Date = new DateTime(item.Start.Year, item.Start.Month, item.Start.Day);
                         appointment.DateStr = appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortDatePattern) + " " + appointment.Date.ToString(CultureInfo.GetCultureInfo("en-EN").DateTimeFormat.ShortTimePattern);
+                        appointments.Add(appointment);
                     }
-                    if (item.Subject != null)
-                        appointment.Subject = item.Subject;
-                    if (item.Location != null)
-                        appointment.Paid = item.Location;
-                    appointments.Add(appointment);
                 }
                 catch (Exception)
                 {
@@ -305,8 +306,8 @@ namespace SMSProjectWinFrm
                             appointment.Subject = item.Subject;
                         if (item.Location != null)
                             appointment.Paid = item.Location;
+                        appointments.Add(appointment);
                     }
-                    appointments.Add(appointment);
                 }
                 catch (Exception)
                 {
