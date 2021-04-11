@@ -39,6 +39,7 @@ namespace SMSProjectWinFrm
             try
             {
                 List<cls_Appointment> appointment = (List<cls_Appointment>)outlookManagement.appointments.ToList().Where(a => a.Date == selectedDate).ToList();
+                appointment.Sort((u1, u2) => u1.StartDateTime.CompareTo(u2.StartDateTime));
 
                 dataGridView1.DataSource = new BindingList<cls_Appointment>(appointment); ;
 
