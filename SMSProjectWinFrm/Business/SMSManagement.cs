@@ -170,6 +170,9 @@ namespace SMSProjectWinFrm
             string ReturnStr = "";
             string ResultStr = "";
             string SMSCPanelStr = acm.ReadSetting("SMSCPanel").ToLower();
+
+            //SMSCPanelStr = "false";
+
             string GSMPanelStr = acm.ReadSetting("GSMPanel").ToLower();
             string Signeture = acm.ReadSetting("Signeture");
             int Result = 0;
