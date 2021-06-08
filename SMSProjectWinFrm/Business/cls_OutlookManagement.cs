@@ -543,7 +543,7 @@ namespace SMSProjectWinFrm
                 }
                 else
                 {
-                    for (short TimeAfterToSendSMS = 0; TimeAfterToSendSMS < 6; TimeAfterToSendSMS++)
+                    for (short TimeAfterToSendSMS = 0; TimeAfterToSendSMS < 3; TimeAfterToSendSMS++)
                     {
                         DateTime now = DateTime.Now.AddDays(TimeAfterToSendSMS);
 
