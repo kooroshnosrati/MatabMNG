@@ -501,27 +501,34 @@ namespace SMSProjectWinFrm
         }
         private void ListOneDayAppointmentsAndSendSMS(DateTime dateTime, int JobID)
         {
-            DateTime AbsoluteDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
-            List<cls_Appointment> oneDayAppointments = appointments.Where(m => m.Date == AbsoluteDate).ToList();
-            foreach (cls_Appointment item in oneDayAppointments.ToList<cls_Appointment>())
+            try
             {
-                if (item.Subject.Length > 1)
-                { 
-                    try
+                DateTime AbsoluteDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
+                List<cls_Appointment> oneDayAppointments = appointments.Where(m => m.Date == AbsoluteDate).ToList();
+                foreach (cls_Appointment item in oneDayAppointments.ToList<cls_Appointment>())
+                {
+                    if (item.Subject.Length > 1)
                     {
-                        item.contact.PatientID = item.contact.Mobile = new String(item.Subject.Where(Char.IsDigit).ToArray());
-                    }
-                    catch (Exception err1)
-                    {
-                        logger.ErrorLog(err1.Message + " ErrorFunction : ListOneDayAppointmentsAndSendSMS");
-                    }
-                    if (!string.IsNullOrEmpty(item.contact.PatientID))
-                        item.contact.FullName = item.Subject.Replace(item.contact.PatientID, "").Trim();
-                    else
-                        item.contact.FullName = item.Subject;
+                        try
+                        {
+                            item.contact.PatientID = item.contact.Mobile = new String(item.Subject.Where(Char.IsDigit).ToArray());
+                        }
+                        catch (Exception err1)
+                        {
+                            logger.ErrorLog(err1.Message + " ErrorFunction : ListOneDayAppointmentsAndSendSMS");
+                        }
+                        if (!string.IsNullOrEmpty(item.contact.PatientID))
+                            item.contact.FullName = item.Subject.Replace(item.contact.PatientID, "").Trim();
+                        else
+                            item.contact.FullName = item.Subject;
 
-                    FindContactAndSendVisitConfirmationSMS(item, JobID);
+                        FindContactAndSendVisitConfirmationSMS(item, JobID);
+                    }
                 }
+            }
+            catch (Exception err2)
+            {
+                logger.ErrorLog(err2.Message + " ErrorFunction : ListOneDayAppointmentsAndSendSMS");
             }
         }
         public void ListForwardAppointmentsAndSendSMS()
@@ -556,6 +563,7 @@ namespace SMSProjectWinFrm
             }
             catch (Exception err)
             {
+                IsSurfingInAppointment = false;
                 throw (err);
             }
             IsSurfingInAppointment = false;

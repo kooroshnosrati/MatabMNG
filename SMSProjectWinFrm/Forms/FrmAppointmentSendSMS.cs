@@ -38,10 +38,17 @@ namespace SMSProjectWinFrm
         }
         private void button2_Click(object sender, EventArgs e)
         {
-            button1.Enabled = true;
-            button2.Enabled = false;
-            if (backgroundWorker1.WorkerSupportsCancellation == true)
-                backgroundWorker1.CancelAsync();
+            try
+            {
+                button1.Enabled = true;
+                button2.Enabled = false;
+                if (backgroundWorker1.WorkerSupportsCancellation == true)
+                    backgroundWorker1.CancelAsync();
+            }
+            catch (Exception err)
+            {
+                int kk = 0;
+            }
         }
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -56,14 +63,20 @@ namespace SMSProjectWinFrm
                     }
                     catch (Exception err)
                     {
+                        if (err.Message == "Collection was modified; enumeration operation may not execute.")
+                            continue;
                         listBox1.Invoke(new Action(() => listBox1.Items.Add(err.Message + "---" + err.InnerException)));
-                        button2_Click(null, null);
                         e.Cancel = true;
                         break;
                     }
                 }
             }
             e.Cancel = true;
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            button2_Click(null, null);
         }
     }
 }
