@@ -63,7 +63,7 @@ namespace SMSProjectWinFrm
                     }
                     catch (Exception err)
                     {
-                        if (err.Message == "Collection was modified; enumeration operation may not execute.")
+                        if (err.Message.ToLower().IndexOf("Collection was modified".ToLower()) != -1) //; enumeration operation may not execute.")
                             continue;
                         listBox1.Invoke(new Action(() => listBox1.Items.Add(err.Message + "---" + err.InnerException)));
                         e.Cancel = true;
